@@ -1,5 +1,4 @@
 /*
-Copyright 2015 National University of Singapore 
 cd
 cd NUS/kleeTest
 llvm-gcc --emit-llvm -c -g even.c
