@@ -16,11 +16,12 @@
 # To run a single example, e.g., number.c from the Hansen,
 # Schachte, and Sondergaard's article. These are currenly
 # separated from the default targets as they test the
-# performance limits of KLEE.
+# performance limits of KLEE. The method also works for
+# anything in the defaul targets.
 #
 # make number.klee
 #
-# To build an LLVM language file of number.c:
+# To build an LLVM IR file of number.c:
 #
 # make number.s
 #
