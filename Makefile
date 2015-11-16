@@ -6,6 +6,20 @@
 # <example-name>.klee which also contains the .dot files,
 # and also <example-name>.inputs that shows the input
 # values for each test.
+#
+# Sample usage:
+# 
+# To run KLEE on all examples:
+# make
+#
+# To run KLEE on 1 example, say addition.c:
+# make addition.klee
+#
+# To compile addition.c to LLVM IR:
+# make addition.s
+#
+# To clean the directory:
+# make clean
 
 CC=llvm-gcc
 AS=llvm-gcc -S --emit-llvm
