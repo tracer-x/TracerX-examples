@@ -50,7 +50,7 @@ all-ir: ${IR_TARGETS}
 
 clean:
 	rm -f klee-last *.o *.s *~ *.inputs core 
-	rm -rf ${TARGETS}
+	rm -rf ${TARGETS} ${HANSEN_TARGETS}
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee
