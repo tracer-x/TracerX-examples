@@ -26,7 +26,7 @@ Sample usages:
 
   `make addition.klee`
 
-- To build an LLVM IR file of `number.c`:
+- To build an LLVM IR file of `addition.c`:
 
   `make addition.s`
 
