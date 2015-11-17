@@ -3,7 +3,7 @@
 # Copyright 2015 National University of Singapore
 
 CC=llvm-gcc
-AS=llvm-gcc -S --emit-llvm
+AS=${CC} -S --emit-llvm
 CFLAGS=--emit-llvm -g
 KLEE_FLAGS=-write-pcs -use-query-log=all:pc,all:smt2 -search=dfs
 
