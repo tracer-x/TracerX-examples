@@ -13,8 +13,11 @@ Each directory contains a suite of simple examples.
            Joining and Splitting for the Symbolic Execution of
            Binaries." These tests the performance limits of KLEE.
 
-  llbmc  - Examples from LLBMC 2013.1 distribution. The license
-           information is included in the license/LLBMC_LICENSE file.
+  llbmc - Examples from LLBMC 2013.1 distribution. The examples were
+   	   modified on 17 November 2015 for running with KLEE, e.g.,
+   	   adding main method and replaced LLBMC API calls with the
+   	   corresponding KLEE API calls. The LLBMC license information
+   	   is included in the license/LLBMC_LICENSE file.
 
 To run the the example(s) in a particular directory, say basic, change
 your current directory to the basic directory.

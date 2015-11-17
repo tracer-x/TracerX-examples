@@ -1,9 +1,12 @@
 /**
+ * multiply.c - A KLEE example adapted from the paper
  * Hansen, Schachte, Sondergaard: State Joining and Splitting for the
  * Symbolic Execution of Binaries
  *
  * There are 2^64 paths through the function multiply. Simple path
  * enumeration without state merging would enumerate all paths.
+ *
+ * Copyright 2015 National University of Singapore
  */
 
 #include <stdint.h>

@@ -1,9 +1,12 @@
 /**
+ * wegner.c - A KLEE example adapted from the paper
  * Hansen, Schachte, Sondergaard: State Joining and Splitting for the
  * Symbolic Execution of Binaries
  *
  * This example counts the number of 1-bits in a symbolic 64-bit number.
  * The example has 65 paths.
+ *
+ * Copyright 2015 National University of Singapore
  */
 
 #include <stdint.h>
