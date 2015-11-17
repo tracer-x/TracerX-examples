@@ -2,7 +2,7 @@
 #
 # Copyright 2015 National University of Singapore
 
-TARGETS=double-free.klee memory-access.klee openssl.klee polynomial.klee popcount.klee
+TARGETS=double-free.klee memory-access.klee openssl.klee popcount.klee
 
 include ../Makefile.common
 

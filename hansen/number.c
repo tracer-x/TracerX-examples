@@ -8,6 +8,8 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
+#include <klee/klee.h>
 
 int main() {
   char s[9];
@@ -22,7 +24,7 @@ int main() {
   klee_make_symbolic(&number, sizeof(number), "number");
 
   if (number == 12345678) {
-    fail();
+    assert(0);
   }
 
   return 0;

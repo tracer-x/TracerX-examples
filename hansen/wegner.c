@@ -7,6 +7,7 @@
  */
 
 #include <stdint.h>
+#include <klee/klee.h>
 
 uint64_t popCount (uint64_t y);
 

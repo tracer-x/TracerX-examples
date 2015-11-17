@@ -1,5 +1,6 @@
 #include <stdint.h>
-#include "llbmc.h"
+#include <assert.h>
+#include <klee/klee.h>
 
 uint32_t optimized_popcount(uint32_t x)
 {
@@ -32,5 +33,15 @@ void __llbmc_main(uint32_t x)
     // Show that both implementations of popcount produce the
     // same result for all values of x.
 
-    __llbmc_assert(opt == ref);
+    assert(opt == ref);
+}
+
+int main() {
+  uint32_t x;
+
+  klee_make_symbolic(&x, sizeof(x), "x");
+
+  __llbmc_main(x);
+
+  return 0;
 }
