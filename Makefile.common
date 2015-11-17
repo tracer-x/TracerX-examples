@@ -34,14 +34,6 @@ AS=llvm-gcc -S --emit-llvm
 CFLAGS=--emit-llvm -g
 KLEE_FLAGS=-write-pcs -use-query-log=all:pc,all:smt2 -search=dfs
 
-# Default targets
-TARGETS=addition.klee arraysimple2.klee even.klee polynomial.klee simple.klee
-
-# Targets for examples from Hansen, Schachte, and Sondergaard
-HANSEN_TARGETS=number.klee wegner.klee multiply.klee
-
-#
-
 INPUT_TARGETS=$(subst .klee,.inputs,${TARGETS})
 IR_TARGETS=$(subst .klee,.s,${TARGETS})
 
@@ -51,7 +43,7 @@ all-ir: ${IR_TARGETS}
 
 clean:
 	rm -f klee-last *.o *.s *~ *.inputs core 
-	rm -rf ${TARGETS} ${HANSEN_TARGETS}
+	rm -rf ${TARGETS}
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee
