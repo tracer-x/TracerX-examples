@@ -9,6 +9,7 @@ ktest-tool --write-ints klee-last/test000001.ktest
 ktest-tool --write-ints klee-last/test000002.ktest
 
 */
+#include <klee/klee.h>
 #include <assert.h>
 
 int polynomial(int p1, int p2) { 

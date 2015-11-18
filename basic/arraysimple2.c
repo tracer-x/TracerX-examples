@@ -11,6 +11,7 @@ ktest-tool --write-ints klee-last/test000002.ktest
 ktest-tool --write-ints klee-last/test000003.ktest
 
 */
+#include <klee/klee.h>
 #include <assert.h>
 
 int main() {
