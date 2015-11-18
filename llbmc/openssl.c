@@ -29,19 +29,16 @@ char *SSL_get_shared_ciphers(const char *cp, char *buf, int len)
 int main()
 {
     char *buf = malloc(BUF_SIZE);
+    klee_make_symbolic(buf, BUF_SIZE, "buf");
 
     // Set up string variable 'name' with arbitrary content
     // and length at most MAX_S (including terminator).
 
-    size_t s;
-    klee_make_symbolic(&s, sizeof(s), "s");
-
-    klee_assume(0 < s && s < MAX_S);
+    int s = MAX_S;
     char *name = malloc(s);
+    name[s-1] = '\0';
+    klee_make_symbolic(name, s, "name");
 
-    klee_make_symbolic(&name, sizeof(name), "name");
-
-    klee_assume(name[s-1] == '\0');
 
     // Check SSL_get_shared_ciphers for all strings 'name'
     // of size up to MAX_S.
