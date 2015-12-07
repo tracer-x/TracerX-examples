@@ -13,6 +13,8 @@ Each directory contains a suite of simple examples.
 
 - **llbmc** - Examples from LLBMC 2013.1 distribution. The examples were modified on 17 November 2015 for running with KLEE, e.g., adding main method and replaced LLBMC API calls with the corresponding KLEE API calls. The LLBMC license information is included in the `license/LLBMC_LICENSE` file.
 
+- **tutorial** - Additional examples from KLEE tutorial at http://klee.github.io/tutorials
+
 To run the the example(s) in a particular directory, say basic, change your current directory to the `basic` directory.
 
 The Makefile in each directory will create KLEE output directories `<example-name>.klee` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for each test.

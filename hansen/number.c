@@ -6,8 +6,6 @@
  * A somewhat classical example that shows the advantage of symbolic execution
  * over black-box test generation. It is unlikely that a black-box random test
  * approach would be able to figure out that failure is possible.
- *
- * Copyright 2015 National University of Singapore
  */
 
 #include <stdio.h>

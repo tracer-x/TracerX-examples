@@ -2,7 +2,7 @@
 #
 # Copyright 2015 National University of Singapore
 
-TARGETS=addition.klee arraysimple2.klee even.klee polynomial.klee addition_safe.klee
+TARGETS=Regexp.klee
 
 include ../Makefile.common
 
