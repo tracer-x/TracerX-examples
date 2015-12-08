@@ -24,7 +24,7 @@ clean:
 .SUFFIXES: .klee .inputs
 
 .o.klee:
-	klee ${KLEE_FLAGS} -output-dir=$@ $<
+	time klee ${KLEE_FLAGS} -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 
