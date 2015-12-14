@@ -16,12 +16,13 @@ ktest-tool --write-ints klee-last/test000003.ktest
 
 int add(int p1, int p2, int p3, int x) { 
 if(x <= 0){
-	 if(p1 > 8) x = x + 1; 
-	 if(p2 > 8) x = x;
+
+	 if(p1 > 8) x = x; 
+		 else {x = x + 1;}
+         if(p2 > 8) x = x;
 	 	else {x = x + 2;}
-	 if(p3 > 8) {x = x + 3;}
-	  
-	 assert(x <= 5);
+
+	 assert(x <= 3);
  }
  return x;
 } 
