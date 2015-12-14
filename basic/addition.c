@@ -1,5 +1,9 @@
 /*
 Copyright 2015 National University of Singapore 
+Execute:  clang -emit-llvm -c addition.c -o addition.o
+
+or
+
 cd
 cd nus/kleetest
 llvm-gcc --emit-llvm -c -g addition.c
