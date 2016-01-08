@@ -7,7 +7,8 @@ TARGETS=addition.klee \
 	even.klee \
 	polynomial.klee \
 	addition_safe.klee \
-	interproc.klee
+	interproc.klee \
+	addition_depend.klee
 
 include ../Makefile.common
 
