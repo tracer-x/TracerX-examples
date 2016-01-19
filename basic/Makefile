@@ -9,7 +9,8 @@ TARGETS=addition.klee \
 	addition_safe.klee \
 	interproc.klee \
 	addition_depend.klee \
-	addition_safe_small.klee
+	addition_safe_small.klee \
+	sp.klee
 
 include ../Makefile.common
 
