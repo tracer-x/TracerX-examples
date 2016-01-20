@@ -14,7 +14,7 @@ ktest-tool --write-ints klee-last/test00000?.ktest
 
 int y;
 
-int proc(int x, int y) {
+void proc(int x, int y) {
 
   // The first conditional is to prevent underflow
   if (x >= -1 && y >= -1) {
@@ -35,8 +35,6 @@ int proc(int x, int y) {
 
     assert(x + y <= 5);
   }
-
-  return x + y;
 }
 
 int main() {
@@ -45,5 +43,6 @@ int main() {
   klee_make_symbolic(&x, sizeof(x), "x");
   klee_make_symbolic(&y, sizeof(y), "y");
 
-  return proc(x, y);
+  proc(x, y);
+  return 0;
 } 
