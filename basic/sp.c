@@ -14,22 +14,27 @@ ktest-tool --write-ints klee-last/test00000?.ktest
 
 int y;
 
-int proc(int x, int y) { 
-  if (x > 0) {
-    x = 2;
-  } else {
-    x += 2;
-  }
+int proc(int x, int y) {
 
-  if (y > 0) {
-    y = 2;
-    x++;
-  } else {
-    y += 2;
-    x++;
-  }
+  // The first conditional is to prevent underflow
+  if (x >= -1 && y >= -1) {
 
-  assert (x + y <= 5);
+    if (x > 0) {
+      x = 2;
+    } else {
+      x += 2;
+    }
+
+    if (y > 0) {
+      y = 2;
+      x++;
+    } else {
+      y += 2;
+      x++;
+    }
+
+    assert(x + y <= 5);
+  }
 
   return x + y;
 }
