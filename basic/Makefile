@@ -6,10 +6,11 @@ TARGETS=addition.klee \
 	arraysimple2.klee \
 	even.klee \
 	polynomial.klee \
-	addition_safe.klee \
 	interproc.klee \
-	addition_depend.klee \
-	addition_safe_small.klee \
+	addition_safe1.klee \
+	addition_safe2.klee \
+	addition_safe3.klee \
+	addition_safe4.klee \
 	sp.klee
 
 include ../Makefile.common
