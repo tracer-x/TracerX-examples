@@ -15,6 +15,7 @@ ktest-tool --write-ints klee-last/test00000?.ktest
 int y;
 
 void proc(int x, int y) {
+  int z = 5;
 
   // The first conditional is to prevent underflow
   if (x >= -1 && y >= -1) {
@@ -33,7 +34,7 @@ void proc(int x, int y) {
       x++;
     }
 
-    assert(x + y <= 5);
+    assert(x + y <= z);
   }
 }
 
