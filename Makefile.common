@@ -2,7 +2,11 @@
 #
 # Copyright 2015 National University of Singapore
 
-import Makefile.settings
+CC=clang
+KLEE=${HOME}/git/memdepend/klee/Release+Asserts/bin/klee
+AS=${CC} -S -emit-llvm
+CFLAGS=-emit-llvm -g -I${HOME}/nus/kleetest
+KLEE_FLAGS=-write-pcs -use-query-log=all:pc,all:smt2 -search=dfs
 
 INPUT_TARGETS=$(subst .klee,.inputs,${TARGETS})
 IR_TARGETS=$(subst .klee,.s,${TARGETS})
