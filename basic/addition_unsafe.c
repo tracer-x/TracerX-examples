@@ -1,8 +1,7 @@
 /*
 Copyright 2015 National University of Singapore 
-Execute:  clang -emit-llvm -c addition.c -o addition.o
 
-or
+Assertion can be violated here.
 
 cd
 cd nus/kleetest
@@ -18,22 +17,22 @@ ktest-tool --write-ints klee-last/test000003.ktest
 #include <klee/klee.h>
 #include <assert.h>
 
-int add(int p1, int p2, int x) { 
+int add(int p1, int p2, int p3, int x) { 
 if(x <= 0){
-
-	 if(p1 > 8) x = x; 
-		 else {x = x + 1;}
-         if(p2 > 8) x = x;
+	 if(p1 > 8) x = x + 1; 
+	 if(p2 > 8) x = x;
 	 	else {x = x + 2;}
-
-	 assert(x <= 3);
+	 if(p3 > 8) {x = x + 3;}
+	  
+	 assert(x <= 5);
  }
  return x;
 } 
 int main() {
-  int p1,p2, x;
+  int p1,p2, p3, x;
   klee_make_symbolic(&p1, sizeof(p1), "p1");
   klee_make_symbolic(&p2, sizeof(p2), "p2");
+  klee_make_symbolic(&p3, sizeof(p3), "p3");
   klee_make_symbolic(&x, sizeof(x), "x");
-  return add(p1, p2, x);
+  return add(p1, p2, p3, x);
 } 
