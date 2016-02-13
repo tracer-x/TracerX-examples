@@ -12,6 +12,7 @@ TARGETS=addition.klee \
 	addition_safe3.klee \
 	addition_safe4.klee \
 	addition_safe5.klee \
+	addition_safe6.klee \
 	addition_unsafe.klee \
 	sp.klee
 
