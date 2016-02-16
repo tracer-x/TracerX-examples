@@ -15,7 +15,7 @@ Each directory contains a suite of simple examples.
 
 - **tutorial** - Additional examples from KLEE tutorial at http://klee.github.io/tutorials
 
-To run the the example(s) in a particular directory, say basic, change your current directory to the `basic` directory.
+To run the examples, first edit `Makefile.common` to set the right values for your environment. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
 
 The Makefile in each directory will create KLEE output directories `<example-name>.klee` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for each test.
 
