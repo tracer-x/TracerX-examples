@@ -1,23 +1,21 @@
 /*
-  Copyright 2015 National University of Singapore
-
-  This example shows how subsumption work, even without
-  the handling of existentially-quantified formulas. The
-  formula to be proved valid in subsumption checks for
-  this example does not require quantification.
-
-cd
-cd nus/kleetest
-llvm-gcc --emit-llvm -c -g addition_safe2.c
-llvm-gcc -S --emit-llvm addition_safe2.c
-opt -analyze -dot-cfg addition_safe2.o
-klee -write-pcs -use-query-log=all:pc,all:smt2 -search=dfs addition_safe2.o
-ktest-tool --write-ints klee-last/test000001.ktest
-ktest-tool --write-ints klee-last/test000002.ktest
-ktest-tool --write-ints klee-last/test000003.ktest
-
-
-*/
+ * Copyright 2015 National University of Singapore
+ *
+ * This example demonstrates the ability of the system to
+ * compute the dependent memory regions (cells that
+ * influence the unsatisfiability core) as part of the
+ * interpolant.
+ *
+ * cd
+ * cd nus/kleetest
+ * llvm-gcc --emit-llvm -c -g addition_safe2.c
+ * llvm-gcc -S --emit-llvm addition_safe2.c
+ * opt -analyze -dot-cfg addition_safe2.o
+ * klee -write-pcs -use-query-log=all:pc,all:smt2 -search=dfs addition_safe2.o
+ * ktest-tool --write-ints klee-last/test000001.ktest
+ * ktest-tool --write-ints klee-last/test000002.ktest
+ * ktest-tool --write-ints klee-last/test000003.ktest
+ */
 #include <klee/klee.h>
 #include <assert.h>
 
