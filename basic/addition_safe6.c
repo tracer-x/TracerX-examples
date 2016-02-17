@@ -18,22 +18,22 @@ int main() {
   klee_make_symbolic(&p3, sizeof(p3), "p3");
   klee_make_symbolic(&x, sizeof(x), "x");
 
-  if (x <= 0) {
-    if (p1 > 8)
-      x = x + 1;
-    else
-      x = x + 2;
-    if (p2 > 8)
-      x = x + 1;
-    else
-      x = x + 2;
-    if (p3 > 8)
-      x = x + 1;
-    else
-      x = x + 2;
+  klee_assume (x <= 0);
 
-    assert(x <= 6);
-  }
+  if (p1 > 8)
+    x = x + 1;
+  else
+    x = x + 2;
+  if (p2 > 8)
+    x = x + 1;
+  else
+    x = x + 2;
+  if (p3 > 8)
+    x = x + 1;
+  else
+    x = x + 2;
+  
+  assert(x <= 6);
 
   return 0;
 }

@@ -18,16 +18,19 @@ ktest-tool --write-ints klee-last/test000003.ktest
 #include <assert.h>
 
 int add(int p1, int p2, int p3, int x) { 
-if(x <= 0){
-	 if(p1 > 8) x = x + 1; 
-	 if(p2 > 8) x = x;
-	 	else {x = x + 2;}
-	 if(p3 > 8) {x = x + 3;}
-	  
-	 assert(x <= 5);
- }
- return x;
+  klee_assume (x <= 0);
+  if (p1 > 8)
+    x = x + 1; 
+  if (p2 > 8)
+    x = x;
+  else
+    x = x + 2;
+  if (p3 > 8)
+    x = x + 3;
+  assert(x <= 5);
+  return x;
 } 
+
 int main() {
   int p1,p2, p3, x;
   klee_make_symbolic(&p1, sizeof(p1), "p1");

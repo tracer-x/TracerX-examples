@@ -22,26 +22,27 @@
 int y;
 
 int add(int p1, int p2, int p3, int x) {
-  if (x <= 0) {
-    if (p1 > 8)
-      x = x + 1;
-    else
-      x = 1;
-    if (p2 > 8)
-      x = x + 2;
-    else {
-      x = 0;
-    }
-    if (p3 > 8)
-      x = x + 3;
-    else {
-      x = 3;
-    }
 
-    assert(x <= 6);
-  }
+  klee_assume(x <= 0);
+
+  if (p1 > 8)
+    x = x + 1;
+  else
+    x = 1;
+  if (p2 > 8)
+    x = x + 2;
+  else
+    x = 0;
+
+  if (p3 > 8)
+    x = x + 3;
+  else
+    x = 3;
+ 
+  assert(x <= 6);
   return x;
 }
+
 int main() {
   int p1, p2, p3;
   klee_make_symbolic(&p1, sizeof(p1), "p1");

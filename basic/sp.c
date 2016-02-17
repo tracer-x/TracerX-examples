@@ -17,25 +17,24 @@ int y;
 void proc(int x, int y) {
   int z = 5;
 
-  // The first conditional is to prevent underflow
-  if (x >= -1 && y >= -1) {
+  // This assume is to prevent underflow
+  klee_assume (x >= -1 && y >= -1);
 
-    if (x > 0) {
-      x = 2;
-    } else {
-      x += 2;
-    }
-
-    if (y > 0) {
-      y = 2;
-      x++;
-    } else {
-      y += 2;
-      x++;
-    }
-
-    assert(x + y <= z);
+  if (x > 0) {
+    x = 2;
+  } else {
+    x += 2;
   }
+
+  if (y > 0) {
+    y = 2;
+    x++;
+  } else {
+    y += 2;
+    x++;
+  }
+
+  assert(x + y <= z);
 }
 
 int main() {
