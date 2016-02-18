@@ -20,17 +20,17 @@ ktest-tool --write-ints klee-last/test000003.ktest
 int y;
 
 int add(int p1, int x) {
-  if (x <= 0) {
-    if (p1 > 8)
-      x = x;
-    else {
-      x = x + 2;
-    }
+  klee_assume(x <= 0);
 
-    assert(x <= 6);
-  }
+  if (p1 > 8)
+    x = x;
+  else
+      x = x + 2;
+
+  assert(x <= 6);
   return x;
 }
+
 int main() {
   int p1;
   klee_make_symbolic(&p1, sizeof(p1), "p1");

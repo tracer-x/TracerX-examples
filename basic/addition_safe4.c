@@ -23,20 +23,19 @@ int y;
  */
 int add(int p1, int p2, int p3, int x) {
   int z = 6;
-  if (x <= 0) {
-    if (p1 > 8)
-      x = x + 1;
-    if (p2 > 8)
-      x = x;
-    else {
-      x = x + 2;
-    }
-    if (p3 > 8) {
-      x = x + 3;
-    }
 
-    assert(x <= z);
-  }
+  klee_assume(x <= 0);
+  
+  if (p1 > 8)
+    x = x + 1;
+  if (p2 > 8)
+    x = x;
+  else
+    x = x + 2;
+  if (p3 > 8)
+    x = x + 3;
+
+  assert(x <= z);
   return x;
 }
 

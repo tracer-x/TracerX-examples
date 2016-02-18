@@ -13,7 +13,8 @@ TARGETS=addition.klee \
 	addition_safe4.klee \
 	addition_safe5.klee \
 	addition_safe6.klee \
-	addition_unsafe.klee \
+	addition_unsafe1.klee \
+	addition_unsafe2.klee \
 	sp.klee
 
 include ../Makefile.common
