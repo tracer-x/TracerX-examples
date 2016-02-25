@@ -12,13 +12,12 @@ ktest-tool --write-ints klee-last/test00000?.ktest
 #include <klee/klee.h>
 #include <assert.h>
 
-int y;
-
 void proc(int x, int y) {
   int z = 5;
 
-  // This assume is to prevent underflow
-  klee_assume (x >= -1 && y >= -1);
+  // These assumes are to prevent underflow
+  klee_assume (x >= -1);
+  klee_assume (y >= -1);
 
   if (x > 0) {
     x = 2;
