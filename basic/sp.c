@@ -1,14 +1,14 @@
 /*
-Copyright 2015 National University of Singapore 
-cd
-cd nus/kleetest
-llvm-gcc --emit-llvm -c -g sp.c
-llvm-gcc -S --emit-llvm sp.c
-opt -analyze -dot-cfg sp.o
-klee -write-pcs -use-query-log=all:pc,all:smt2 -search=dfs sp.o
-ktest-tool --write-ints klee-last/test00000?.ktest
-
-*/
+ * Copyright 2015 National University of Singapore 
+ *
+ * cd
+ * cd nus/kleetest
+ * llvm-gcc --emit-llvm -c -g sp.c
+ * llvm-gcc -S --emit-llvm sp.c
+ * opt -analyze -dot-cfg sp.o
+ * klee -write-pcs -use-query-log=all:pc,all:smt2 -search=dfs sp.o
+ * ktest-tool --write-ints klee-last/test00000?.ktest
+ */
 #include <klee/klee.h>
 #include <assert.h>
 
