@@ -1,5 +1,7 @@
 /*
  * Bubble sort
+ * 
+ * Copyright 2016 National University of Singapore 
  *
  * This is an example whose analysis by naive path
  * exploration is expensive. Note that the paper
@@ -7,8 +9,6 @@
  * by Codish et al. http://arxiv.org/abs/1405.5754
  * suggests that in standard sorting algorithm there can 
  * possibly be plenty of superfluous comparisons.
- * 
- * Copyright 2015 National University of Singapore 
  */
 #include <klee/klee.h>
 #include <assert.h>

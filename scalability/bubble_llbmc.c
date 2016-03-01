@@ -1,5 +1,7 @@
 /*
  * Bubble sort
+ *
+ * Copyright 2016 National University of Singapore 
  * 
  * This is an example whose analysis by naive path
  * exploration is expensive. Note that the paper
@@ -8,7 +10,14 @@
  * suggests that in standard sorting algorithm there can 
  * possibly be plenty of superfluous comparisons.
  * 
- * Copyright 2015 National University of Singapore 
+ * When running times are compared, LLBMC finished
+ * way faster than KLEE (loop iteration bound 10 for
+ * LLBMC which should imply complete search).
+ *
+ * To run, install LLMBC, make sure llbmc executable
+ * is in your path, and say
+ *
+ * make bubble_llbmc
  */
 #include <llbmc.h>
 
