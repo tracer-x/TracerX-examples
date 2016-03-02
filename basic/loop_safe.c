@@ -1,28 +1,22 @@
-#include <assert.h>
-#include <stdlib.h>
 #include <klee/klee.h>
+#include <stdlib.h>
+#include <assert.h>
 
-int main(){
- 
-   int i;
-   int j;
-   klee_make_symbolic(&i, sizeof(i), "i");   
-   klee_make_symbolic(&j, sizeof(j), "j");   
-   klee_assume (0 <= i);
-   klee_assume (i <= 10);
+int main()
+{
+    int N;    
+    klee_make_symbolic(&N, sizeof(N), "N");
+    klee_assume(0 <= N);
+    klee_assume(N <= 4);
 
-   int x,y;
-   x=i;
-   y=j;
-
-   while (x!=0) {
-      x--;
-      y--;
-   }
-
-   if (i==j){
-      assert( y == 0);
-   }
-   
-   return 0;
+    int x = 0, i = 0;
+    while (i < N) {
+ 	    if (i % 2 == 0) {
+ 	      x += 2;
+ 	    }
+ 	    i++;
+    }
+    assert(x == N || x == N + 1); // x == N if N is even, otherwise N is odd
+    
+    return 0;
 }
