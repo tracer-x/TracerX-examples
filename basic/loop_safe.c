@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
-#include<klee/klee.h>
+#include <klee/klee.h>
 
 int main(){
  
@@ -22,10 +22,7 @@ int main(){
 
    if (i==j){
       assert( y == 0);
-
-      
    }
    
-   
-   return 1;
+   return 0;
 }
