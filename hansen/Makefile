@@ -2,7 +2,7 @@
 #
 # Copyright 2015 National University of Singapore
 
-TARGETS=number.klee multiply.klee wegner.klee
+TARGETS=$(patsubst %.c,%.klee,$(wildcard *c))
 
 include ../Makefile.common
 

@@ -2,7 +2,7 @@
 #
 # Copyright 2015 National University of Singapore
 
-TARGETS=double-free.klee memory-access.klee openssl.klee openssl_partial_fix.klee popcount.klee
+TARGETS=$(patsubst %.c,%.klee,$(wildcard *c))
 
 include ../Makefile.common
 
