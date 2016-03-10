@@ -12,6 +12,7 @@ KLEE_FLAGS=-write-pcs -use-query-log=all:pc,all:smt2 -search=dfs
 
 INPUT_TARGETS=$(subst .klee,.inputs,${TARGETS})
 IR_TARGETS=$(subst .klee,.s,${TARGETS})
+STPKLEE_TARGETS=$(subst .klee,.stpklee,${TARGETS})
 
 all: all-ir ${INPUT_TARGETS}
 
@@ -19,15 +20,22 @@ all-ir: ${IR_TARGETS}
 
 clean:
 	rm -f klee-last *.o *.s *.ll *~ *.inputs core 
-	rm -rf ${TARGETS}
+	rm -rf ${TARGETS} ${STPKLEE_TARGETS}
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee
 
-.SUFFIXES: .klee .inputs
+.SUFFIXES: .klee .stpklee .inputs
 
+# For running KLEE with Z3 and interpolation
 .o.klee:
 	time ${KLEE} ${KLEE_FLAGS} -output-dir=$@ $<
+	opt -analyze -dot-cfg $<
+	mv *.dot $@
+
+# For running KLEE with STP without interpolation
+.o.stpklee:
+	time ${KLEE} ${KLEE_FLAGS} -select-solver=stp -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 
