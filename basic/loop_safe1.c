@@ -1,3 +1,7 @@
+/*
+ * Copyright 2016 National University of Singapore
+ */
+
 #include <klee/klee.h>
 #include <stdlib.h>
 #include <assert.h>
