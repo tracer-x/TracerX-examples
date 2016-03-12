@@ -32,12 +32,22 @@ clean:
 	time ${KLEE} ${KLEE_FLAGS} -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
+	# Create PDFs from *.dot files
+	for DOTFILE in $@/*.dot ; do \
+		PDFFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.pdf/ -` ; \
+		dot -Tpdf $$DOTFILE -o $$PDFFILE ; \
+	done
 
 # For running KLEE with STP without interpolation
 .o.stpklee:
 	time ${KLEE} ${KLEE_FLAGS} -select-solver=stp -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
+	# Create PDFs from .dot files
+	for DOTFILE in $@/*.dot ; do \
+		PDFFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.pdf/ -` ; \
+		dot -Tpdf $$DOTFILE -o $$PDFFILE ; \
+	done
 
 .klee.inputs:
 	for KTEST in $</*.ktest ; do \
