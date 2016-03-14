@@ -2,6 +2,8 @@
 #
 # Copyright 2016 National University of Singapore
 
+EXTRA_OPTIONS=
+
 # We remove bubble_llbmc.klee from KLEE targets, as it
 # is to be run with LLBMC
 TARGETS=$(subst bubble_llbmc.klee,,$(patsubst %.c,%.klee,$(wildcard *.c)))
