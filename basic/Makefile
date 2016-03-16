@@ -4,7 +4,7 @@
 
 # We enable execution tree (tree.dot) output as the examples
 # in this directory are small.
-EXTRA_OPTIONS=-output-tree
+EXTRA_OPTIONS=-output-tree -interpolation-time-stat
 
 TARGETS=$(patsubst %.c,%.klee,$(wildcard *c))
 
