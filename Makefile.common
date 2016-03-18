@@ -8,7 +8,7 @@ KLEE=${HOME}/git/memdepend/klee/Release+Asserts/bin/klee
 AS=${CC} -S -emit-llvm
 CFLAGS=-emit-llvm -g -I${HOME}/nus/kleetest
 #CFLAGS=-emit-llvm -g -I${HOME}/software/klee/include
-KLEE_FLAGS=${EXTRA_OPTIONS} -write-pcs -use-query-log=all:pc,all:smt2 -search=dfs
+KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
 
 INPUT_TARGETS=$(subst .klee,.inputs,${TARGETS})
 IR_TARGETS=$(subst .klee,.s,${TARGETS})
