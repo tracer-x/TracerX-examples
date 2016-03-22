@@ -2,7 +2,7 @@
 #
 # Copyright 2016 National University of Singapore
 
-EXTRA_OPTIONS=-interpolation-time-stat
+EXTRA_OPTIONS=-interpolation-stat
 
 # We remove bubble_llbmc.klee from KLEE targets, as it
 # is to be run with LLBMC
