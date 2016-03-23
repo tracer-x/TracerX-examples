@@ -8,6 +8,9 @@
  * This code with KLEE harness is obtained from the following
  * page of the KLEE tutorial on December 2015:
  *   http://klee.github.io/resources/Regexp.c.html
+ *
+ * The size of the re array has been modified to 8.
+ * Used in experiments ran on 22/3/2016.
  */ 
 
 #include <klee/klee.h>
@@ -49,7 +52,7 @@ int match(char *re, char *text) {
  */
 
 // The size of the buffer to test with.
-#define SIZE 7
+#define SIZE 8
 
 int main() {
   // The input regular expression.

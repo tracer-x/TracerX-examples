@@ -24,9 +24,13 @@ Sample usages:
 
   `make`
 
-- To run a single example, e.g., addition.c in the basic directory:
+- To run a single example, e.g., addition.c in the basic directory using Z3 solver and interpolation:
 
   `make addition.klee`
+
+- To run a single example, e.g., addition.c in the basic directory using STP solver and without interpolation:
+
+  `make addition.stpklee`
 
 - To build an LLVM IR file of `addition.c`:
 

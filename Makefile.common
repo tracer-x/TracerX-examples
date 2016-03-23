@@ -4,12 +4,15 @@
 
 CC=clang
 KLEE=${HOME}/git/memdepend/klee/Release+Asserts/bin/klee
+#KLEE=klee
 AS=${CC} -S -emit-llvm
 CFLAGS=-emit-llvm -g -I${HOME}/nus/kleetest
-KLEE_FLAGS=-write-pcs -use-query-log=all:pc,all:smt2 -search=dfs
+#CFLAGS=-emit-llvm -g -I${HOME}/software/klee/include
+KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
 
 INPUT_TARGETS=$(subst .klee,.inputs,${TARGETS})
 IR_TARGETS=$(subst .klee,.s,${TARGETS})
+STPKLEE_TARGETS=$(subst .klee,.stpklee,${TARGETS})
 
 all: all-ir ${INPUT_TARGETS}
 
@@ -17,17 +20,34 @@ all-ir: ${IR_TARGETS}
 
 clean:
 	rm -f klee-last *.o *.s *.ll *~ *.inputs core 
-	rm -rf ${TARGETS}
+	rm -rf ${TARGETS} ${STPKLEE_TARGETS}
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee
 
-.SUFFIXES: .klee .inputs
+.SUFFIXES: .klee .stpklee .inputs
 
+# For running KLEE with Z3 and interpolation
 .o.klee:
 	time ${KLEE} ${KLEE_FLAGS} -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
+	# Create PDFs from *.dot files
+	for DOTFILE in $@/*.dot ; do \
+		PDFFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.pdf/ -` ; \
+		dot -Tpdf $$DOTFILE -o $$PDFFILE ; \
+	done
+
+# For running KLEE with STP without interpolation
+.o.stpklee:
+	time ${KLEE} ${KLEE_FLAGS} -select-solver=stp -output-dir=$@ $<
+	opt -analyze -dot-cfg $<
+	mv *.dot $@
+	# Create PDFs from .dot files
+	for DOTFILE in $@/*.dot ; do \
+		PDFFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.pdf/ -` ; \
+		dot -Tpdf $$DOTFILE -o $$PDFFILE ; \
+	done
 
 .klee.inputs:
 	for KTEST in $</*.ktest ; do \
