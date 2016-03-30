@@ -7,7 +7,7 @@
 #include <klee/klee.h>
 #include <assert.h>
 
-#define ARRAY_SIZE 3
+#define ARRAY_SIZE 4
 
 int main() {
   int a[ARRAY_SIZE];
@@ -29,5 +29,6 @@ int main() {
   }
 
   assert (a[0] <= a[1] &&
-	  a[1] <= a[2]);
+	  a[1] <= a[2] &&
+	  a[2] <= a[3]);
 }

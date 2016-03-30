@@ -61,7 +61,7 @@ clean:
 	done
 
 .c.s:
-	${AS} $<
+	${AS} ${CFLAGS} $<
 	if [ -e $(subst .s,.ll,$@) ] ; then \
 		mv $(subst .s,.ll,$@) $@ ; \
 	fi
