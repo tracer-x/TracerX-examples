@@ -10,10 +10,10 @@ int main() {
 
   klee_make_symbolic(&i, sizeof(i), "i");
 
-  klee_assume(i <= 1);
-  a[i] = 0;
+  klee_assume(i >= 2);
+  klee_assume(i <= 3);
 
-  assert(a[3] != 0);
+  assert(a[i] == 'l');
 
   return 0;
 } 
