@@ -8,8 +8,8 @@
 
 cd
 cd nus/kleetest
-clang -g -emit-llvm -c argument.c -o argument.bc
- ~/git/tracerx/klee/Release+Asserts/bin/klee -only-output-states-covering-new -search=dfs argument.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 
+clang -g -emit-llvm -c argument1.c -o argument1.bc
+ ~/git/tracerx/klee/Release+Asserts/bin/klee -only-output-states-covering-new -search=dfs argument1.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 
  */
 
  #include <stdio.h>
