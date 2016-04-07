@@ -1,11 +1,5 @@
 /*
   Copyright 2016 National University of Singapore
- 
-  For this example we need to ensure that the formula
-  constructed for subsumption check is correct. In some
-  versions of Tracer-X, the global version of int x
-  is considered a composite allocation.
-
 cd
 cd git/klee-examples/basic
 clang -g -emit-llvm -c argument2.c -o argument2.bc
