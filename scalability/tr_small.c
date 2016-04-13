@@ -1,10 +1,10 @@
 /*
 
 clang -g -emit-llvm -c tr_small.c -o tr_small.bc
- ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -search=dfs tr_small.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 
+ ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -search=dfs tr_small.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
 
 clang -g -emit-llvm -c tr_small.c -o tr_small.bc
- ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -search=dfs tr_small.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 
+ ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -search=dfs tr_small.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
 
 RUN WITH THIS CONFIG CAUSE RUN TIME ERROR
 clang -emit-llvm -c -g tr_small.c -o tr_small.bc
@@ -47,6 +47,7 @@ time ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -
  _PROTOTYPE(void complement, (unsigned char *buffer));*/
 
 int main (int argc, char **argv);
+int mystrlen(const char * input);
 void convert(void);
 void map(unsigned char *string1, unsigned char *string2);
 void expand(char *arg, unsigned char *buffer);
@@ -166,7 +167,8 @@ char *argv[];
  
                  /* skip keyword if found, otherwise expand range */
                  if (keyword_index >= 0){
-                        // arg += strlen(expand_keywords[keyword_index].keyword);
+	 		arg += mystrlen(expand_keywords[keyword_index].keyword);
+                        //arg += strlen(expand_keywords[keyword_index].keyword);
 		}
                  else
                  {
@@ -187,4 +189,11 @@ char *argv[];
    }
  }
  
+ int mystrlen(const char * input){
+   int length = 0;
+   while(input[length]!='\0'){
+    length++;
+   }
+   return length;
+ }
  
