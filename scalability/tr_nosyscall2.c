@@ -6,10 +6,10 @@
       s: squeeze multiple output characters of string2 into one character
 
 clang -emit-llvm -c -g tr_nosyscall2.c -o tr_nosyscall2.bc
-time ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall2.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
+time ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc -interpolation-stat --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall2.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
 
 clang -emit-llvm -c -g tr_nosyscall2.c -o tr_nosyscall2.bc
-time ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./nosyscall2.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
+time ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall2.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
 
 
 */ 
@@ -91,7 +91,7 @@ char *argv[];
          for (ptr = input; *ptr; ptr++) invec[*ptr] = TRUE;
          for (ptr = output; *ptr; ptr++) outvec[*ptr] = TRUE;
    }
-   //convert();
+   convert();
    return(0);
  }
  
@@ -109,6 +109,7 @@ char *argv[];
                          // exit(0);
                  // }
                  in_index = 0;
+		 exit(0);
          }
          c = input[in_index++];
          coded = vector[c];
