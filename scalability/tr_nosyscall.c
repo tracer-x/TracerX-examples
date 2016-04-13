@@ -5,11 +5,11 @@
       d: delete input characters coded string1
       s: squeeze multiple output characters of string2 into one character
 
-clang -emit-llvm -c -g tr.c -o tr.bc
-time ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
+clang -emit-llvm -c -g tr_nosyscall.c -o tr_nosyscall.bc
+time ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc -interpolation-stat --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
 
-clang -emit-llvm -c -g tr.c -o tr.bc
-time ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
+clang -emit-llvm -c -g tr_nosyscall.c -o tr_nosyscall.bc
+time ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
 
 
 */ 
@@ -44,6 +44,7 @@ time ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -
  _PROTOTYPE(void complement, (unsigned char *buffer));*/
 
 int main (int argc, char **argv);
+int mystrlen(const char * input);
 void convert(void);
 void map(unsigned char *string1, unsigned char *string2);
 void expand(char *arg, unsigned char *buffer);
@@ -108,6 +109,7 @@ char *argv[];
                          // exit(0);
                  // }
                  in_index = 0;
+		 exit(0);
          }
          c = input[in_index++];
          coded = vector[c];
@@ -208,8 +210,10 @@ char *argv[];
                          }
  
                  /* skip keyword if found, otherwise expand range */
-                 if (keyword_index >= 0)
-                         arg += strlen(expand_keywords[keyword_index].keyword);
+                 if (keyword_index >= 0){
+			 arg += mystrlen(expand_keywords[keyword_index].keyword);
+                         //arg += strlen(expand_keywords[keyword_index].keyword);
+		}
                  else
                  {
                          /* expand range */
@@ -234,6 +238,14 @@ void mystrcpy(char* buffer, char * conv){
     *buffer++ = *conv++;
   } 
 }
+
+ int mystrlen(const char * input){
+   int length = 0;
+   while(input[length]!='\0'){
+    length++;
+   }
+   return length;
+ }
  
  void complement(buffer)
  unsigned char *buffer;
