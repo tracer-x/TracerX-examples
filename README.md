@@ -15,6 +15,13 @@ Each directory contains a suite of simple examples.
 
 - **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials
 
+- **llbmc-bench** - Examples of C/C++ programs, with the fix suggested by Jonas Wagner. There are several modifications from the original version at http://llbmc.org/files/downloads/llbmc-bench-1.1.tgz for running with KLEE, e.g., replaced LLBMC API calls with the corresponding KLEE API calls.
+
+- **coreutils-6.10** - Examples of 89 stand-alone programs in the GNU COREUTILS utility suite, which form the core
+user-level environment installed on millions of Unix systems. In this version, KLEE able to find some bugs.
+
+- **coreutils-6.11** Examples of newer version of Coreutils-6.10 where the bugs that were being reported by KLEE had been fixed. 
+
 To run the examples, first edit `Makefile.common` to set the right values for your environment. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
 
 The Makefile in each directory will create KLEE output directories `<example-name>.klee` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for each test.
