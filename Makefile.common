@@ -17,7 +17,7 @@ AS=${CC} -S -emit-llvm
 KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
 
 INPUT_TARGETS=$(subst .klee,.inputs,${TARGETS})
-IR_TARGETS=$(subst .klee,.s,${TARGETS})
+IR_TARGETS=$(subst .klee,.ll,${TARGETS})
 STPKLEE_TARGETS=$(subst .klee,.stpklee,${TARGETS})
 
 all: all-ir ${INPUT_TARGETS}
@@ -25,16 +25,16 @@ all: all-ir ${INPUT_TARGETS}
 all-ir: ${IR_TARGETS}
 
 clean:
-	rm -f klee-last *.o *.s *.ll *~ *.inputs core 
+	rm -f klee-last *.bc *.ll *~ *.inputs core 
 	rm -rf ${TARGETS} ${STPKLEE_TARGETS}
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee
 
-.SUFFIXES: .klee .stpklee .inputs
+.SUFFIXES: .klee .stpklee .inputs .bc .ll
 
 # For running KLEE with Z3 and interpolation
-.o.klee:
+.bc.klee:
 	time ${KLEE} ${KLEE_FLAGS} -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
@@ -45,7 +45,7 @@ clean:
 	done
 
 # For running KLEE with STP without interpolation
-.o.stpklee:
+.bc.stpklee:
 	time ${KLEE} ${KLEE_FLAGS} -select-solver=stp -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
@@ -60,9 +60,9 @@ clean:
 		( ( ktest-tool --write-ints $$KTEST ) >> $@ ) ; \
 	done
 
-.c.s:
+.c.ll:
 	${AS} ${CFLAGS} $<
-	if [ -e $(subst .s,.ll,$@) ] ; then \
-		mv $(subst .s,.ll,$@) $@ ; \
-	fi
+
+.c.bc:
+	${CC} -emit-llvm ${CFLAGS} -c $<
 
