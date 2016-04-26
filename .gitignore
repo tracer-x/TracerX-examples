@@ -1,2 +1,7 @@
 /.project
 /.cproject
+*/*.bc
+*/*.ll
+*/*.klee
+*/*.stpklee
+
