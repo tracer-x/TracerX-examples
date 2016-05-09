@@ -1,0 +1,11 @@
+asnprintf.o: ../../lib/asnprintf.c config.h ../../lib/vasnprintf.h \
+  /usr/include/clang/3.4.2/include/stdarg.h \
+  /usr/include/clang/3.4.2/include/stddef.h
+
+config.h:
+
+../../lib/vasnprintf.h:
+
+/usr/include/clang/3.4.2/include/stdarg.h:
+
+/usr/include/clang/3.4.2/include/stddef.h:
