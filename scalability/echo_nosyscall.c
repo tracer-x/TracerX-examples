@@ -1,6 +1,6 @@
 /*
-clang -emit-llvm -g -I/home/felicia/git/klee-examples/scalability/lib -I/home/felicia/git/klee-examples/coreutils-6.11/lib -I/home/felicia/git/klee-examples/coreutils-6.11/src -c -o echonosyscall.bc echonosyscall.c  
-~/git/tracerx/klee/Release+Asserts/bin/klee -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls ./echonosyscall.bc --sym-args 0 2 4
+clang -emit-llvm -g -Ilib -I../coreutils-6.11/lib -I../coreutils-6.11/src -c echo_nosyscall.c  
+~/git/tracerx/klee/Release+Asserts/bin/klee -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls ./echo_nosyscall.bc --sym-args 0 2 4
 
 
    echo.c, derived from code echo.c in Bash.
