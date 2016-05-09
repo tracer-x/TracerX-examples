@@ -1,0 +1,6 @@
+uname-arch.o: ../../src/uname-arch.c /usr/include/stdc-predef.h \
+ ../../src/uname.h
+
+/usr/include/stdc-predef.h:
+
+../../src/uname.h:
