@@ -1,6 +1,0 @@
-buffer-lcm.o: ../../lib/buffer-lcm.c ../../lib/buffer-lcm.h \
-  /usr/include/clang/3.4.2/include/stddef.h
-
-../../lib/buffer-lcm.h:
-
-/usr/include/clang/3.4.2/include/stddef.h:
