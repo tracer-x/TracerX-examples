@@ -1,6 +1,6 @@
 Simple examples for running with KLEE
 
-Copyright 2015 National University of Singapore
+Copyright 2015, 2016 National University of Singapore
 
 To run the examples using KLEE, first edit Makefile.common to set the
 right variable values for your system.
