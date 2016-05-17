@@ -1,7 +1,7 @@
 /*
  * Copyright 2016 National University of Singapore
  *
- * Subsumption test with symbolic index. This exposes some supposedly
+ * Subsumption test with symbolic index. This exposed some supposedly
  * bounded variables appearing unbounded in subsumption check.
  */
 #include <klee/klee.h>
