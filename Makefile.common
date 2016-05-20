@@ -25,8 +25,8 @@ all: all-ir ${INPUT_TARGETS}
 all-ir: ${IR_TARGETS}
 
 clean:
-	rm -f klee-last *.bc *.ll *~ *.inputs core 
-	rm -rf ${TARGETS} ${STPKLEE_TARGETS}
+	rm -f klee-last *.bc *.ll *~ *.inputs core ${EXTRA_REMOVAL} 
+	rm -rf klee-out-* ${TARGETS} ${STPKLEE_TARGETS}
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee
