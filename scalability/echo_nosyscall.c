@@ -58,53 +58,6 @@ enum { DEFAULT_ECHO_TO_XPG = false };
 /* The name this program was run with. */
 char *program_name;
 
-void
-usage (int status)
-{
-  if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
-	     program_name);
-  else
-    {
-      printf (_("Usage: %s [OPTION]... [STRING]...\n"), program_name);
-      fputs (_("\
-Echo the STRING(s) to standard output.\n\
-\n\
-  -n             do not output the trailing newline\n\
-"), stdout);
-      fputs (_(DEFAULT_ECHO_TO_XPG
-	       ? "\
-  -e             enable interpretation of backslash escapes (default)\n\
-  -E             disable interpretation of backslash escapes\n"
-	       : "\
-  -e             enable interpretation of backslash escapes\n\
-  -E             disable interpretation of backslash escapes (default)\n"),
-	     stdout);
-      fputs (HELP_OPTION_DESCRIPTION, stdout);
-      fputs (VERSION_OPTION_DESCRIPTION, stdout);
-      fputs (_("\
-\n\
-If -e is in effect, the following sequences are recognized:\n\
-\n\
-  \\0NNN   the character whose ASCII code is NNN (octal)\n\
-  \\\\     backslash\n\
-  \\a     alert (BEL)\n\
-  \\b     backspace\n\
-"), stdout);
-      fputs (_("\
-  \\c     suppress trailing newline\n\
-  \\f     form feed\n\
-  \\n     new line\n\
-  \\r     carriage return\n\
-  \\t     horizontal tab\n\
-  \\v     vertical tab\n\
-"), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_bug_reporting_address ();
-    }
-  exit (status);
-}
-
 /* Convert C from hexadecimal character to integer.  */
 static int
 hextobin (unsigned char c)
