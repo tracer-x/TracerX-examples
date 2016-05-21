@@ -10,6 +10,7 @@ TARGETS=$(subst bubble_llbmc.klee,,$(patsubst %.c,%.klee,$(wildcard *.c)))
 
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 
+ECHO_TARGETS=echo_nosyscall.echo0 echo_small.echo0
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
 
 EXTRA_REMOVAL=${TR_TARGETS}
@@ -24,15 +25,21 @@ bubble_llbmc: bubble_llbmc.c
 	${CC} -c -g -emit-llvm -I${LLBMC}/examples bubble_llbmc.c -o bubble_llbmc.o
 	llbmc -max-loop-iterations=10 bubble_llbmc.o
 
-echo_small: echo_small.bc
-	time ${KLEE} -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls echo_small.bc --sym-args 0 2 4
+echo: ${ECHO_TARGETS}
+	rm -rf klee-*
+	rm -f $^
 
 # For running Minix tr versions
 tr: ${TR_TARGETS}
 	rm -rf klee-*
 	rm -f $^
 
-.SUFFIXES: .tr0
+.SUFFIXES: .tr0 .echo0
+
+.bc.echo0:
+	rm -rf $@ klee-*
+	time ${KLEE} -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls $< --sym-args 0 2 4
+	touch $@
 
 .bc.tr0:
 	rm -rf $@ klee-*

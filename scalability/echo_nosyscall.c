@@ -1,4 +1,9 @@
-
+/*
+ * This is a modified GNU Coreutils 6.11 echo for running with KLEE.
+ * Modifications copyright 2016 National University of Singapore.
+ * 
+ * See license/COPYING for license.
+ */
 #include <klee/klee.h>
 
 
