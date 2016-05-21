@@ -24,9 +24,8 @@ bubble_llbmc: bubble_llbmc.c
 	${CC} -c -g -emit-llvm -I${LLBMC}/examples bubble_llbmc.c -o bubble_llbmc.o
 	llbmc -max-loop-iterations=10 bubble_llbmc.o
 
-echo_nosyscall: echo_nosyscall.c
-	${CC} -emit-llvm -g -Ilib -I../coreutils-6.11/lib -I../coreutils-6.11/src -c echo_nosyscall.c -o echo_nosyscall.bc
-	time ${KLEE} -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls echo_nosyscall.bc --sym-args 0 2 4
+echo_small: echo_small.bc
+	time ${KLEE} -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls echo_small.bc --sym-args 0 2 4
 
 # For running Minix tr versions
 tr: ${TR_TARGETS}
