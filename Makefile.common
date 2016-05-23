@@ -2,6 +2,9 @@
 #
 # Copyright 2015, 2016 National University of Singapore
 
+# Where KLEE resides in the system
+KLEE_HOME=/usr/local/lib/tracerx
+
 # In the following, please select where klee and its various tools are
 # located in your system
 KLEE=klee
@@ -14,12 +17,11 @@ KTEST_TOOL=ktest-tool
 #KTEST_TOOL=${HOME}/git/memdepend/klee/Release+Asserts/bin/ktest-tool
 
 # In the following, please select suitable include directory
-CFLAGS=-g -I/usr/local/lib/tracerx/include
+CFLAGS=-g -I${KLEE_HOME}/include
 #CFLAGS=-g -I${HOME}/nus/kleetest
 #CFLAGS=-g -I${HOME}/software/klee/include
 
-LDFLAGS=-L${HOME}/software/klee/Release+Asserts/lib -lkleeBasic -lkleeModule -lkleeRuntest -lkleeCore -lkleeSupport
-KLEE_RUNTIME_DIR=${HOME}/software/klee/Release+Asserts/lib
+LDFLAGS=-L${KLEE_HOME}/lib -lkleeRuntest
 
 CC=clang
 AS=${CC} -S
@@ -86,7 +88,7 @@ clean:
 	####################################################################
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $(subst .klee,.c,$<) -o $(subst .klee,,$<)
 	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_RUNTIME_DIR} KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .klee,,$<) $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .klee,,$<) $$KTEST ) ; \
 	done	
 	llvm-cov -gcno=$(subst .klee,.gcno,$<) -gcda=$(subst .klee,.gcda,$<) > $@
 	echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .klee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
@@ -108,7 +110,7 @@ clean:
 	####################################################################
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $(subst .stpklee,.c,$<) -o $(subst .stpklee,,$<)
 	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_RUNTIME_DIR} KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .stpklee,,$<) $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .stpklee,,$<) $$KTEST ) ; \
 	done	
 	llvm-cov -gcno=$(subst .stpklee,.gcno,$<) -gcda=$(subst .stpklee,.gcda,$<) > $@
 	echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .stpklee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
@@ -117,9 +119,6 @@ clean:
 	for KTEST in $</*.ktest ; do \
 		( ( ${KTEST_TOOL} --write-ints $$KTEST ) >> $@ ) ; \
 	done
-
-%: %.c
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $< -o $@
 
 .c.ll:
 	${AS} -emit-llvm ${CFLAGS} $<
