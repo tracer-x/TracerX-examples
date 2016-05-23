@@ -34,9 +34,17 @@ Sample usages:
 
   `make addition.klee`
 
+- For additional coverage statistics, instead run:
+
+  `make addition.cov`
+
 - To run a single example, e.g., addition.c in the basic directory using STP solver and without interpolation:
 
   `make addition.stpklee`
+
+- And for additionally generating coverage statistics using STP solver backend and without interpolation, run instead:
+
+  `make addition.stpcov`
 
 - To build an LLVM IR file of `addition.c`:
 
