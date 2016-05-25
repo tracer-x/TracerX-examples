@@ -12,6 +12,7 @@ LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 
 ECHO_TARGETS=echo_nosyscall.echo0 echo_small.echo0
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
+BUBBLE_TARGETS=bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
 
 EXTRA_REMOVAL=${TR_TARGETS}
 
@@ -34,7 +35,11 @@ tr: ${TR_TARGETS}
 	rm -rf klee-*
 	rm -f $^
 
-.SUFFIXES: .tr0 .echo0
+bubble: ${BUBBLE_TARGETS}
+	rm -rf klee-*
+	rm -f $^
+
+.SUFFIXES: .tr0 .echo0 .bubble0
 
 .bc.echo0:
 	rm -rf $@ klee-*
@@ -49,3 +54,9 @@ tr: ${TR_TARGETS}
 	rm -rf klee-*
 	time ${KLEE} --max-time=120 -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-files 2 2000 --max-fail 1
 	touch $@
+
+.bc.bubble0:
+	rm -rf $@ klee-*
+	time ${KLEE} -max-time=120 -interpolation-stat --only-output-states-covering-new $<
+	touch $@
+	
