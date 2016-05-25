@@ -18,9 +18,22 @@ EXTRA_REMOVAL=${TR_TARGETS}
 
 include ../Makefile.common
 
-###############################################################################
-# Below are special targets for special run configurations                    #
-###############################################################################
+#################################################################################
+# Below are special targets for special run configurations                      #
+#                                                                               #
+# To run all programs under specific group targets, please run:                 #
+#   Make <group_target>                                                         #
+#     Example:                                                                  #
+#       Make echo  ==> run echo_nosyscall and echo_small                        #
+#       Make tr  ==> run tr, tr_nosyscall, and tr_small                         #
+#       Make bubble  ==> run bubble9, bubble12, bubble9_unsafe, bubble12_unsafe #
+# To run only a specific program, please run:                                   #
+#   Make <program_name>.<suffixes_group>                                        #
+#     Example:                                                                  #
+#       Make echo_nosyscall.echo0 (only run echo_nosyscall)                     #
+#       Make tr_nosyscall.tr0 (only run tr_nosyscall)                           #
+#       Make bubble9.bubble0 (only run bubble9)                                 #
+#################################################################################
 
 bubble_llbmc: bubble_llbmc.c
 	${CC} -c -g -emit-llvm -I${LLBMC}/examples bubble_llbmc.c -o bubble_llbmc.o
