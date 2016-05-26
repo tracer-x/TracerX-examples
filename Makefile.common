@@ -11,10 +11,10 @@ KLEE=klee
 KLEE_STATS=klee-stats
 KLEE_REPLAY=klee-replay
 KTEST_TOOL=ktest-tool
-#KLEE=${HOME}/git/memdepend/klee/Release+Asserts/bin/klee
-#KLEE_STATS=${HOME}/git/memdepend/klee/Release+Asserts/bin/klee-stats
-#KLEE_REPLAY=${HOME}/git/memdepend/klee/Release+Asserts/bin/klee-replay
-#KTEST_TOOL=${HOME}/git/memdepend/klee/Release+Asserts/bin/ktest-tool
+#KLEE=${HOME}/git/tracerx/klee/Release+Asserts/bin/klee
+#KLEE_STATS=${HOME}/git/tracerx/klee/Release+Asserts/bin/klee-stats
+#KLEE_REPLAY=${HOME}/git/tracerx/klee/Release+Asserts/bin/klee-replay
+#KTEST_TOOL=${HOME}/git/tracerx/klee/Release+Asserts/bin/ktest-tool
 
 # In the following, please select suitable include directory
 CFLAGS=-g -I${KLEE_HOME}/include
@@ -41,7 +41,7 @@ all-replay: ${COV_TARGETS}
 
 clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
-	rm -rf klee-out-* ${TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
+	rm -rf klee-out-* ${TARGETS} ${BUBBLE_TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee %.stpklee
