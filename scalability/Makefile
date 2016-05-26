@@ -70,6 +70,13 @@ bubble: ${BUBBLE_TARGETS}
 
 .bc.bubble0:
 	rm -rf $@ klee-*
-	time ${KLEE} -max-time=120 -interpolation-stat --only-output-states-covering-new $<
+	time ${KLEE} -max-time=120 -interpolation-stat --only-output-states-covering-new -output-tree -output-dir=$@ $<
+	opt -analyze -dot-cfg $<
+	mv *.dot $@
+	# Create SVGs from *.dot files
+	for DOTFILE in $@/*.dot ; do \
+		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
+		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+	done
 	touch $@
 	
