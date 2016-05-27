@@ -14,7 +14,7 @@ ECHO_TARGETS=echo_nosyscall.echo0 echo_small.echo0
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
 BUBBLE_TARGETS=bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
 
-EXTRA_REMOVAL=${TR_TARGETS}
+EXTRA_REMOVAL=${TR_TARGETS} ${ECHO_TARGETS} ${BUBBLE_TARGETS}
 
 include ../Makefile.common
 

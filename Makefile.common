@@ -41,7 +41,7 @@ all-replay: ${COV_TARGETS}
 
 clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
-	rm -rf klee-out-* ${TARGETS} ${BUBBLE_TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
+	rm -rf klee-out-* ${TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
 
 # To prevent the removal of *.klee subdirectories
 .PRECIOUS: %.klee %.stpklee
