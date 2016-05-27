@@ -14,7 +14,7 @@ ECHO_TARGETS=echo_nosyscall.echo0 echo_small.echo0
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
 BUBBLE_TARGETS=bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
 
-EXTRA_REMOVAL=${TR_TARGETS}
+EXTRA_REMOVAL=${TR_TARGETS} ${ECHO_TARGETS} ${BUBBLE_TARGETS}
 
 include ../Makefile.common
 
@@ -61,15 +61,22 @@ bubble: ${BUBBLE_TARGETS}
 
 .bc.tr0:
 	rm -rf $@ klee-*
-	time ${KLEE} --max-time=120 -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -output-tree $< --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -output-tree $< --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1
 	rm -rf klee-*
-	time ${KLEE} --max-time=120 -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 2 --sym-arg 2 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 2 --sym-arg 2 --sym-files 2 2000 --max-fail 1
 	rm -rf klee-*
-	time ${KLEE} --max-time=120 -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-files 2 2000 --max-fail 1
 	touch $@
 
 .bc.bubble0:
 	rm -rf $@ klee-*
-	time ${KLEE} -max-time=120 -interpolation-stat --only-output-states-covering-new $<
+	time ${KLEE} -max-time=120 -interpolation-stat --only-output-states-covering-new -output-tree -output-dir=$@ $<
+	opt -analyze -dot-cfg $<
+	mv *.dot $@
+	# Create SVGs from *.dot files
+	for DOTFILE in $@/*.dot ; do \
+		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
+		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+	done
 	touch $@
 	
