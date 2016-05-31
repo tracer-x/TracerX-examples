@@ -8,6 +8,20 @@
  *
  * See license/openssl-1.0.1f.txt for full license text.
  */
+
+/*
+
+A possible script for running with KLEE follows.
+
+#!/bin/bash
+# A shell script to automate things up.
+clang heartbleed.c -emit-llvm -g -O0 -c
+clang heartbleed.c -S -emit-llvm -g -O0 -c
+rm -rf heartbleed.klee-out
+klee -taint=controlflow --output-dir=heartbleed.klee-out -exit-on-error heartbleed.bc
+
+*/
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -34,11 +48,28 @@ int main() {
   /* Another issue is to track the source of this input */
   p = &(input[0]);
 
-  klee_set_taint(1, &(p[2]), 2 * sizeof(unsigned char));
+  // We taint only the first byte of the payload
+  klee_set_taint(1, &(p[1]), sizeof(unsigned char));
 
   hbtype = *p++;
+
+  klee_make_symbolic(&hbtype, sizeof(unsigned short), "hbtype");
+
+  unsigned char *q = p;
+
+  klee_assert(klee_get_taint(q++, 1) == 1);
+  klee_assert(klee_get_taint(q, 1) == 0);
+
   n2s(p, payload);
-  pl = p;
+
+  // Here we check for taintedness: It seems both bytes
+  // become tainted, possibly due to bitwise or in n2s.
+  // This can be considered an overtainting.
+  unsigned char *r = &payload;
+  klee_assert(klee_get_taint(r++, 1) == 1);
+  klee_assert(klee_get_taint(r, 1) == 1);
+
+ pl = p;
 
   if (hbtype == TLS1_HB_REQUEST) {
     unsigned char *buffer, *bp;
@@ -52,9 +83,14 @@ int main() {
 
     /* Enter response type, length and copy payload */
     *bp++ = TLS1_HB_RESPONSE;
+    unsigned char *b = bp, *c = &payload;
     s2n(payload, bp);
 
-    klee_assert(klee_get_taint(&payload, sizeof payload) == 0);
+    klee_assert(klee_get_taint(c++, 1) == 1);
+    klee_assert(klee_get_taint(c, 1) == 1);
+
+    klee_assert(klee_get_taint(b++, 1) == 1);
+    klee_assert(klee_get_taint(b, 1) == 1);
 
     memcpy(bp, pl, payload);
     bp += payload;
