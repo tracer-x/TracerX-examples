@@ -10,7 +10,7 @@ TARGETS=$(subst bubble_llbmc.klee,,$(patsubst %.c,%.klee,$(wildcard *.c)))
 
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 
-ECHO_TARGETS=echo_nosyscall.echo0 echo_small.echo0
+ECHO_TARGETS=echo.echo0 echo_nosyscall.echo0 echo_small.echo0
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
 BUBBLE_TARGETS=bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
 
@@ -24,7 +24,7 @@ include ../Makefile.common
 # To run all programs under specific group targets, please run:                 #
 #   Make <group_target>                                                         #
 #     Example:                                                                  #
-#       Make echo  ==> run echo_nosyscall and echo_small                        #
+#       Make echo  ==> run echo, echo_nosyscall and echo_small                  #
 #       Make tr  ==> run tr, tr_nosyscall, and tr_small                         #
 #       Make bubble  ==> run bubble9, bubble12, bubble9_unsafe, bubble12_unsafe #
 # To run only a specific program, please run:                                   #
