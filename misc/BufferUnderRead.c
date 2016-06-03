@@ -1,4 +1,5 @@
 /*CWE-127: Buffer Under-read*/
+/* From https://samate.nist.gov/SARD/view_testcase.php?tID=153830 */
 
 /*This test case implements an incorrect size check when reading from a buffer that can cause a buffer under read. The buffer is declared as a character buffer of size 64 on the heap. 64 bytes of input are copied into the buffer but the test case incorrectly uses the original size of the input string to read the buffer to the output stream in reverse order leading to a buffer under read. 
 Metadata
