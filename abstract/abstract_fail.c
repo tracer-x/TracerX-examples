@@ -9,8 +9,10 @@ int main() {
 	int i;
 	klee_make_symbolic(&count, sizeof(count), "count");	
 	klee_make_symbolic(&i, sizeof(i), "i");	
-	klee_assume(i == 0 & count == 0);
-	klee_abstract(count == 0 & i == 0); // Use & instead of &&
+	klee_assume(count == 0);
+	klee_assume(i == 0);
+	klee_abstract(i == 0); 
+	klee_abstract(count == 2);
 	while(i < 3){
 		count++;
 		i++;
