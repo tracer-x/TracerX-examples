@@ -1,3 +1,0 @@
-uname-arch.o: ../../src/uname-arch.c ../../src/uname.h
-
-../../src/uname.h:
