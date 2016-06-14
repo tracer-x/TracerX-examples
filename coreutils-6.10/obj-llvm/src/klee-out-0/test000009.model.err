@@ -1,0 +1,16 @@
+Error: concretized symbolic size
+File: /home/felicia/git/klee-examples/coreutils-6.10/obj-llvm/lib/../../lib/xmalloc.c
+Line: 49
+assembly.ll line: 2568
+Stack: 
+	#000002568 in __user_main (argc=10, argv=26894016) at /home/felicia/git/klee-examples/coreutils-6.10/obj-llvm/lib/../../lib/xmalloc.c:49
+	#100013066 in main (=10, =26894016) at /home/felicia/klee-uclibc/libc/misc/internals/__uClibc_main.c:401
+Info: 
+  size expr: (Add w64 4096
+                       (Select w64 (And (Slt 0
+                                             N0:(ReadLSB w64 56 stdin-stat))
+                                        (Ult N0 2305843009213693953))
+                                   N0
+                                   512))
+  concretization : 4608
+  unbound example: 4112

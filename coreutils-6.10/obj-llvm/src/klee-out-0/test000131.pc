@@ -1,0 +1,39 @@
+array n_args[4] : w32 -> w8 = symbolic
+array B-data-stat[144] : w32 -> w8 = symbolic
+array stdin-stat[144] : w32 -> w8 = symbolic
+array model_version[4] : w32 -> w8 = symbolic
+array arg0[11] : w32 -> w8 = symbolic
+array A-data-stat[144] : w32 -> w8 = symbolic
+(query [(Ult N0:(ReadLSB w32 0 n_args)
+              4)
+         (Slt 0 N0)
+         (Eq false (Slt 1 N0))
+         (Eq false
+             (Eq 0
+                 (And w64 (ReadLSB w64 8 A-data-stat)
+                          2147483647)))
+         (Ult (ReadLSB w64 56 A-data-stat)
+              65536)
+         (Eq false
+             (Eq 0
+                 (And w64 (ReadLSB w64 8 B-data-stat)
+                          2147483647)))
+         (Ult (ReadLSB w64 56 B-data-stat)
+              65536)
+         (Eq false
+             (Eq 0
+                 (And w64 (ReadLSB w64 8 stdin-stat)
+                          2147483647)))
+         (Ult (ReadLSB w64 56 stdin-stat)
+              65536)
+         (Eq 1
+             (ReadLSB w32 0 model_version))
+         (Eq 45 (Read w8 0 arg0))
+         (Eq false
+             (Eq 0 N1:(Read w8 1 arg0)))
+         (Eq false (Eq 45 N1))
+         (Eq 69
+             (Read w8 1 U0:[10=0] @ arg0))
+         (Eq 98 (Read w8 2 U0))
+         (Eq 0 (Read w8 3 U0))]
+        false)

@@ -1,0 +1,39 @@
+printf-args.o: ../../lib/printf-args.c config.h ../../lib/printf-args.h \
+  /usr/include/clang/3.4.2/include/stddef.h /usr/include/wchar.h \
+  /usr/include/features.h /usr/include/stdc-predef.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h stdio.h \
+  /usr/include/stdio.h /usr/include/clang/3.4.2/include/stdarg.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h /usr/include/xlocale.h
+
+config.h:
+
+../../lib/printf-args.h:
+
+/usr/include/clang/3.4.2/include/stddef.h:
+
+/usr/include/wchar.h:
+
+/usr/include/features.h:
+
+/usr/include/stdc-predef.h:
+
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+
+stdio.h:
+
+/usr/include/stdio.h:
+
+/usr/include/clang/3.4.2/include/stdarg.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+/usr/include/xlocale.h:
