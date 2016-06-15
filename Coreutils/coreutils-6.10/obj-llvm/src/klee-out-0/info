@@ -1,0 +1,29 @@
+/home/felicia/git/tracerx/klee/Release+Asserts/bin/klee -max-time=120 --libc=uclibc --posix-runtime -optimize ./cat.bc --sym-args 0 3 10 -sym-files 2 8 -max-fail 1
+PID: 21353
+Started: 2016-06-14 16:32:15
+BEGIN searcher description
+<InterleavedSearcher> containing 2 searchers:
+RandomPathSearcher
+WeightedRandomSearcher::CoveringNew
+</InterleavedSearcher>
+END searcher description
+Finished: 2016-06-14 16:34:17
+Elapsed: 00:02:02
+KLEE: done: explored paths = 1276
+KLEE: done: avg. constructs per query = 54
+KLEE: done: total queries = 4209
+KLEE: done: valid queries = 2040
+KLEE: done: invalid queries = 2169
+KLEE: done: query cex = 4209
+
+KLEE: done: total instructions = 122112
+KLEE: done: completed paths = 1276, among which
+KLEE: done:     early-terminating paths (instruction time limit, solver timeout, max-depth reached) = 1262
+KLEE: done:     subsumed paths = 0
+KLEE: done:     error paths = 7
+KLEE: done:     program exit paths = 7
+KLEE: done: generated tests = 1271, among which
+KLEE: done:     early-terminating tests (instruction time limit, solver timeout, max-depth reached) = 1262
+KLEE: done:     subsumed tests = 0
+KLEE: done:     error tests = 2
+KLEE: done:     program exit tests = 7

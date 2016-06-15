@@ -1,0 +1,9 @@
+ktest file : 'abstract.klee/test000001.ktest'
+args       : ['abstract.bc']
+num objects: 2
+object    0: name: 'count'
+object    0: size: 4
+object    0: data: 0
+object    1: name: 'i'
+object    1: size: 4
+object    1: data: 0
