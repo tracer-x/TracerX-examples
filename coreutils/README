@@ -1,0 +1,5 @@
+There are two folders in this directory:
+	1. Coreutils-6.10 is a folder that contains programs which Tracer-x use for testing
+	2. Whole-program-llvm is a wrapper script that help build Coreutils-6.10
+
+Please use Makefile for automatically testing Tracer-X to Coreutils program.
