@@ -18,7 +18,7 @@
 EXTRA_OPTIONS=-interpolation-stat
 
 COREUTILS=coreutils-6.10
-WHOLE_PROGRAM_LLVM=${KLEE_EXAMPLES}/whole-program-llvm
+WHOLE_PROGRAM_LLVM=/home/felicia/whole-program-llvm
 
 KLEE=/home/felicia/git/tracerx/klee/Release+Asserts/bin/klee
 KLEE_REPLAY=/home/felicia/git/tracerx/klee/Release+Asserts/bin/klee-replay
