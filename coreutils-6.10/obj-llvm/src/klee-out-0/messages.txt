@@ -1,4 +1,0 @@
-KLEE: ERROR: /home/felicia/git/klee-examples/coreutils-6.10/obj-llvm/lib/../../lib/xmalloc.c:49: concretized symbolic size
-KLEE: NOTE: now ignoring this error at this location
-KLEE: ERROR: /home/felicia/git/klee-examples/coreutils-6.10/obj-llvm/lib/../../lib/xmalloc.c:49: concretized symbolic size
-KLEE: NOTE: now ignoring this error at this location
