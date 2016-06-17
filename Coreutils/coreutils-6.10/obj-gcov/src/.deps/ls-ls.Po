@@ -1,5 +1,0 @@
-ls-ls.o: ../../src/ls-ls.c /usr/include/stdc-predef.h ../../src/ls.h
-
-/usr/include/stdc-predef.h:
-
-../../src/ls.h:

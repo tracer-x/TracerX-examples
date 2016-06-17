@@ -1,9 +1,0 @@
-KLEE: WARNING: undefined reference to function: __ctype_b_loc
-KLEE: WARNING: undefined reference to function: __signbitl
-KLEE: WARNING: undefined reference to function: klee_posix_prefer_cex
-KLEE: WARNING: executable has module level assembly (ignoring)
-KLEE: WARNING ONCE: calling external: syscall(16, 0, 21505, 25805216)
-KLEE: WARNING ONCE: calling external: getpagesize()
-KLEE: WARNING ONCE: calling close_stdout with extra arguments.
-KLEE: WARNING ONCE: calling external: vprintf(36172432, 51277392)
-KLEE: WARNING ONCE: ioctl: (FIONREAD) symbolic file, incomplete model
