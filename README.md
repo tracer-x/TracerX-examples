@@ -17,9 +17,12 @@ Each directory contains a suite of simple examples.
 
 - **llbmc-bench** - Examples of C/C++ programs, with the fix suggested by Jonas Wagner. There are several modifications from the original version at http://llbmc.org/files/downloads/llbmc-bench-1.1.tgz for running with KLEE, e.g., replaced LLBMC API calls with the corresponding KLEE API calls.
 
-- **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE able to find some bugs and reported them in https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf.
+- **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
 
-To run the examples, first edit `Makefile.common` to set the right values for your environment. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
+Running examples other than *coreutils*
+---------------------------------------
+
+Instruction on running the examples in the `coreutils` directory can be found later in this document. To run other examples, first edit `Makefile.common` to set the right values for your environment. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
 
 The Makefile in each directory will create KLEE output directories `<example-name>.klee` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for each test.
 
@@ -52,3 +55,17 @@ Sample usages:
 
   `make clean`
 
+Running *coreutils* examples
+----------------------------
+
+- *Prerequisites:* 
+   1. `whole-program-llvm`. This can be done by cloning it from GitHub, i.e.:
+     
+      `git clone https://github.com/travitch/whole-program-llvm.git`
+
+   2. You may/may not need an older version of GNU texinfo. The build does not work with texinfo 5.2, but known to work with 4.13. Texinfo 4.13 can be found [here](http://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz). You may install Texinfo 4.13 with installation prefix `<texinfo_prefix>`, and set `EXTRA_PATH` in `Makefile.common` to include `<texinfo_prefix>/bin`.
+
+- For testing a Coreutils 6.10 program with KLEE, first please edit the top-level `Makefile.common` to set suitable values for various variables, then:
+   1. `cd coreutils`
+   2. `make` - Builds Coreutils 6.10 twice: one with LLVM (in `coreutils/coreutils-6.10/obj-llvm/src`) and another with GCOV (in `coreutils/coreutils-6.10/obj-gcov/src`).
+   4. `make <program_name>` - `<program_name>` is one of the programs whose object file is found as `coreutils/coreutils-6.10/obj-llvm/src/<program_name>.o`. The output will be the result of Tracer-X KLEE run on the program and its coverage information.

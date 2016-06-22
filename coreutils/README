@@ -1,7 +1,0 @@
-
-*) Prerequisite:
-Please install whole-program-llvm from https://github.com/travitch/whole-program-llvm 
-
-*) The coreutils folder contain:
-	- Coreutils-6.10 is a folder that contains programs which Tracer-x use for testing
-	- Please use Makefile for automatically testing Tracer-X to Coreutils program.
