@@ -62,7 +62,7 @@ cat: build
 	@echo Running KLEE on $@ ...
 	@echo =================================================================
 	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -f $@.klee; \
+		rm -rf $@.klee; \
 		time ${KLEE} ${KLEE_FLAGS} -max-time=120 --libc=uclibc --posix-runtime -optimize -output-dir=$@.klee ./$@.bc --sym-args 0 3 10 -sym-files 2 8 -max-fail 1 \
 	)
 	@echo =================================================================
