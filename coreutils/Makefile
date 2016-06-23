@@ -8,12 +8,18 @@ COREUTILS_DIR=coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
 
+
 include ../Makefile.common
 
 # The first target (default)
-all: ${COREUTILS_LLVM_DIR} ${COREUTILS_GCOV_DIR}
+all: cat
 
-${COREUTILS_GCOV_DIR}: 
+build: ${COREUTILS_LLVM_DIR} ${COREUTILS_GCOV_DIR}
+
+${COREUTILS_GCOV_DIR}:
+	@echo =================================================================
+	@echo Building Coreutils using GCC ...
+	@echo =================================================================
 	rm -rf ${COREUTILS_GCOV_DIR}	
 	mkdir ${COREUTILS_GCOV_DIR}
 	( cd ${COREUTILS_GCOV_DIR}; \
@@ -24,6 +30,9 @@ ${COREUTILS_GCOV_DIR}:
 	)
 
 ${COREUTILS_LLVM_DIR}:
+	@echo =================================================================
+	@echo Building Coreutils using LLVM ...
+	@echo =================================================================
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
 	rm -rf ${COREUTILS_LLVM_DIR}	
 	mkdir ${COREUTILS_LLVM_DIR}
@@ -33,15 +42,39 @@ ${COREUTILS_LLVM_DIR}:
 		export CC=${WHOLE_PROGRAM_LLVM}/wllvm; \
 		export CXX=${WHOLE_PROGRAM_LLVM}/wllvm++; \
 		../configure --disable-nls CFLAGS="-g"; \
-		make \
+		make ; \
+		rm -f src/*.gcov \
+	)
+	@echo =================================================================
+	@echo Creating whole-program bitcode file for each utility ...
+	@echo =================================================================
+	( cd ${COREUTILS_LLVM_DIR}/src; \
+		EXEC_LIST=`ls *.o | sed s\/\\\\.o\\$\/\/`; \
+		for EXEC_FILE in $$EXEC_LIST ; do \
+			if [ -e $$EXEC_FILE ] ; then \
+				${WHOLE_PROGRAM_LLVM}/extract-bc $$EXEC_FILE ; \
+			fi ; \
+		done \
 	)
 
-cat: all
-	rm -f cat.bc
-	rm -rf tracerx-cat
-	cd ${COREUTILS_LLVM_DIR}/src; ${WHOLE_PROGRAM_LLVM}/extract-bc cat; ${KLEE} ${KLEE_FLAGS} -max-time=120 --libc=uclibc --posix-runtime -optimize ./cat.bc --sym-args 0 3 10 -sym-files 2 8 -max-fail 1
-	cd ${COREUTILS_GCOV_DIR}/src; rm -f *.gcda; ${KLEE_REPLAY} ./cat ${COREUTILS_LLVM_DIR}/src/klee-last/*.ktest; cd ${COREUTILS_GCOV_DIR}/src; gcov cat
+cat: build
+	@echo =================================================================
+	@echo Running KLEE on $@ ...
+	@echo =================================================================
+	( cd ${COREUTILS_LLVM_DIR}/src; \
+		rm -f $@.klee; \
+		time ${KLEE} ${KLEE_FLAGS} -max-time=120 --libc=uclibc --posix-runtime -optimize -output-dir=$@.klee ./$@.bc --sym-args 0 3 10 -sym-files 2 8 -max-fail 1 \
+	)
+	@echo =================================================================
+	@echo Running KLEE-generated tests to compute coverage ...
+	@echo =================================================================
+	( cd ${COREUTILS_GCOV_DIR}/src; \
+		for KLEE_TEST in ../../../${COREUTILS_LLVM_DIR}/src/$@.klee/*.ktest ; do \
+			${KLEE_REPLAY} ./$@ $$KLEE_TEST ; \
+		done ; \
+		gcov $@ \
+	)
 
 clean:
-	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} doc
+	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} ${COREUTILS_DIR}/doc/coreutils.info
 
