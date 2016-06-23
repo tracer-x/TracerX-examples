@@ -52,6 +52,9 @@ bubble: ${BUBBLE_TARGETS}
 	rm -rf klee-*
 	rm -f $^
 
+
+clean: standard-clean
+
 .SUFFIXES: .tr0 .echo0 .bubble0
 
 .bc.echo0:
@@ -79,4 +82,4 @@ bubble: ${BUBBLE_TARGETS}
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
 	done
 	touch $@
-	
+
