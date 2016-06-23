@@ -69,6 +69,6 @@ Running *coreutils* examples
 - For testing a Coreutils 6.10 program with KLEE, first please edit the top-level `Makefile.common` to set suitable values for various variables, then:
    1. `cd coreutils`
    2. Run `make` in any of these ways:
-       a. `make build` - To build Coreutils 6.10 twice: one with LLVM (in `coreutils/coreutils-6.10/obj-llvm/src`) and another with GCOV (in `coreutils/coreutils-6.10/obj-gcov/src`) without running KLEE.
-       b. Just `make` - Runs the test-case generation on all programs: it will build Coreutils 6.10 if this is not done already.
-       c. `make <program_name>` - Runs the test-case generation on `<program_name>`: it will build Coreutils 6.10 if this is not done already. Here, `<program_name>` is one of the Coreutils programs whose executable file is found as `coreutils/coreutils-6.10/obj-llvm/src/<program_name>`. The output will be the result of Tracer-X KLEE run on the program and its coverage information.
+       - `make build` - To build Coreutils 6.10 twice: one with LLVM (in `coreutils/coreutils-6.10/obj-llvm/src`) and another with GCOV (in `coreutils/coreutils-6.10/obj-gcov/src`) without running KLEE.
+       - Just `make` - Runs the test-case generation on all programs: it will build Coreutils 6.10 if this is not done already.
+       - `make <program_name>` - Runs the test-case generation on `<program_name>`: it will build Coreutils 6.10 if this is not done already. Here, `<program_name>` is one of the Coreutils programs whose executable file is found as `coreutils/coreutils-6.10/obj-llvm/src/<program_name>`. The output will be the result of Tracer-X KLEE run on the program and its coverage information.
