@@ -111,114 +111,78 @@ sandbox:
 		mkdir e \
 	)
 
-${TARGET}: build sandbox
+%.klee: build sandbox
 	@echo =================================================================
-	@echo Running Tracerx on $@ ...
+	@echo Running Tracer-X on $* ...
 	@echo =================================================================
-	( if [ $@ = "dd" ]; then \
+	( if [ $* = "dd" ]; then \
 			PROGRAM_ARGS="${DD_ARGS}" ; \
-		elif [ $@ = "dircolors" ]; then \
+		elif [ $* = "dircolors" ]; then \
 			PROGRAM_ARGS="${DIRCOLORS_ARGS}" ; \
-		elif [ $@ = "echo" ]; then \
+		elif [ $* = "echo" ]; then \
 			PROGRAM_ARGS="${ECHO_ARGS}" ; \
-		elif [ $@ = "expr" ]; then \
+		elif [ $* = "expr" ]; then \
 			PROGRAM_ARGS="${EXPR_ARGS}" ; \
-		elif [ $@ = "mknod" ]; then \
+		elif [ $* = "mknod" ]; then \
 			PROGRAM_ARGS="${MKNOD_ARGS}" ; \
-		elif [ $@ = "od" ]; then \
+		elif [ $* = "od" ]; then \
 			PROGRAM_ARGS="${OD_ARGS}" ; \
-		elif [ $@ = "pathchk" ]; then \
+		elif [ $* = "pathchk" ]; then \
 			PROGRAM_ARGS="${PATHCHK_ARGS}" ; \
-		elif [ $@ = "printf" ]; then \
+		elif [ $* = "printf" ]; then \
 			PROGRAM_ARGS="${PRINTF_ARGS}" ; \
 		else \
 			PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 		fi ; \
 		( cd ${SANDBOX}; \
-			rm -rf $@.klee; \
-			LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${SANDBOX} -output-dir=$@.klee ${COREUTILS_LLVM_DIR}/src/$@.bc $$PROGRAM_ARGS -max-fail 1 ; \
+			rm -rf $@; \
+			LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${SANDBOX} -output-dir=$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
 		); \
 	)
 	@echo =================================================================
-	@echo Running Tracerx-generated tests to compute coverage ...
+	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
 	( cd ${SANDBOX}; \
-		${KLEE_REPLAY} ${COREUTILS_GCOV_DIR}/src/$@ $$KLEE_TEST ${COREUTILS_LLVM_DIR}/src/$@.klee/*.ktest ; \
-		gcov ${COREUTILS_GCOV_DIR}/src/$@ \
+		${KLEE_REPLAY} ${COREUTILS_GCOV_DIR}/src/$* $$KLEE_TEST ${COREUTILS_LLVM_DIR}/src/$@/*.ktest ; \
+		gcov ${COREUTILS_GCOV_DIR}/src/$* \
 	)
 
-%.stp: build
+%.stpklee: build sandbox
 	@echo =================================================================
-	@echo Running KLEE on $* ...
+	@echo Running KLEE with STP on $* ...
 	@echo =================================================================
-	#$(eval KLEE = /home/felicia/git/original/klee/Release+Asserts/bin/klee)
-	#$(eval KLEE_STATS= /home/felicia/git/original/klee/Release+Asserts/bin/klee-stats)	
-	#$(eval KLEE_REPLAY= /home/felicia/git/original/klee/Release+Asserts/bin/klee-replay)
-	#$(eval KTEST_TOOL= /home/felicia/git/original/klee/Release+Asserts/bin/ktest-tool)
-	$(eval EXTRA_OPTIONS = )
-	@if [ $* != "dd" ] && [ $* != "dircolors" ] && [ $* != "echo" ] && [ $* != "expr" ] && [ $* != "mknod" ] && [ $* != "od" ] && [ $* != "pathchk" ] && [ $* != "printf" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${DEFAULT_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "dd" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${DD_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "dircolors" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${DIRCOLORS_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "echo" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${ECHO_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "expr" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${EXPR_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "mknod" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${MKNOD_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "od" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${OD_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "pathchk" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${PATHCHK_ARGS} -max-fail 1; \
-	); \
-	fi
-	@if [ $* = "printf" ]; then\
-	( cd ${COREUTILS_LLVM_DIR}/src; \
-		rm -rf $*.stpklee; \
-		time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$*.stpklee ./$*.bc ${PRINTF_ARGS} -max-fail 1; \
-	); \
-	fi	
-	@echo =================================================================
-	@echo Running KLEE-generated tests to compute coverage ...
-	@echo =================================================================
-	( cd ${COREUTILS_GCOV_DIR}/src; \
-		for KLEE_TEST in ../../../${COREUTILS_LLVM_DIR}/src/$*.stpklee/*.ktest ; do \
-			${KLEE_REPLAY} ./$* $$KLEE_TEST ; \
-		done ; \
-		gcov $* \
+	( if [ $* = "dd" ]; then \
+			PROGRAM_ARGS="${DD_ARGS}" ; \
+		elif [ $* = "dircolors" ]; then \
+			PROGRAM_ARGS="${DIRCOLORS_ARGS}" ; \
+		elif [ $* = "echo" ]; then \
+			PROGRAM_ARGS="${ECHO_ARGS}" ; \
+		elif [ $* = "expr" ]; then \
+			PROGRAM_ARGS="${EXPR_ARGS}" ; \
+		elif [ $* = "mknod" ]; then \
+			PROGRAM_ARGS="${MKNOD_ARGS}" ; \
+		elif [ $* = "od" ]; then \
+			PROGRAM_ARGS="${OD_ARGS}" ; \
+		elif [ $* = "pathchk" ]; then \
+			PROGRAM_ARGS="${PATHCHK_ARGS}" ; \
+		elif [ $* = "printf" ]; then \
+			PROGRAM_ARGS="${PRINTF_ARGS}" ; \
+		else \
+			PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
+		fi ; \
+		( cd ${SANDBOX}; \
+			rm -rf $@; \
+			LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --select-solver=stp --environ=${CURDIR}/test.env --run-in=${SANDBOX} -output-dir=$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+		); \
 	)
+	@echo =================================================================
+	@echo Running generated tests to compute coverage ...
+	@echo =================================================================
+	( cd ${SANDBOX}; \
+		${KLEE_REPLAY} ${COREUTILS_GCOV_DIR}/src/$* $$KLEE_TEST ${COREUTILS_LLVM_DIR}/src/$*.stpklee/*.ktest ; \
+		gcov ${COREUTILS_GCOV_DIR}/src/$* \
+	)
+
 
 clean:
 	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} ${SANDBOX} test.env

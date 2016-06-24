@@ -10,7 +10,7 @@ EXTRA_PATH=
 # Extra libraries that may be needed for running KLEE to be added to
 # LD_LIBRARY_PATH environment variable, e.g., the path of libz3.so
 EXTRA_LD_LIB=
-#EXTRA_LD_LIB=${HOME}/software/lib
+#EXTRA_LD_LIB=${HOME}/software/lib:${HOME}/software/stp-2.1.0/build/lib
 
 # Where KLEE resides in the system
 KLEE_HOME=/usr/local/lib/tracerx
