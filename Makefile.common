@@ -9,7 +9,7 @@ EXTRA_PATH=
 
 # Where KLEE resides in the system
 KLEE_HOME=/usr/local/lib/tracerx
-#KLEE_HOME=${HOME}/git/tracerx/klee/Release+Asserts/bin
+#KLEE_HOME=${HOME}/git/tracerx/klee/Release+Asserts
 #KLEE_HOME=${HOME}/software/klee/Release+Asserts
 
 # Where whole-program-llvm resides in the system
