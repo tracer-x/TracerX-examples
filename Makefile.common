@@ -3,9 +3,14 @@
 # Copyright 2015, 2016 National University of Singapore
 
 # Extra executable path to include. This is used for building
-# coreutils 6.10 as older utilites may be needed, such as makeinfo.
+# coreutils 6.10 as older utilites may be needed, such as Texinfo 4.13.
 EXTRA_PATH=
 #EXTRA_PATH=${HOME}/software/alt/bin
+
+# Extra libraries that may be needed for running KLEE to be added to
+# LD_LIBRARY_PATH environment variable, e.g., the path of libz3.so
+EXTRA_LD_LIB=
+#EXTRA_LD_LIB=${HOME}/software/lib
 
 # Where KLEE resides in the system
 KLEE_HOME=/usr/local/lib/tracerx
