@@ -2,7 +2,8 @@
 #
 # Copyright 2016 National University of Singapore
 #
-# Symbolic arguments for testing coreutils is following http://klee.github.io/docs/coreutils-experiments/
+# Symbolic arguments for testing coreutils is following
+# http://klee.github.io/docs/coreutils-experiments/
 
 EXTRA_OPTIONS=-interpolation-stat
 
@@ -12,6 +13,17 @@ COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
 
 SANDBOX=/tmp/sandbox
 BASH=/bin/bash
+
+# From http://klee.github.io/docs/coreutils-experiments/
+KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
+	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
+	--use-cex-cache --libc=uclibc --posix-runtime \
+	--allow-external-sym-calls --only-output-states-covering-new \
+	--max-sym-array-size=4096 --max-instruction-time=30. --max-time=3600. \
+	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
+	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
+	--randomize-fork --search=random-path --search=nurs:covnew \
+	--use-batching-search --batch-instructions=10000
 
 TARGET=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp cpslit cut date dd df dircolors dirname du echo env expand expr factor FALSE fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
 MAX_TIME=60
@@ -31,7 +43,10 @@ include ../Makefile.common
 # The first target (default)
 all: ${TARGET}
 
-build: ${COREUTILS_LLVM_DIR} ${COREUTILS_GCOV_DIR} sandbox
+build: ${COREUTILS_LLVM_DIR} ${COREUTILS_GCOV_DIR} test.env
+
+test.env:
+	env -i ${BASH} -c '( source testing-env.sh ; env > test.env )'
 
 ${COREUTILS_GCOV_DIR}:
 	@echo =================================================================
@@ -121,7 +136,7 @@ ${TARGET}: build sandbox
 		fi ; \
 		( cd ${SANDBOX}; \
 			rm -rf $@.klee; \
-			env -i ${BASH} -c '(source ${CURDIR}/testing-env.sh ; LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} -max-time=${MAX_TIME} --libc=uclibc --posix-runtime -optimize -output-dir=$@.klee ${COREUTILS_LLVM_DIR}/src/$@.bc $$PROGRAM_ARGS -max-fail 1)' ; \
+			LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${SANDBOX} -output-dir=$@.klee ${COREUTILS_LLVM_DIR}/src/$@.bc $$PROGRAM_ARGS -max-fail 1 ; \
 		); \
 	)
 	@echo =================================================================
@@ -206,5 +221,5 @@ ${TARGET}: build sandbox
 	)
 
 clean:
-	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} ${SANDBOX}
+	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} ${SANDBOX} test.env
 
