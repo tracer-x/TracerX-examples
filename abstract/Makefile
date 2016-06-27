@@ -10,3 +10,4 @@ TARGETS=$(patsubst %.c,%.klee,$(wildcard *c))
 
 include ../Makefile.common
 
+clean: standard-clean

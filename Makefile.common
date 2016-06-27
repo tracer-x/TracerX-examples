@@ -2,25 +2,35 @@
 #
 # Copyright 2015, 2016 National University of Singapore
 
+# Extra executable path to include. This is used for building
+# coreutils 6.10 as older utilites may be needed, such as Texinfo 4.13.
+EXTRA_PATH=
+#EXTRA_PATH=${HOME}/software/alt/bin
+
+# Extra libraries that may be needed for running KLEE to be added to
+# LD_LIBRARY_PATH environment variable, e.g., the path of libz3.so
+EXTRA_LD_LIB=
+#EXTRA_LD_LIB=${HOME}/software/lib:${HOME}/software/stp-2.1.0/build/lib
+
 # Where KLEE resides in the system
 KLEE_HOME=/usr/local/lib/tracerx
+#KLEE_HOME=${HOME}/git/tracerx/klee/Release+Asserts
+#KLEE_HOME=${HOME}/software/klee/Release+Asserts
+
+# Where whole-program-llvm resides in the system
+WHOLE_PROGRAM_LLVM=/usr/local/lib/whole-program-llvm
+#WHOLE_PROGRAM_LLVM=${HOME}/whole-program-llvm
+#WHOLE_PROGRAM_LLVM=${HOME}/software/whole-program-llvm
 
 # In the following, please select where klee and its various tools are
 # located in your system
-KLEE=klee
-KLEE_STATS=klee-stats
-KLEE_REPLAY=klee-replay
-KTEST_TOOL=ktest-tool
-#KLEE=${HOME}/git/tracerx/klee/Release+Asserts/bin/klee
-#KLEE_STATS=${HOME}/git/tracerx/klee/Release+Asserts/bin/klee-stats
-#KLEE_REPLAY=${HOME}/git/tracerx/klee/Release+Asserts/bin/klee-replay
-#KTEST_TOOL=${HOME}/git/tracerx/klee/Release+Asserts/bin/ktest-tool
+KLEE=${KLEE_HOME}/bin/klee
+KLEE_STATS=${KLEE_HOME}/bin/klee-stats
+KLEE_REPLAY=${KLEE_HOME}/bin/klee-replay
+KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 
-# In the following, please select suitable include directory
+# In the following, please select suitable include and DLL directories
 CFLAGS=-g -I${KLEE_HOME}/include
-#CFLAGS=-g -I${HOME}/nus/kleetest
-#CFLAGS=-g -I${HOME}/software/klee/include
-
 LDFLAGS=-L${KLEE_HOME}/lib -lkleeRuntest
 
 CC=clang
@@ -39,7 +49,7 @@ all-ir: ${IR_TARGETS}
 
 all-replay: ${COV_TARGETS}
 
-clean:
+standard-clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
 	rm -rf klee-out-* ${TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
 
