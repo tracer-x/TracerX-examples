@@ -14,7 +14,7 @@ COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
 BASH=/bin/bash
 
 # From http://klee.github.io/docs/coreutils-experiments/
-KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module -output-tree \
+KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
 	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
 	--use-cex-cache --libc=uclibc --posix-runtime \
 	--allow-external-sym-calls --only-output-states-covering-new \
@@ -145,7 +145,7 @@ sandbox:
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
-	@echo Create SVGs from *.dot files ...
+	@echo Create SVGs from tree.dot files ...
 	@echo =================================================================
 	dot -Tsvg ${CURDIR}/$@/tree.dot -o ${CURDIR}/$@/$*.svg
 	@echo =================================================================
