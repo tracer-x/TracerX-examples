@@ -14,7 +14,7 @@ COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
 BASH=/bin/bash
 
 # From http://klee.github.io/docs/coreutils-experiments/
-KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
+KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module -output-tree \
 	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
 	--use-cex-cache --libc=uclibc --posix-runtime \
 	--allow-external-sym-calls --only-output-states-covering-new \
@@ -25,7 +25,7 @@ KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-
 	--use-batching-search --batch-instructions=10000
 
 # Comment this out if the above options are preferred
-KLEE_COREUTILS_OPTIONS=--libc=uclibc --posix-runtime --optimize --max-time=60.
+#KLEE_COREUTILS_OPTIONS=--libc=uclibc --posix-runtime --optimize --output-tree --max-time=60.
 
 # From http://klee.github.io/docs/coreutils-experiments/
 # Some of these, e.g., [, have no .bc file: Why?
@@ -145,12 +145,16 @@ sandbox:
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
+	@echo Create SVGs from *.dot files ...
+	@echo =================================================================
+	dot -Tsvg ${CURDIR}/$@/tree.dot -o ${CURDIR}/$@/$*.svg
+	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
 		gcov $* ) > ${CURDIR}/$@/CoverageLog.txt 2>&1; \
-
+	
 %.stpklee: build sandbox
 	@echo =================================================================
 	@echo Running KLEE with STP on $* ...
