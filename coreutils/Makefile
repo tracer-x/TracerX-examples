@@ -153,7 +153,7 @@ sandbox:
 	@echo =================================================================
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		gcov $* ) > ${CURDIR}/$@/CoverageLog.txt 2>&1; \
+		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
 	
 %.stpklee: build sandbox
 	@echo =================================================================
@@ -187,7 +187,7 @@ sandbox:
 	@echo =================================================================
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		gcov $* ) > ${CURDIR}/$@/CoverageLog.txt 2>&1; \
+		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
 
 clean:
 	rm -rf ${KLEE_TARGETS} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
