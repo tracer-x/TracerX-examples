@@ -152,8 +152,8 @@ typedef struct
 
 
 
-
-typedef __builtin_va_list va_list;
+/* Clang complains about va_list not conforming to pre-C++11 */
+/* typedef __builtin_va_list va_list; */
 
 typedef __builtin_va_list __gnuc_va_list;
 
