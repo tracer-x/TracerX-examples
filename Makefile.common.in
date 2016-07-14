@@ -68,7 +68,30 @@ standard-clean:
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
 	done
-
+	# The following is to catch any difference in subsumption
+	# number for regression testing purposes
+	if [ -e subsumption.dat ]; then \
+		REFERENCE_SUBSUMPTION=`grep $*.c subsumption.dat | sed 's/^[a-z0-9_]*\.c\t\+//' - ` ; \
+		if [ x$$REFERENCE_SUBSUMPTION != x ] ; then \
+			ACTUAL_SUBSUMPTION=`grep subsumed $@/tree.dot | wc -l` ; \
+			if [ x$$REFERENCE_SUBSUMPTION != x$$ACTUAL_SUBSUMPTION ] ; then \
+				echo ERROR: Subsumption number \($$ACTUAL_SUBSUMPTION\) disagrees with reference data for $*.c \($$REFERENCE_SUBSUMPTION\) ; \
+				exit 1 ; \
+			fi ; \
+		fi ; \
+	fi
+	# The following is to catch any difference in error report
+	# number for regression testing purposes
+	if [ -e error.dat ]; then \
+		REFERENCE_ERROR=`grep $*.c error.dat | sed 's/^[a-z0-9_]*\.c\t\+//' - ` ; \
+		if [ x$$REFERENCE_ERROR != x ] ; then \
+			ACTUAL_ERROR=`ls $@/*.err | wc -l` ; \
+			if [ x$$REFERENCE_ERROR != x$$ACTUAL_ERROR ] ; then \
+				echo ERROR: Error count \($$ACTUAL_ERROR\) disagrees with reference data for $*.c \($$REFERENCE_ERROR\) ; \
+				exit 1 ; \
+			fi ; \
+		fi ; \
+	fi
 # For running KLEE with STP without interpolation
 .bc.stpklee:
 	time ${KLEE} ${KLEE_FLAGS} -select-solver=stp -output-dir=$@ $<
