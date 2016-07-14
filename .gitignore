@@ -1,7 +1,12 @@
+coreutils/coreutils-6.10/autom4te.cache/requests
 coreutils/coreutils-6.10/config.h.in
 coreutils/coreutils-6.10/doc/coreutils.info
 coreutils/coreutils-6.10/doc/stamp-vti
 coreutils/coreutils-6.10/doc/version.texi
+coreutils/coreutils-6.10/obj-llvm
+coreutils/coreutils-6.10/obj-gcov
+coreutils/sandbox
+coreutils/test.env
 /.project
 /.cproject
 */*.bc
