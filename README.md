@@ -28,17 +28,21 @@ Instruction on running the examples in the `coreutils` directory can be found la
 The Makefile in each directory will create KLEE output directories `<example-name>.klee` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for each test.
 
 Sample usages:
-- To run all examples with KLEE:
-
-  `make`
-
-- To run a single example, e.g., addition.c in the basic directory using Z3 solver and interpolation:
+- To run a single example, e.g., addition.c in the basic directory with KLEE using Z3 solver and interpolation:
 
   `make addition.klee`
 
-- For additional coverage statistics, instead run:
+  If the file `subsumption.dat` exists, this may also perform a regression test on the number of subsumptions compared to reference data in `subsumption.dat`.
+
+- For running addition.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
 
   `make addition.cov`
+
+- To run all examples with KLEE using Z3 solver and interpolation:
+
+  `make`
+
+  This is the same as executing `make <example_name>.klee` for all examples.
 
 - To run a single example, e.g., addition.c in the basic directory using STP solver and without interpolation:
 
