@@ -141,7 +141,7 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -154,7 +154,7 @@ sandbox:
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
 		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
-	
+
 %.stpklee: build sandbox
 	@echo =================================================================
 	@echo Running KLEE with STP on $* ...

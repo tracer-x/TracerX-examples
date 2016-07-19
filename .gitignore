@@ -7,6 +7,7 @@ coreutils/coreutils-6.10/obj-llvm
 coreutils/coreutils-6.10/obj-gcov
 coreutils/sandbox
 coreutils/test.env
+Makefile.common
 /.project
 /.cproject
 */*.bc
