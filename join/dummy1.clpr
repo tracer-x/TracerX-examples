@@ -1,0 +1,5 @@
+% Simple CLP(R) program for testing
+%
+% Copyright 2016 National University of Singapore
+
+dummy1(X) :- X <= 3.
