@@ -17,6 +17,7 @@ int main() {
   /*-------- First Program --------------------*/
   for (i = 0; i < SIZE; ++i) {
     if (a[i]) ++count1;
+    klee_join("count", a, i, count1);
   }
 
   /*-------- Second Program -------------------*/

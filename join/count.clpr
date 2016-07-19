@@ -1,0 +1,8 @@
+count(A, 0, 1) :-
+	 V > 0, mcc_select(A, 0, V).
+count(A, 0, 0) :-
+	 V <= 0, mcc_select(A, 0, V).
+count(A, I + 1, C + 1) :- I >= 0,
+	 V > 0, mcc_select(A, I + 1, V), count(A, I, C).
+count(A, I + 1, C) :- I >= 0,
+	 V <= 0, mcc_select(A, I + 1, V), count(A, I, C).
