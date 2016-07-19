@@ -10,7 +10,7 @@ EXTRA_PATH=
 # Extra libraries that may be needed for running KLEE to be added to
 # LD_LIBRARY_PATH environment variable, e.g., the path of libz3.so
 EXTRA_LD_LIBRARY_PATH=
-#EXTRA_LD_LIBRARY_PATH=${HOME}/software/lib:${HOME}/software/stp-2.1.0/build/lib
+#EXTRA_LD_LIBRARY_PATH=${HOME}/software/clpr-1.2l/lib:${HOME}/software/stp-2.1.0/build/lib:${HOME}/z3/z3_install/lib
 
 # Where KLEE resides in the system
 KLEE_HOME=@klee@
