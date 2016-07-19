@@ -145,16 +145,18 @@ sandbox:
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
-	@echo Create SVGs from tree.dot files ...
+	@echo Create SVGs from tree.dot file if any ...
 	@echo =================================================================
-	dot -Tsvg ${CURDIR}/$@/tree.dot -o ${CURDIR}/$@/$*.svg
+	if [ -e ${CURDIR}/$@/tree.dot ]; then \
+		dot -Tsvg ${CURDIR}/$@/tree.dot -o ${CURDIR}/$@/$*.svg ; \
+	fi
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
 		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
-	
+
 %.stpklee: build sandbox
 	@echo =================================================================
 	@echo Running KLEE with STP on $* ...
