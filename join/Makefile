@@ -6,7 +6,7 @@
 # in this directory are small.
 EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2
 
-JOIN_TARGETS=test-use-clpr test-join test-count test-bubble test-sum
+JOIN_TARGETS=test-use-clpr test-join test-count test-sum
 
 default: ${JOIN_TARGETS}
 
