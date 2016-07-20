@@ -6,7 +6,7 @@
 # in this directory are small.
 EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2
 
-JOIN_TARGETS=test-use-clpr test-join test-count
+JOIN_TARGETS=test-use-clpr test-join test-count test-bubble test-sum test-fibo
 
 default: ${JOIN_TARGETS}
 
@@ -25,3 +25,7 @@ test-join: join2.bc
 
 test-count: count.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=count.clpr -output-dir=$@ $<
+
+test-sum: sum.bc
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=sum.clpr -output-dir=$@ $<
+
