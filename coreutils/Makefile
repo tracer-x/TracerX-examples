@@ -28,8 +28,7 @@ KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-
 #KLEE_COREUTILS_OPTIONS=--libc=uclibc --posix-runtime --optimize --output-tree --max-time=60.
 
 # From http://klee.github.io/docs/coreutils-experiments/
-# Some of these, e.g., [, have no .bc file: Why?
-TARGETS=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp cpslit cut date dd df dircolors dirname du echo env expand expr factor FALSE fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
+TARGETS=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut date dd df dircolors dirname du echo env expand expr factor false fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
 
 DEFAULT_ARGS=--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
 DD_ARGS=--sym-args 0 3 10 --sym-files 1 8 -sym-stdin 8 --sym-stdout
@@ -70,6 +69,10 @@ ${COREUTILS_GCOV_DIR}:
 		make -C src arch hostname \
 	)
 
+# In the following target:
+# * We build arch and hostname after make is executed, as it appears that
+#   make does not build them.
+# * We skip whole-program bitcode creation for groups as it is a script.
 ${COREUTILS_LLVM_DIR}:
 	@echo =================================================================
 	@echo Building Coreutils using LLVM ...
@@ -86,17 +89,18 @@ ${COREUTILS_LLVM_DIR}:
 		unset CPLUS_INCLUDE_PATH; \
 		../configure --disable-nls CFLAGS="-g"; \
 		make ; \
-		rm -f src/*.gcov \
+		rm -f src/*.gcov ; \
+		( cd src ; \
+			make arch hostname \
+		) \
 	)
 	@echo =================================================================
 	@echo Creating whole-program bitcode file for each utility ...
 	@echo =================================================================
 	( cd ${COREUTILS_LLVM_DIR}/src; \
-		EXEC_LIST=`ls *.o | sed s\/\\\\.o\\$\/\/`; \
+		EXEC_LIST=`find . -executable -type f | sed 's/.\/groups//'` ; \
 		for EXEC_FILE in $$EXEC_LIST ; do \
-			if [ -e $$EXEC_FILE ] ; then \
-				${WHOLE_PROGRAM_LLVM}/extract-bc $$EXEC_FILE ; \
-			fi ; \
+			${WHOLE_PROGRAM_LLVM}/extract-bc $$EXEC_FILE ; \
 		done \
 	)
 
