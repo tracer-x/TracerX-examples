@@ -1,8 +1,20 @@
-count(A, 0, 1) :-
-	 V > 0, mcc_select(A, 0, V).
-count(A, 0, 0) :-
-	 V <= 0, mcc_select(A, 0, V).
-count(A, I + 1, C + 1) :- I >= 0,
-	 V > 0, mcc_select(A, I + 1, V), count(A, I, C).
-count(A, I + 1, C) :- I >= 0,
-	 V <= 0, mcc_select(A, I + 1, V), count(A, I, C).
+
+count(H, A_Ptr, A_Ptr, 1) :-
+	V < 0, mcc_select(H, A_Ptr, V).
+count(H, A_Ptr, A_Ptr, 1) :-
+	V > 0, mcc_select(H, A_Ptr, V).
+count(H, A_Ptr, A_Ptr, 0) :-
+ 	V = 0, mcc_select(H, A_Ptr, V).
+count(H, A_Ptr, E_Ptr, C + 1) :-
+	A_Ptr < E_Ptr,
+	V < 0, mcc_select(H, E_Ptr, V),
+	count(H, A_Ptr, E_Ptr - 1, C).
+count(H, A_Ptr, E_Ptr, C + 1) :-
+	A_Ptr < E_Ptr,
+	V > 0, mcc_select(H, E_Ptr, V),
+	count(H, A_Ptr, E_Ptr - 1, C).
+count(H, A_Ptr, E_Ptr, C) :-
+	A_Ptr < E_Ptr,
+	V = 0, mcc_select(H, E_Ptr, V),
+	count(H, A_Ptr, E_Ptr - 1, C).
+

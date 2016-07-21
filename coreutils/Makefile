@@ -64,7 +64,7 @@ ${COREUTILS_GCOV_DIR}:
 		export PATH=${EXTRA_PATH}:$$PATH; \
 		unset C_INCLUDE_PATH; \
 		unset CPLUS_INCLUDE_PATH; \
-		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage"; \
+		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage" --enable-install-program=arch,hostname ; \
 		make; \
 		make -C src arch hostname \
 	)
@@ -87,12 +87,9 @@ ${COREUTILS_LLVM_DIR}:
 		export CXX=${WHOLE_PROGRAM_LLVM}/wllvm++; \
 		unset C_INCLUDE_PATH; \
 		unset CPLUS_INCLUDE_PATH; \
-		../configure --disable-nls CFLAGS="-g"; \
+		../configure --disable-nls CFLAGS="-g" --enable-install-program=arch,hostname ; \
 		make ; \
-		rm -f src/*.gcov ; \
-		( cd src ; \
-			make arch hostname \
-		) \
+		rm -f src/*.gcov \
 	)
 	@echo =================================================================
 	@echo Creating whole-program bitcode file for each utility ...
@@ -104,9 +101,9 @@ ${COREUTILS_LLVM_DIR}:
 		done \
 	)
 
+# The testing sandbox reconstructed here is from
+# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
 sandbox:
-	# The testing sandbox reconstructed here is from
-	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
 	@echo =================================================================
 	@echo Creating the sandbox ...
 	@echo =================================================================
@@ -157,9 +154,47 @@ sandbox:
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
+	if [ $* = "arch" ]; then \
+		GCOV_OBJECTS="uname uname-arch" ; \
+	elif [ $* = "[" ]; then \
+		GCOV_OBJECTS="lbracket" ; \
+	elif [ $* = "cp" ]; then \
+		GCOV_OBJECTS="cp copy cp-hash" ; \
+	elif [ $* = "dir" ]; then \
+		GCOV_OBJECTS="ls ls-dir" ; \
+	elif [ $* = "vdir" ]; then \
+		GCOV_OBJECTS="ls ls-vdir" ; \
+	elif [ $* = "ls" ]; then \
+		GCOV_OBJECTS="ls ls-ls" ; \
+	elif [ $* = "chown" ]; then \
+		GCOV_OBJECTS="chown chown-core" ; \
+	elif [ $* = "chgrp" ]; then \
+		GCOV_OBJECTS="chgrp chown-core" ; \
+	elif [ $* = "mv" ]; then \
+		GCOV_OBJECTS="mv remove copy cp-hash" ; \
+	elif [ $* = "rm" ]; then \
+		GCOV_OBJECTS="rm remove" ; \
+	elif [ $* = "uname" ]; then \
+		GCOV_OBJECTS="uname uname-uname" ; \
+	elif [ $* = "sha1sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha224sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha256sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha384sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha512sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	else \
+		GCOV_OBJECTS=$* ; \
+	fi ; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
+		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
+			gcov -o $$GCOV_OBJ $* ; \
+		done \
+	) > ${CURDIR}/$@/GcovLog.txt 2>&1
 
 %.stpklee: build sandbox
 	@echo =================================================================
@@ -185,15 +220,53 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --select-solver=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ;
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --select-solver=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ;
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
+	if [ $* = "arch" ]; then \
+		GCOV_OBJECTS="uname uname-arch" ; \
+	elif [ $* = "[" ]; then \
+		GCOV_OBJECTS="lbracket" ; \
+	elif [ $* = "cp" ]; then \
+		GCOV_OBJECTS="cp copy cp-hash" ; \
+	elif [ $* = "dir" ]; then \
+		GCOV_OBJECTS="ls ls-dir" ; \
+	elif [ $* = "vdir" ]; then \
+		GCOV_OBJECTS="ls ls-vdir" ; \
+	elif [ $* = "ls" ]; then \
+		GCOV_OBJECTS="ls ls-ls" ; \
+	elif [ $* = "chown" ]; then \
+		GCOV_OBJECTS="chown chown-core" ; \
+	elif [ $* = "chgrp" ]; then \
+		GCOV_OBJECTS="chgrp chown-core" ; \
+	elif [ $* = "mv" ]; then \
+		GCOV_OBJECTS="mv remove copy cp-hash" ; \
+	elif [ $* = "rm" ]; then \
+		GCOV_OBJECTS="rm remove" ; \
+	elif [ $* = "uname" ]; then \
+		GCOV_OBJECTS="uname uname-uname" ; \
+	elif [ $* = "sha1sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha224sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha256sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha384sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha512sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	else \
+		GCOV_OBJECTS=$* ; \
+	fi ; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
+		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
+			gcov -o $$GCOV_OBJ $* ; \
+		done \
+	) > ${CURDIR}/$@/GcovLog.txt 2>&1
 
 clean:
 	rm -rf ${KLEE_TARGETS} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
