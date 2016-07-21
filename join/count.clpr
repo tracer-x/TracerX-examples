@@ -1,3 +1,6 @@
+% Count predicate for count example
+%
+% Copyright 2016 National University of Singapore
 
 count(H, A_Ptr, A_Ptr, 1) :-
 	V < 0, mcc_select(H, A_Ptr, V).
