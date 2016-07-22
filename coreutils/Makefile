@@ -18,7 +18,7 @@ KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-
 	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
 	--use-cex-cache --libc=uclibc --posix-runtime \
 	--allow-external-sym-calls --only-output-states-covering-new \
-	--max-sym-array-size=4096 --max-instruction-time=30. --max-time=3600. \
+	--max-sym-array-size=4096 --max-instruction-time=30. --max-time=10. \
 	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
 	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
 	--randomize-fork --search=random-path --search=nurs:covnew \
@@ -209,6 +209,8 @@ sandbox:
 	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
 	elif [ $* = "sha512sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
 	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	else \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp $*.gcda $*_temp.gcda ; \
 	fi; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
@@ -225,6 +227,9 @@ sandbox:
 	elif [ -e ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ] ; then \
 		rm ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
 		mv ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
+	else \
+		rm ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/$*_temp.gcda ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
 	fi; \
 
 %.stpklee: build sandbox
@@ -312,6 +317,8 @@ sandbox:
 	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
 	elif [ $* = "sha512sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
 	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	else \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp $*.gcda $*_temp.gcda ; \
 	fi; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
@@ -328,6 +335,9 @@ sandbox:
 	elif [ -e ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ] ; then \
 		rm ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
 		mv ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
+	else \
+		rm ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/$*_temp.gcda ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
 	fi; \
 
 clean:
