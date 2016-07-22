@@ -10,6 +10,8 @@ Each directory contains a suite of simple examples.
 
 - **basic**  - Basic examples.
 
+- **abstract** - Examples for testing `klee_abstract` API.
+
 - **hansen** - Examples from Hansen, Schachte, Sondergaard's paper *State Joining and Splitting for the Symbolic Execution of Binaries.* These test various aspects of symbolic execution.
 
 - **llbmc** - Examples from LLBMC 2013.1 distribution. The examples were modified on 17 November 2015 for running with KLEE, e.g., adding main method and replaced LLBMC API calls with the corresponding KLEE API calls. The LLBMC license information is included in the `license/LLBMC_LICENSE` file.
@@ -18,12 +20,14 @@ Each directory contains a suite of simple examples.
 
 - **llbmc-bench** - Examples of C/C++ programs, with the fix suggested by Jonas Wagner. There are several modifications from the original version at http://llbmc.org/files/downloads/llbmc-bench-1.1.tgz for running with KLEE, e.g., replaced LLBMC API calls with the corresponding KLEE API calls.
 
+- **join** - Examples for testing `klee_join` API.
+
 - **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
 
-Running examples other than *coreutils*
----------------------------------------
+Running examples other than *join* and *coreutils*
+--------------------------------------------------
 
-Instruction on running the examples in the `coreutils` directory can be found later in this document. To run other examples, first edit `Makefile.common` to set the right values for your environment. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
+Instruction on running the examples in the `join` and `coreutils` directories can be found later in this document. To run other examples, first edit `Makefile.common` to set the right values for your environment. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
 
 The Makefile in each directory will create KLEE output directories `<example-name>.klee` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for each test.
 
@@ -59,6 +63,23 @@ Sample usages:
 - To clean the directory:
 
   `make clean`
+
+Running *join* examples
+-----------------------
+
+The examples in the `join` subdirectory requires Tracer-X KLEE to be compiled with CLP(R) 1.2l support. The `Makefile` tests can be run in the following way:
+
+- For running Tracer-X KLEE with `join1.c` to test the ability of `-use-clpr` option to load multiple CLP(R) files.
+
+  `make test-use-clpr`
+
+- For running Tracer-X KLEE with `join2.c` to actually test the subsumption ability of Tracer-X KLEE with `klee_join`.
+
+  `make test-join`
+
+- For running Tracer-X KLEE with `count.c`, a larger example to test the subsumption ability of Tracer-X KLEE with `klee_join`.
+
+  `make test-count`
 
 Running *coreutils* examples
 ----------------------------

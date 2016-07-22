@@ -28,8 +28,7 @@ KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-
 #KLEE_COREUTILS_OPTIONS=--libc=uclibc --posix-runtime --optimize --output-tree --max-time=60.
 
 # From http://klee.github.io/docs/coreutils-experiments/
-# Some of these, e.g., [, have no .bc file: Why?
-TARGETS=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp cpslit cut date dd df dircolors dirname du echo env expand expr factor FALSE fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
+TARGETS=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut date dd df dircolors dirname du echo env expand expr factor false fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
 
 DEFAULT_ARGS=--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
 DD_ARGS=--sym-args 0 3 10 --sym-files 1 8 -sym-stdin 8 --sym-stdout
@@ -65,11 +64,15 @@ ${COREUTILS_GCOV_DIR}:
 		export PATH=${EXTRA_PATH}:$$PATH; \
 		unset C_INCLUDE_PATH; \
 		unset CPLUS_INCLUDE_PATH; \
-		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage"; \
+		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage" --enable-install-program=arch,hostname ; \
 		make; \
 		make -C src arch hostname \
 	)
 
+# In the following target:
+# * We build arch and hostname after make is executed, as it appears that
+#   make does not build them.
+# * We skip whole-program bitcode creation for groups as it is a script.
 ${COREUTILS_LLVM_DIR}:
 	@echo =================================================================
 	@echo Building Coreutils using LLVM ...
@@ -84,7 +87,7 @@ ${COREUTILS_LLVM_DIR}:
 		export CXX=${WHOLE_PROGRAM_LLVM}/wllvm++; \
 		unset C_INCLUDE_PATH; \
 		unset CPLUS_INCLUDE_PATH; \
-		../configure --disable-nls CFLAGS="-g"; \
+		../configure --disable-nls CFLAGS="-g" --enable-install-program=arch,hostname ; \
 		make ; \
 		rm -f src/*.gcov \
 	)
@@ -92,17 +95,15 @@ ${COREUTILS_LLVM_DIR}:
 	@echo Creating whole-program bitcode file for each utility ...
 	@echo =================================================================
 	( cd ${COREUTILS_LLVM_DIR}/src; \
-		EXEC_LIST=`ls *.o | sed s\/\\\\.o\\$\/\/`; \
+		EXEC_LIST=`find . -executable -type f | sed 's/.\/groups//'` ; \
 		for EXEC_FILE in $$EXEC_LIST ; do \
-			if [ -e $$EXEC_FILE ] ; then \
-				${WHOLE_PROGRAM_LLVM}/extract-bc $$EXEC_FILE ; \
-			fi ; \
+			${WHOLE_PROGRAM_LLVM}/extract-bc $$EXEC_FILE ; \
 		done \
 	)
 
+# The testing sandbox reconstructed here is from
+# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
 sandbox:
-	# The testing sandbox reconstructed here is from
-	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
 	@echo =================================================================
 	@echo Creating the sandbox ...
 	@echo =================================================================
@@ -141,20 +142,91 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
-	@echo Create SVGs from tree.dot files ...
+	@echo Create SVGs from tree.dot file if any ...
 	@echo =================================================================
-	dot -Tsvg ${CURDIR}/$@/tree.dot -o ${CURDIR}/$@/$*.svg
+	if [ -e ${CURDIR}/$@/tree.dot ]; then \
+		dot -Tsvg ${CURDIR}/$@/tree.dot -o ${CURDIR}/$@/$*.svg ; \
+	fi
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
+	if [ $* = "arch" ]; then \
+		GCOV_OBJECTS="uname uname-arch" ; \
+	elif [ $* = "[" ]; then \
+		GCOV_OBJECTS="lbracket" ; \
+	elif [ $* = "cp" ]; then \
+		GCOV_OBJECTS="cp copy cp-hash" ; \
+	elif [ $* = "dir" ]; then \
+		GCOV_OBJECTS="ls ls-dir" ; \
+	elif [ $* = "vdir" ]; then \
+		GCOV_OBJECTS="ls ls-vdir" ; \
+	elif [ $* = "ls" ]; then \
+		GCOV_OBJECTS="ls ls-ls" ; \
+	elif [ $* = "chown" ]; then \
+		GCOV_OBJECTS="chown chown-core" ; \
+	elif [ $* = "chgrp" ]; then \
+		GCOV_OBJECTS="chgrp chown-core" ; \
+	elif [ $* = "mv" ]; then \
+		GCOV_OBJECTS="mv remove copy cp-hash" ; \
+	elif [ $* = "rm" ]; then \
+		GCOV_OBJECTS="rm remove" ; \
+	elif [ $* = "uname" ]; then \
+		GCOV_OBJECTS="uname uname-uname" ; \
+	elif [ $* = "sha1sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha224sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha256sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha384sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha512sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	else \
+		GCOV_OBJECTS=$* ; \
+	fi ; \
+	if   [ $* = "arch" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
+	elif [ $* = "uname" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
+	elif [ $* = "dir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
+	elif [ $* = "vdir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
+	elif [ $* = "ls" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
+	elif [ $* = "sha1sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha224sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha256sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha384sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha512sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	fi; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
-	
+		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
+			gcov -o $$GCOV_OBJ $* ; \
+		done \
+	) > ${CURDIR}/$@/GcovLog.txt 2>&1
+	if [ -e ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ] ; then \
+		rm ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
+	elif [ -e ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ] ; then \
+		rm ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
+	elif [ -e ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ] ; then \
+		rm ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
+	fi; \
+
 %.stpklee: build sandbox
 	@echo =================================================================
 	@echo Running KLEE with STP on $* ...
@@ -179,15 +251,84 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIB} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --select-solver=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ;
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --select-solver=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ;
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
+	if [ $* = "arch" ]; then \
+		GCOV_OBJECTS="uname uname-arch" ; \
+	elif [ $* = "[" ]; then \
+		GCOV_OBJECTS="lbracket" ; \
+	elif [ $* = "cp" ]; then \
+		GCOV_OBJECTS="cp copy cp-hash" ; \
+	elif [ $* = "dir" ]; then \
+		GCOV_OBJECTS="ls ls-dir" ; \
+	elif [ $* = "vdir" ]; then \
+		GCOV_OBJECTS="ls ls-vdir" ; \
+	elif [ $* = "ls" ]; then \
+		GCOV_OBJECTS="ls ls-ls" ; \
+	elif [ $* = "chown" ]; then \
+		GCOV_OBJECTS="chown chown-core" ; \
+	elif [ $* = "chgrp" ]; then \
+		GCOV_OBJECTS="chgrp chown-core" ; \
+	elif [ $* = "mv" ]; then \
+		GCOV_OBJECTS="mv remove copy cp-hash" ; \
+	elif [ $* = "rm" ]; then \
+		GCOV_OBJECTS="rm remove" ; \
+	elif [ $* = "uname" ]; then \
+		GCOV_OBJECTS="uname uname-uname" ; \
+	elif [ $* = "sha1sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha224sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha256sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha384sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha512sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	else \
+		GCOV_OBJECTS=$* ; \
+	fi ; \
+	if   [ $* = "arch" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
+	elif [ $* = "uname" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
+	elif [ $* = "dir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
+	elif [ $* = "vdir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
+	elif [ $* = "ls" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
+	elif [ $* = "sha1sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha224sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha256sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha384sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	elif [ $* = "sha512sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
+	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
+	fi; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		gcov $* ) > ${CURDIR}/$@/GcovLog.txt 2>&1; \
+		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
+			gcov -o $$GCOV_OBJ $* ; \
+		done \
+	) > ${CURDIR}/$@/GcovLog.txt 2>&1
+	if [ -e ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ] ; then \
+		rm ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
+	elif [ -e ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ] ; then \
+		rm ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
+	elif [ -e ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ] ; then \
+		rm ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
+		mv ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
+	fi; \
 
 clean:
 	rm -rf ${KLEE_TARGETS} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
