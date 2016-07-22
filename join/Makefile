@@ -18,21 +18,21 @@ clean: standard-clean
 # For testing -use-clpr option in loading multiple CLP(R) files
 test-use-clpr: join1.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=dummy1.clpr -use-clpr=dummy2.clpr -output-dir=$@ $<
-	mv /tmp/clpr-* $@/
+	mv -f /tmp/clpr-* $@/clpr.log
 
 # For testing actual klee_join mechanism
 test-join: join2.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=dummy1.clpr -output-dir=$@ $<
-	mv /tmp/clpr-* $@/
+	mv -f /tmp/clpr-* $@/clpr.log
 
 # For testing the count example
 test-count: count.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=count.clpr -output-dir=$@ $<
-	mv /tmp/clpr-* $@/
+	mv -f /tmp/clpr-* $@/clpr.log
 
 # For testing the sum example
 test-sum: sum.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=sum.clpr -output-dir=$@ $<
-	mv /tmp/clpr-* $@/
+	mv -f /tmp/clpr-* $@/clpr.log
 
 
