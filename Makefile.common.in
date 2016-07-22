@@ -13,12 +13,12 @@ EXTRA_LD_LIBRARY_PATH=
 #EXTRA_LD_LIBRARY_PATH=${HOME}/software/clpr-1.2l/lib:${HOME}/software/stp-2.1.0/build/lib:${HOME}/z3/z3_install/lib:${HOME}/software/lib
 
 # Where KLEE resides in the system
-KLEE_HOME=/usr/local/lib/tracerx
+KLEE_HOME=@klee@
 #KLEE_HOME=${HOME}/git/tracerx/klee/Release+Asserts
 #KLEE_HOME=${HOME}/software/klee/Release+Asserts
 
 # Where whole-program-llvm resides in the system
-WHOLE_PROGRAM_LLVM=/usr/local/lib/whole-program-llvm
+WHOLE_PROGRAM_LLVM=@whole-program-llvm@
 #WHOLE_PROGRAM_LLVM=${HOME}/whole-program-llvm
 #WHOLE_PROGRAM_LLVM=${HOME}/software/whole-program-llvm
 
@@ -33,7 +33,7 @@ KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 CFLAGS=-g -I${KLEE_HOME}/include
 LDFLAGS=-L${KLEE_HOME}/lib -lkleeRuntest
 
-CC=clang
+CC=@CC@
 AS=${CC} -S
 KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
 
