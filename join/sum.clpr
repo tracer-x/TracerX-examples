@@ -1,4 +1,8 @@
-sum([], 0).
-sum([H|T], Sum) :-
-   sum(T, Rest),
-   Sum is H + Rest.
+% Sum/4 predicate specifying the behavior of "sum"
+%
+% Copyright 2016 National University of Singapore
+
+sum(_H, _A_Ptr, 0, 0).
+sum(H, A_Ptr, Index, Number + Rest) :-
+    mcc_select(H, A_Ptr + Index, Number),
+    sum(H, A_Ptr, Index - 1, Rest).

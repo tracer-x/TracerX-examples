@@ -10,7 +10,7 @@
 
 int main() {
   char a[SIZE];
-  unsigned i, count1, count2;
+  unsigned i, count1 = 0, count2 = 0;
 
   klee_make_symbolic(a, SIZE * sizeof(char), "a");
 
