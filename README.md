@@ -77,7 +77,7 @@ The examples in the `join` subdirectory requires Tracer-X KLEE to be compiled wi
 
   `make test-join`
 
-- For running Tracer-X KLEE with `count.c`, a larger example to test the subsumption ability of Tracer-X KLEE with `klee_join`.
+- Make `test-count` and `test-sum` targets are for running Tracer-X KLEE with larger examples to test the subsumption ability using `klee_join`. Run, e.g.:
 
   `make test-count`
 
