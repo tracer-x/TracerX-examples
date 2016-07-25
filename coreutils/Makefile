@@ -196,7 +196,7 @@ sandbox:
 			gcov -o $$GCOV_OBJ $* ; \
 		done \
 	) > ${CURDIR}/$@/GcovLog.txt 2>&1
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
 
 %.stpklee: build sandbox
 	@echo =================================================================
@@ -270,7 +270,7 @@ sandbox:
 			gcov -o $$GCOV_OBJ $* ; \
 		done \
 	) > ${CURDIR}/$@/GcovLog.txt 2>&1
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
 
 clean:
 	rm -rf ${KLEE_TARGETS} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
