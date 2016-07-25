@@ -189,48 +189,14 @@ sandbox:
 	else \
 		GCOV_OBJECTS=$* ; \
 	fi ; \
-	if   [ $* = "arch" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
-	elif [ $* = "uname" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
-	elif [ $* = "dir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
-	elif [ $* = "vdir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
-	elif [ $* = "ls" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
-	elif [ $* = "sha1sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha224sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha256sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha384sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha512sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	else \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp $*.gcda $*_temp.gcda ; \
-	fi; \
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
 		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
 			gcov -o $$GCOV_OBJ $* ; \
 		done \
 	) > ${CURDIR}/$@/GcovLog.txt 2>&1
-	if [ -e ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ] ; then \
-		rm ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
-	elif [ -e ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ] ; then \
-		rm ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
-	elif [ -e ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ] ; then \
-		rm ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
-	else \
-		rm ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/$*_temp.gcda ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
-	fi; \
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
 
 %.stpklee: build sandbox
 	@echo =================================================================
@@ -297,48 +263,14 @@ sandbox:
 	else \
 		GCOV_OBJECTS=$* ; \
 	fi ; \
-	if   [ $* = "arch" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
-	elif [ $* = "uname" ] && [ -e ${COREUTILS_GCOV_DIR}/src/uname.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp uname.gcda uname_temp.gcda ; \
-	elif [ $* = "dir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
-	elif [ $* = "vdir" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
-	elif [ $* = "ls" ] && [ -e ${COREUTILS_GCOV_DIR}/src/ls.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp ls.gcda ls_temp.gcda ; \
-	elif [ $* = "sha1sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha224sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha256sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha384sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	elif [ $* = "sha512sum" ] && [ -e ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ] ; then \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp md5sum.gcda md5sum_temp.gcda ; \
-	else \
-	     cd ${COREUTILS_GCOV_DIR}/src/; cp $*.gcda $*_temp.gcda ; \
-	fi; \
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
 	( cd ${COREUTILS_GCOV_DIR}/src ; \
 		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
 		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
 			gcov -o $$GCOV_OBJ $* ; \
 		done \
 	) > ${CURDIR}/$@/GcovLog.txt 2>&1
-	if [ -e ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ] ; then \
-		rm ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/uname_temp.gcda ${COREUTILS_GCOV_DIR}/src/uname.gcda ; \
-	elif [ -e ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ] ; then \
-		rm ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/ls_temp.gcda ${COREUTILS_GCOV_DIR}/src/ls.gcda ; \
-	elif [ -e ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ] ; then \
-		rm ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/md5sum_temp.gcda ${COREUTILS_GCOV_DIR}/src/md5sum.gcda ; \
-	else \
-		rm ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
-		mv ${COREUTILS_GCOV_DIR}/src/$*_temp.gcda ${COREUTILS_GCOV_DIR}/src/$*.gcda ; \
-	fi; \
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
 
 clean:
 	rm -rf ${KLEE_TARGETS} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
