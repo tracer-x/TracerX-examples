@@ -2,4 +2,4 @@
 %
 % Copyright 2016 National University of Singapore
 
-dummy1(X) :- X <= 3.
+dummy1(_H, X) :- X <= 3.
