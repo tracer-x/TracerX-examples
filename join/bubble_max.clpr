@@ -1,0 +1,13 @@
+% Count predicate for count example
+%
+% Copyright 2016 National University of Singapore
+
+bubble_max(H, A_Ptr, LastIdx) :-
+    bubble_max_aux(H, A_Ptr, A_Ptr + (LastIdx * 4)).
+
+bubble_max_aux(H, Ptr, Ptr) :- !.
+bubble_max_aux(H, Ptr, LastPtr) :-
+    Ptr < LastPtr, V <= W,
+    mcc_select(H, Ptr, V),
+    mcc_select(H, LastPtr, W),
+    bubble_max_aux(H, Ptr + 4, LastPtr).

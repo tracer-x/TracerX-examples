@@ -6,7 +6,7 @@
 # in this directory are small.
 EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2 -clpr-log
 
-JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum
+JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum test-bubble9
 
 default: ${JOIN_TARGETS}
 
@@ -14,6 +14,7 @@ include ../Makefile.common
 
 clean: standard-clean
 	rm -rf ${JOIN_TARGETS}
+	rm -f /tmp/clpr-*
 
 # For testing -use-clpr option in loading multiple CLP(R) files
 test-use-clpr: join1.bc
@@ -84,6 +85,15 @@ test-count: count.bc
 # For testing the sum example
 test-sum: sum.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=sum.clpr -output-dir=$@ $<
+	mv -f /tmp/clpr-* $@/clpr.log
+	# Create SVGs from *.dot files
+	for DOTFILE in $@/*.dot ; do \
+		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
+		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+	done
+
+test-bubble9: bubble9.bc
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=bubble_max.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
