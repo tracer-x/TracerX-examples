@@ -85,10 +85,7 @@ standard-clean:
 	if [ -e error.dat ]; then \
 		REFERENCE_ERROR=`grep $*.c error.dat | sed 's/^[a-z0-9_]*\.c\t\+//' - ` ; \
 		if [ x$$REFERENCE_ERROR != x ] ; then \
-			ACTUAL_ERROR=0 ; \
-			if [ -e $@/*.err ] ; then \
-				ACTUAL_ERROR=`ls $@/*.err | wc -l` ; \
-			fi ; \
+			ACTUAL_ERROR=`ls $@ | grep err | wc -l` ; \
 			if [ x$$REFERENCE_ERROR != x$$ACTUAL_ERROR ] ; then \
 				echo ERROR: Error count \($$ACTUAL_ERROR\) disagrees with reference data for $*.c \($$REFERENCE_ERROR\) ; \
 				exit 1 ; \
