@@ -23,6 +23,7 @@ branch.c		0
 bubble.c		0
 even.c			0
 interproc.c		0
+local.c			0
 loop_safe1.c		0
 loop_safe2.c		0
 loop_unsafe1.c		1
