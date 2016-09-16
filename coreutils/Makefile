@@ -257,9 +257,6 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	if [ ${KLEE_EXP1} = "true" ]; then \
-		OPT="-select-solver=stps" ; \
-	fi ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
