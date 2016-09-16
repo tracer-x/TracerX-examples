@@ -10,8 +10,7 @@ EXTRA_OPTIONS=-interpolation-stat
 COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
-KLEE_EXP1=
-KLEE_EXP2=
+
 BASH=/bin/bash
 
 # From http://klee.github.io/docs/coreutils-experiments/
@@ -178,9 +177,6 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	if [ ${KLEE_EXP1} = "true" ]; then \
-		OPT="-select-solver=stps" ; \
-	fi ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_BASIC_OPTIONS} ${KLEE_COREUTILS_MORE_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
