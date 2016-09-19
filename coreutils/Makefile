@@ -393,3 +393,13 @@ clean:
 realclean: clean
 	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} 
 
+exp-201609:
+	for program in cut expand fmt fold join pr printf sort sum tail tsort uniq wc factor seq; \
+	do \
+		make $$program.klee1;    \
+		make $$program.klee2;    \
+		make $$program.tracerx1; \
+		make $$program.tracerx2; \
+ 		make $$program.tracerx3; \
+		make $$program.tracerx4; \
+	done
