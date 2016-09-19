@@ -136,24 +136,24 @@ sandbox:
 	)
 
 %.klee1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -select-solver=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.kleetest
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -select-solver=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.klee2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.kleetest
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.kleetest
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.kleetest
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.kleetest
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.kleetest
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
-%.kleetest: build sandbox
+%.klee-exp-201609: build sandbox
 	@echo =================================================================
 	@echo Running Tracer-X on $* ...
 	@echo =================================================================
