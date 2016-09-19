@@ -10,6 +10,7 @@ EXTRA_OPTIONS=-interpolation-stat
 COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
+COREUTILS_SRC=${COREUTILS_DIR}/src
 
 BASH=/bin/bash
 
@@ -232,6 +233,10 @@ sandbox:
 		done \
 	) > ${OUTPUT_DIR}/GcovLog.txt 2>&1
 	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
+	@echo =================================================================
+	@echo Measure number of lines of code by using SLOCCount...
+	@echo =================================================================
+	sloccount ${COREUTILS_SRC}/$*.c > ${OUTPUT_DIR}/SLocCountLog.txt 2>&1
 
 %.klee: build sandbox
 	@echo =================================================================
