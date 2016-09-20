@@ -10,6 +10,7 @@ EXTRA_OPTIONS=-interpolation-stat
 COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
+COREUTILS_SRC=${COREUTILS_DIR}/src
 
 BASH=/bin/bash
 
@@ -22,6 +23,16 @@ KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-
 	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
 	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
 	--randomize-fork --search=random-path --search=nurs:covnew \
+	--use-batching-search --batch-instructions=10000
+
+KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
+	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
+	--use-cex-cache --libc=uclibc --posix-runtime \
+	--allow-external-sym-calls --only-output-states-covering-new \
+	--max-sym-array-size=4096 --max-instruction-time=30. \
+	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
+	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
+	--randomize-fork \
 	--use-batching-search --batch-instructions=10000
 
 # Comment this out if the above options are preferred
@@ -43,6 +54,13 @@ PRINTF_ARGS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
 KLEE_TARGETS=$(TARGETS:=.klee)
 
 KLEESTP_TARGETS=$(TARGETS:=.stpklee)
+
+KLEE_TARGETS1=$(TARGETS:=.klee1)
+KLEE_TARGETS2=$(TARGETS:=.klee2)
+TRACERX_TARGETS1=$(TARGETS:=.tracerx1)
+TRACERX_TARGETS2=$(TARGETS:=.tracerx2)
+TRACERX_TARGETS3=$(TARGETS:=.tracerx3)
+TRACERX_TARGETS4=$(TARGETS:=.tracerx4)
 
 # The first target (default)
 all: ${KLEE_TARGETS} ${KLEESTP_TARGETS}
@@ -117,6 +135,110 @@ sandbox:
 		touch d ; \
 		mkdir e \
 	)
+
+%.klee1 : 
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -select-solver=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+%.klee2 : 
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+%.tracerx1 : 
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+%.tracerx2 : 
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+%.tracerx3 : 
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+%.tracerx4 : 
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+# This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
+# can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
+%.klee-exp-201609: build sandbox
+	@echo =================================================================
+	@echo Running Tracer-X on $* ...
+	@echo =================================================================
+	if [ $* = "dd" ]; then \
+		PROGRAM_ARGS="${DD_ARGS}" ; \
+	elif [ $* = "dircolors" ]; then \
+		PROGRAM_ARGS="${DIRCOLORS_ARGS}" ; \
+	elif [ $* = "echo" ]; then \
+		PROGRAM_ARGS="${ECHO_ARGS}" ; \
+	elif [ $* = "expr" ]; then \
+		PROGRAM_ARGS="${EXPR_ARGS}" ; \
+	elif [ $* = "mknod" ]; then \
+		PROGRAM_ARGS="${MKNOD_ARGS}" ; \
+	elif [ $* = "od" ]; then \
+		PROGRAM_ARGS="${OD_ARGS}" ; \
+	elif [ $* = "pathchk" ]; then \
+		PROGRAM_ARGS="${PATHCHK_ARGS}" ; \
+	elif [ $* = "printf" ]; then \
+		PROGRAM_ARGS="${PRINTF_ARGS}" ; \
+	else \
+		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
+	fi ; \
+	rm -rf $@; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_BASIC_OPTIONS} ${KLEE_COREUTILS_MORE_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	# Delete the sandbox
+	rm -rf sandbox sandbox.temps
+	@echo =================================================================
+	@echo Create SVGs from tree.dot file if any ...
+	@echo =================================================================
+	if [ -e ${OUTPUT_DIR}/tree.dot ]; then \
+		dot -Tsvg ${OUTPUT_DIR}/tree.dot -o ${OUTPUT_DIR}/$*.svg ; \
+	fi
+	@echo =================================================================
+	@echo Running generated tests to compute coverage ...
+	@echo =================================================================
+	if [ $* = "arch" ]; then \
+		GCOV_OBJECTS="uname uname-arch" ; \
+	elif [ $* = "[" ]; then \
+		GCOV_OBJECTS="lbracket" ; \
+	elif [ $* = "cp" ]; then \
+		GCOV_OBJECTS="cp copy cp-hash" ; \
+	elif [ $* = "dir" ]; then \
+		GCOV_OBJECTS="ls ls-dir" ; \
+	elif [ $* = "vdir" ]; then \
+		GCOV_OBJECTS="ls ls-vdir" ; \
+	elif [ $* = "ls" ]; then \
+		GCOV_OBJECTS="ls ls-ls" ; \
+	elif [ $* = "chown" ]; then \
+		GCOV_OBJECTS="chown chown-core" ; \
+	elif [ $* = "chgrp" ]; then \
+		GCOV_OBJECTS="chgrp chown-core" ; \
+	elif [ $* = "mv" ]; then \
+		GCOV_OBJECTS="mv remove copy cp-hash" ; \
+	elif [ $* = "rm" ]; then \
+		GCOV_OBJECTS="rm remove" ; \
+	elif [ $* = "uname" ]; then \
+		GCOV_OBJECTS="uname uname-uname" ; \
+	elif [ $* = "sha1sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha224sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha256sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha384sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	elif [ $* = "sha512sum" ]; then \
+		GCOV_OBJECTS="md5sum" ; \
+	else \
+		GCOV_OBJECTS=$* ; \
+	fi ; \
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
+	( cd ${COREUTILS_GCOV_DIR}/src ; \
+		${KLEE_REPLAY} $* ${OUTPUT_DIR}/*.ktest ; \
+		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
+			gcov -o $$GCOV_OBJ $* ; \
+		done \
+	) > ${OUTPUT_DIR}/GcovLog.txt 2>&1
+	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
+	@echo =================================================================
+	@echo Measure number of lines of code by using SLOCCount...
+	@echo =================================================================
+	sloccount ${COREUTILS_SRC}/$*.c > ${OUTPUT_DIR}/SLocCountLog.txt 2>&1
 
 %.klee: build sandbox
 	@echo =================================================================
@@ -273,8 +395,18 @@ sandbox:
 	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
 
 clean:
-	rm -rf ${KLEE_TARGETS} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
+	rm -rf ${KLEE_TARGETS} ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} 
 
+exp-201609:
+	for program in cut expand fmt fold join pr printf sort sum tail tsort uniq wc factor seq; \
+	do \
+		make $$program.klee1;    \
+		make $$program.klee2;    \
+		make $$program.tracerx1; \
+		make $$program.tracerx2; \
+ 		make $$program.tracerx3; \
+		make $$program.tracerx4; \
+	done
