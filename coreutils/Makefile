@@ -154,6 +154,8 @@ sandbox:
 %.tracerx4 : 
 	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
+# This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
+# can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
 %.klee-exp-201609: build sandbox
 	@echo =================================================================
 	@echo Running Tracer-X on $* ...
