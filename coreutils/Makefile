@@ -410,3 +410,48 @@ exp-201609:
  		make $$program.tracerx3; \
 		make $$program.tracerx4; \
 	done
+
+# This target is used for collecting data from experiment exp-201609 result into log-exp-201609.csv file.
+csv-exp-201609:
+	rm -f log-exp-201609.csv
+	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC" >> log-exp-201609.csv; \
+	for program in cut expand fmt fold join pr printf sort sum tail tsort uniq wc factor seq; \
+	do \
+		for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
+		do \
+			if [ -d $$program$$ext ]; then \
+				printf "$$program$$ext," >> log-exp-201609.csv; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "average branching depth of subsumption paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "average instructions of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "average instructions of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				if [ -e $$program$$ext/GcovLog.txt ]; then \
+					grep -A1 -P "/$$program.c" ${CURDIR}/$$program$$ext/GcovLog.txt | grep "Lines executed" | sed -E  's/(.*):(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				fi ; \
+				printf ", " >> log-exp-201609.csv; \
+				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
+					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				fi ; \
+				printf "\n" >> log-exp-201609.csv; \
+			fi ; \
+		done ; \
+	done
+
