@@ -414,10 +414,10 @@ exp-201609:
 # This target is used for collecting data from experiment exp-201609 result into log-exp-201609.csv file.
 csv-exp-201609:
 	rm -f log-exp-201609.csv
-	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC" >> log-exp-201609.csv; \
-	for program in cut expand fmt fold join pr printf sort sum tail tsort uniq wc factor seq; \
+	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check" >> log-exp-201609.csv; \
+	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
-		for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
+		for program in cut expand fmt fold join pr printf sort sum tail tsort uniq wc factor seq; \
 		do \
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> log-exp-201609.csv; \
@@ -430,6 +430,8 @@ csv-exp-201609:
 				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
 				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "KLEE: done:     program exit paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
 				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
@@ -450,6 +452,16 @@ csv-exp-201609:
 				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
 					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				fi ; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\2/' | tr -d ')\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "Average solver calls per subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf "\n" >> log-exp-201609.csv; \
 			fi ; \
 		done ; \
