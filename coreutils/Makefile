@@ -180,7 +180,7 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} ${KLEE_COREUTILS_BASIC_OPTIONS} ${KLEE_COREUTILS_MORE_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} ${KLEE_COREUTILS_BASIC_OPTIONS} ${KLEE_COREUTILS_MORE_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -401,7 +401,7 @@ realclean: clean
 	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} 
 
 exp-201609:
-	for program in cut expand fmt fold join pr printf sort sum tail tsort uniq wc factor seq; \
+	for program in cut expand join sum tail tsort uniq wc factor seq comm dirname head pathchk split; \
 	do \
 		make $$program.klee1;    \
 		make $$program.klee2;    \
@@ -417,7 +417,7 @@ csv-exp-201609:
 	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check" >> log-exp-201609.csv; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
-		for program in cut expand fmt fold join pr printf sort sum tail tsort uniq wc factor seq; \
+		for program in cut expand join sum tail tsort uniq wc factor seq comm dirname head pathchk split; \
 		do \
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> log-exp-201609.csv; \
