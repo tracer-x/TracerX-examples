@@ -435,7 +435,7 @@ csv-exp-201609:
 				printf ", " >> log-exp-201609.csv; \
 				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
-				grep "average branching depth of subsumption paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				grep "average branching depth of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
 				grep "average instructions of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
