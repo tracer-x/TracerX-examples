@@ -414,7 +414,7 @@ exp-201609:
 # This target is used for collecting data from experiment exp-201609 result into log-exp-201609.csv file.
 csv-exp-201609:
 	rm -f log-exp-201609.csv
-	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check" >> log-exp-201609.csv; \
+	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of solver calls,Number of subsumption checks" >> log-exp-201609.csv; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in cut expand join sum tail tsort uniq wc factor seq comm dirname head pathchk split; \
@@ -462,6 +462,10 @@ csv-exp-201609:
 				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
 				grep "Average solver calls per subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "KLEE: done:     Number of solver calls" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\)(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
+				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf "\n" >> log-exp-201609.csv; \
 			fi ; \
 		done ; \
