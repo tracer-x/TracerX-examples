@@ -450,7 +450,7 @@ csv-exp-201609:
 				fi ; \
 				printf ", " >> log-exp-201609.csv; \
 				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
-					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
+					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> log-exp-201609.csv; \
 				fi ; \
 				printf ", " >> log-exp-201609.csv; \
 				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
