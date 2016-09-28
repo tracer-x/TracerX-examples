@@ -67,21 +67,21 @@ clean: standard-clean
 
 .bc.echo0:
 	rm -rf $@ klee-*
-	time ${KLEE} -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls $< --sym-args 0 2 4
+	time ${KLEE} -solver-backend=z3 -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls $< --sym-args 0 2 4
 	touch $@
 
 .bc.tr0:
 	rm -rf $@ klee-*
-	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -output-tree $< --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -output-tree $< --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1
 	rm -rf klee-*
-	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 2 --sym-arg 2 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 2 --sym-arg 2 --sym-files 2 2000 --max-fail 1
 	rm -rf klee-*
-	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-files 2 2000 --max-fail 1
 	touch $@
 
 .bc.bubble0:
 	rm -rf $@ klee-*
-	time ${KLEE} -max-time=120 -interpolation-stat --only-output-states-covering-new -output-tree -output-dir=$@ $<
+	time ${KLEE} -solver-backend=z3 -max-time=120 -interpolation-stat --only-output-states-covering-new -output-tree -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 	# Create SVGs from *.dot files
