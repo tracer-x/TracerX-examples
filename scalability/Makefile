@@ -92,22 +92,22 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="-select-solver=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-solver-backend=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.klee2 : 
-	KLEE_OPTIONS="-no-interpolation -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-no-interpolation -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.tracerx1 : 
-	KLEE_OPTIONS="--search=dfs -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.tracerx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.tracerx3 : 
-	KLEE_OPTIONS="-max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx4 : 
-	KLEE_OPTIONS="-max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
 # can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.

@@ -60,7 +60,7 @@ standard-clean:
 
 # For running KLEE with Z3 and interpolation
 .bc.klee:
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 	# Create SVGs from *.dot files
@@ -94,7 +94,7 @@ standard-clean:
 	fi
 # For running KLEE with STP without interpolation
 .bc.stpklee:
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -select-solver=stp -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=stp -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 	# Create SVGs from .dot files

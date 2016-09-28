@@ -135,22 +135,22 @@ sandbox:
 	)
 
 %.klee1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -select-solver=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.klee2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
 # can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
@@ -262,7 +262,7 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_OPTIONS} -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -342,7 +342,7 @@ sandbox:
 		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_OPTIONS} --select-solver=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ;
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_OPTIONS} -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ;
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
