@@ -67,21 +67,21 @@ clean: standard-clean
 
 .bc.echo0:
 	rm -rf $@ klee-*
-	time ${KLEE} -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls $< --sym-args 0 2 4
+	time ${KLEE} -solver-backend=z3 -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls $< --sym-args 0 2 4
 	touch $@
 
 .bc.tr0:
 	rm -rf $@ klee-*
-	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -output-tree $< --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls -output-tree $< --sym-arg 1 --sym-arg 1 --sym-stdin 2000 --max-fail 1
 	rm -rf klee-*
-	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 2 --sym-arg 2 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1
 	rm -rf klee-*
-	time ${KLEE} --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-files 2 2000 --max-fail 1
+	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-stdin 2000 --max-fail 1
 	touch $@
 
 .bc.bubble0:
 	rm -rf $@ klee-*
-	time ${KLEE} -max-time=120 -interpolation-stat --only-output-states-covering-new -output-tree -output-dir=$@ $<
+	time ${KLEE} -solver-backend=z3 -max-time=120 -interpolation-stat --only-output-states-covering-new -output-tree -output-dir=$@ $<
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 	# Create SVGs from *.dot files
@@ -92,22 +92,22 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="-select-solver=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-solver-backend=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.klee2 : 
-	KLEE_OPTIONS="-no-interpolation -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-no-interpolation -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.tracerx1 : 
-	KLEE_OPTIONS="--search=dfs -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.tracerx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 	
 %.tracerx3 : 
-	KLEE_OPTIONS="-max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx4 : 
-	KLEE_OPTIONS="-max-subsumption-failure=3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
 # can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
