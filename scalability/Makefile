@@ -200,7 +200,7 @@ csv-exp-201609:
 	llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
 	rm -rf $*.bc ; \
 
-# This target is used for collecting data from coreutils LLBMC experiment into log-llbmc file.
+# This target is used for collecting data from LLBMC experiment into log-llbmc file.
 csv-exp-201609-llbmc:
 	rm -f ${LLBMC_OUTPUT_DIR}/log-llbmc.csv ; \
 	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
