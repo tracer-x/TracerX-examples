@@ -470,7 +470,7 @@ csv-exp-201609:
 		done ; \
 	done
 
-# This target is used for running coreutils experiment with LLBMC. #Arguments in PROGRAM_ARGS have lengths matching that of KLEE runs.
+# This target is used for running coreutils experiment with LLBMC. #Arguments in PROGRAM_ARGS have lengths matching that of KLEE runs. For example, Klee runs with --sym-args 0 1 10 --sym-args 0 2 2 which defined in DEFAULT_ARGS, means coreutils programs are triggered with 2 short options (length 2) and 1 long option (length 10). This arguments example in KLEE run is translated into "xx xx xxxxxxxxxx".
 %.llbmc :
 	if [ $* = "dd" ]; then \
 		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
