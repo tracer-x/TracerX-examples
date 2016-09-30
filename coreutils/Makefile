@@ -470,7 +470,7 @@ csv-exp-201609:
 		done ; \
 	done
 
-# This target is used for running coreutils experiment with LLBMC.
+# This target is used for running coreutils experiment with LLBMC. #Arguments in PROGRAM_ARGS have lengths matching that of KLEE runs.
 %.llbmc :
 	if [ $* = "dd" ]; then \
 		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
@@ -499,9 +499,9 @@ csv-exp-201609:
 	rm -rf ${COREUTILS_SRC}/$*.bc ; \
 
 # This target is used for collecting data from coreutils LLBMC experiment into log-llbmc file.
-llbmc-csv:
+csv-exp-201609-llbmc:
 	rm -f ${LLBMC_OUTPUT_DIR}/log-llbmc.csv ; \
-	echo "Program, Time of Performing transformations on LLVM IR,Time of Performing logical encoding,Time of Performing formula transformations,Time of Running SMT solver (STP with MiniSat), Total Time,Error Status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
 	for program in ${TARGETS} ; \
 	do \
 		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
