@@ -101,4 +101,14 @@ test-bubble9: bubble9.bc
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
 	done
 
+test-png_sig_cmp: png_sig_cmp.bc
+	# In the future we need to add -use-clpr= option here
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -output-dir=$@ $<
+	mv -f /tmp/clpr-* $@/clpr.log
+	# Create SVGs from *.dot files
+	for DOTFILE in $@/*.dot ; do \
+		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
+		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+	done
+
 
