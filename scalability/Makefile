@@ -16,6 +16,8 @@ TRACERX_TARGETS3=Regexp.tracerx3 RegexpSize10.tracerx3 RegexpSize15.tracerx3 Reg
 TRACERX_TARGETS4=Regexp.tracerx4 RegexpSize10.tracerx4 RegexpSize15.tracerx4 RegexpSize8.tracerx4 RegexpSize9.tracerx4 bubble12.tracerx4 bubble12_unsafe.tracerx4 bubble9.tracerx4 bubble9_unsafe.tracerx4
 
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
+LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
+LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
 ECHO_TARGETS=echo.echo0 echo_nosyscall.echo0 echo_small.echo0
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
@@ -188,4 +190,36 @@ csv-exp-201609:
 			fi ; \
 		done ; \
 	done
+
+# This target is used for running experiment with LLBMC.
+%.llbmc :
+	if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
+		mkdir ${LLBMC_OUTPUT_DIR}; \
+	fi ; \
+	${CC} -emit-llvm -c ${CFLAGS} $*.c -o $*.bc ; \
+	llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+	rm -rf $*.bc ; \
+
+# This target is used for collecting data from LLBMC experiment into log-llbmc file.
+csv-exp-201609-llbmc:
+	rm -f ${LLBMC_OUTPUT_DIR}/log-llbmc.csv ; \
+	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+	for program in Regexp RegexpSize10 RegexpSize15 RegexpSize8 RegexpSize9 bubble12 bubble12_unsafe bubble9 bubble9_unsafe ; \
+	do \
+		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
+			printf "$$program," >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Performing transformations on LLVM IR" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Performing logical encoding" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Performing formula transformations" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Running SMT solver (STP with MiniSat)" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			awk '/[DONE]/{i++}i==5' ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf "\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+		fi ; \
+	done ; \
 
