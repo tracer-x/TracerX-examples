@@ -4,23 +4,17 @@
 
 # Extra executable path to include. This is used for building
 # coreutils 6.10 as older utilites may be needed, such as Texinfo 4.13.
-EXTRA_PATH=
-#EXTRA_PATH=${HOME}/software/alt/bin
+EXTRA_PATH=@EXTRA_PATH@
 
 # Extra libraries that may be needed for running KLEE to be added to
 # LD_LIBRARY_PATH environment variable, e.g., the path of libz3.so
-EXTRA_LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib/z3/lib
-#EXTRA_LD_LIBRARY_PATH=${HOME}/software/clpr-1.2l/lib:${HOME}/software/stp-2.1.0/build/lib:${HOME}/z3/z3_install/lib:${HOME}/software/lib
+EXTRA_LD_LIBRARY_PATH=@EXTRA_LD_LIBRARY_PATH@
 
 # Where KLEE resides in the system
-KLEE_HOME=@klee@
-#KLEE_HOME=${HOME}/git/tracerx/klee/Release+Asserts
-#KLEE_HOME=${HOME}/software/klee/Release+Asserts
+KLEE_HOME=@KLEE@
 
 # Where whole-program-llvm resides in the system
-WHOLE_PROGRAM_LLVM=@whole-program-llvm@
-#WHOLE_PROGRAM_LLVM=${HOME}/whole-program-llvm
-#WHOLE_PROGRAM_LLVM=${HOME}/software/whole-program-llvm
+WHOLE_PROGRAM_LLVM=@WLLVM@
 
 # In the following, please select where klee and its various tools are
 # located in your system
