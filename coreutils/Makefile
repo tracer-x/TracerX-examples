@@ -9,6 +9,9 @@ COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
 COREUTILS_SRC=${COREUTILS_DIR}/src
+CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_SRC} -I/${COREUTILS_DIR}/lib
+LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
+LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
 BASH=/bin/bash
 
@@ -467,3 +470,53 @@ csv-exp-201609:
 		done ; \
 	done
 
+# This target is used for running coreutils experiment with LLBMC. #Arguments in PROGRAM_ARGS have lengths matching that of KLEE runs. For example, Klee runs with --sym-args 0 1 10 --sym-args 0 2 2 which defined in DEFAULT_ARGS, means coreutils programs are triggered with 2 short options (length 2) and 1 long option (length 10). This arguments example in KLEE run is translated into "xx xx xxxxxxxxxx".
+%.llbmc :
+	if [ $* = "dd" ]; then \
+		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+	elif [ $* = "dircolors" ]; then \
+		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+	elif [ $* = "echo" ]; then \
+		PROGRAM_ARGS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
+	elif [ $* = "expr" ]; then \
+		PROGRAM_ARGS="xxx xxx xxxxxxxxxx" ; \
+	elif [ $* = "mknod" ]; then \
+		PROGRAM_ARGS="xxx xxx xxxxxxxxxx" ; \
+	elif [ $* = "od" ]; then \
+		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+	elif [ $* = "pathchk" ]; then \
+		PROGRAM_ARGS="x x" ; \
+	elif [ $* = "printf" ]; then \
+		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+	else \
+		PROGRAM_ARGS="xx xx xxxxxxxxxx" ; \
+	fi ; \
+	if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
+		mkdir ${LLBMC_OUTPUT_DIR}; \
+	fi ; \
+	${CC} -emit-llvm -c ${CFLAGS_LLBMC_COREUTILS} ${COREUTILS_SRC}/$*.c -o ${COREUTILS_SRC}/$*.bc ; \
+	llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_ARGS" ${COREUTILS_SRC}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+	rm -rf ${COREUTILS_SRC}/$*.bc ; \
+
+# This target is used for collecting data from coreutils LLBMC experiment into log-llbmc file.
+csv-exp-201609-llbmc:
+	rm -f ${LLBMC_OUTPUT_DIR}/log-llbmc.csv ; \
+	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+	for program in ${TARGETS} ; \
+	do \
+		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
+			printf "$$program," >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Performing transformations on LLVM IR" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Performing logical encoding" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Performing formula transformations" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Running SMT solver (STP with MiniSat)" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			awk '/[DONE]/{i++}i==5' ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf "\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+		fi ; \
+	done ; \
