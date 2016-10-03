@@ -495,6 +495,7 @@ csv-exp-201609:
 		mkdir ${LLBMC_OUTPUT_DIR}; \
 	fi ; \
 	${CC} -emit-llvm -c ${CFLAGS_LLBMC_COREUTILS} ${COREUTILS_SRC}/$*.c -o ${COREUTILS_SRC}/$*.bc ; \
+	export PATH=${EXTRA_PATH}:$$PATH ; \
 	llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_ARGS" ${COREUTILS_SRC}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
 	rm -rf ${COREUTILS_SRC}/$*.bc ; \
 
