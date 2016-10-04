@@ -94,22 +94,22 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="-solver-backend=stp -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
-	
+	KLEE_OPTIONS="-solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
 %.klee2 : 
-	KLEE_OPTIONS="-no-interpolation -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
-	
+	KLEE_OPTIONS="-no-interpolation -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
 %.tracerx1 : 
-	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
-	
+	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
 %.tracerx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
-	
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
 %.tracerx3 : 
-	KLEE_OPTIONS="-solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx4 : 
-	KLEE_OPTIONS="-max-subsumption-failure=3 -solver-backend=z3 -max-time=7200" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="-max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
 # can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
@@ -133,14 +133,14 @@ exp-201609:
 		make $$program.klee2;    \
 		make $$program.tracerx1; \
 		make $$program.tracerx2; \
- 		make $$program.tracerx3; \
+		make $$program.tracerx3; \
 		make $$program.tracerx4; \
 	done
 
 # This target is used for collecting data from experiment exp-201609 result into log-exp-201609.csv file.
 csv-exp-201609:
 	rm -f log-exp-201609.csv
-	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks" >> log-exp-201609.csv; \
+	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,Untraversed path count" >> log-exp-201609.csv; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in Regexp RegexpSize10 RegexpSize15 RegexpSize8 RegexpSize9 bubble12 bubble12_unsafe bubble9 bubble9_unsafe; \
@@ -186,8 +186,31 @@ csv-exp-201609:
 				grep "Average solver calls per subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
 				printf ", " >> log-exp-201609.csv; \
 				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf "\n" >> log-exp-201609.csv; \
+				printf ", " >> log-exp-201609.csv; \
 			fi ; \
+			if [ $$ext == .tracerx1 -o $$ext == .tracerx2 -o $$ext == .tracerx3 -o $$ext == .tracerx4 ] ;  then \
+				UNTRAVERSEDKLEEPATH_COUNT=0 ; \
+				for PATHFILE in $$program$$ext/*.path ; \
+				do \
+					LENTRACERPATH=`cat $$PATHFILE | wc -l` ; \
+					for KLEEPATHFILE in $$program.klee1/*.path ; \
+					do \
+						LENKLEEPATH=`cat $$KLEEPATHFILE | wc -l` ; \
+						if [ "$$LENTRACERPATH" -lt "$$LENKLEEPATH" ] ; \
+						then \
+							rm -f $$KLEEPATHFILE.short ; \
+							head --lines=$$LENTRACERPATH $$KLEEPATHFILE > $$KLEEPATHFILE.short ; \
+							diff $$PATHFILE $$KLEEPATHFILE.short > /dev/null ; \
+							if [ "$$?" -eq "0" ] ; \
+							then \
+								UNTRAVERSEDKLEEPATH_COUNT=$$((UNTRAVERSEDKLEEPATH_COUNT+1)) ; \
+							fi ; \
+						fi ; \
+					done ; \
+				done ; \
+				printf $$UNTRAVERSEDKLEEPATH_COUNT >> log-exp-201609.csv; \
+			fi ; \
+			printf "\n" >> log-exp-201609.csv; \
 		done ; \
 	done
 
