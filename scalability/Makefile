@@ -8,12 +8,18 @@ EXTRA_OPTIONS=-interpolation-stat
 # is to be run with LLBMC
 TARGETS=$(subst bubble_llbmc.klee,,$(patsubst %.c,%.klee,$(wildcard *.c)))
 
-KLEE_TARGETS1=Regexp.klee1 RegexpSize10.klee1 RegexpSize15.klee1 RegexpSize8.klee1 RegexpSize9.klee1 bubble12.klee1 bubble12_unsafe.klee1 bubble9.klee1 bubble9_unsafe.klee1
-KLEE_TARGETS2=Regexp.klee2 RegexpSize10.klee2 RegexpSize15.klee2 RegexpSize8.klee2 RegexpSize9.klee2 bubble12.klee2 bubble12_unsafe.klee2 bubble9.klee2 bubble9_unsafe.klee2
-TRACERX_TARGETS1=Regexp.tracerx1 RegexpSize10.tracerx1 RegexpSize15.tracerx1 RegexpSize8.tracerx1 RegexpSize9.tracerx1 bubble12.tracerx1 bubble12_unsafe.tracerx1 bubble9.tracerx1 bubble9_unsafe.tracerx1
-TRACERX_TARGETS2=Regexp.tracerx2 RegexpSize10.tracerx2 RegexpSize15.tracerx2 RegexpSize8.tracerx2 RegexpSize9.tracerx2 bubble12.tracerx2 bubble12_unsafe.tracerx2 bubble9.tracerx2 bubble9_unsafe.tracerx2
-TRACERX_TARGETS3=Regexp.tracerx3 RegexpSize10.tracerx3 RegexpSize15.tracerx3 RegexpSize8.tracerx3 RegexpSize9.tracerx3 bubble12.tracerx3 bubble12_unsafe.tracerx3 bubble9.tracerx3 bubble9_unsafe.tracerx3
-TRACERX_TARGETS4=Regexp.tracerx4 RegexpSize10.tracerx4 RegexpSize15.tracerx4 RegexpSize8.tracerx4 RegexpSize9.tracerx4 bubble12.tracerx4 bubble12_unsafe.tracerx4 bubble9.tracerx4 bubble9_unsafe.tracerx4
+EXP201609_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10 bubble9 bubble12
+
+EXP201609_CSV=exp-201609.csv
+
+KLEE_TARGETS1=$(EXP201609_SET:=.klee1)
+KLEE_TARGETS2=$(EXP201609_SET:=.klee2)
+KLEE_TARGETS3=$(EXP201609_SET:=.klee3)
+KLEE_TARGETS4=$(EXP201609_SET:=.klee4)
+TRACERX_TARGETS1=$(EXP201609_SET:=.tracerx1)
+TRACERX_TARGETS2=$(EXP201609_SET:=.tracerx2)
+TRACERX_TARGETS3=$(EXP201609_SET:=.tracerx3)
+TRACERX_TARGETS4=$(EXP201609_SET:=.tracerx4)
 
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
@@ -63,7 +69,7 @@ bubble: ${BUBBLE_TARGETS}
 
 
 clean: standard-clean
-	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4}
+	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXP201609_CSV}
 
 .SUFFIXES: .tr0 .echo0 .bubble0
 
@@ -94,10 +100,16 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="-solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=dfs -solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.klee2 : 
-	KLEE_OPTIONS="-no-interpolation -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=dfs -no-interpolation -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+%.klee3 : 
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+
+%.klee4 : 
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx1 : 
 	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
@@ -106,13 +118,13 @@ clean: standard-clean
 	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx3 : 
-	KLEE_OPTIONS="-solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx4 : 
-	KLEE_OPTIONS="-max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
-# can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
+# can be seen in %.klee1, %.klee2, %.klee3, %.klee4, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
 %.klee-exp-201609: 
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	if [ $* = "Regexp" ] || [ $* = "RegexpSize10" ] || [ $* = "RegexpSize15" ] || [ $* = "RegexpSize8" ] || [ $* = "RegexpSize9" ] ; then \
@@ -131,68 +143,76 @@ exp-201609:
 	do \
 		make $$program.klee1;    \
 		make $$program.klee2;    \
+		make $$program.klee3;    \
+		make $$program.klee4;    \
 		make $$program.tracerx1; \
 		make $$program.tracerx2; \
 		make $$program.tracerx3; \
 		make $$program.tracerx4; \
 	done
 
-# This target is used for collecting data from experiment exp-201609 result into log-exp-201609.csv file.
+# This target is used for collecting data from experiment exp-201609 result into exp-201609.csv file.
 csv-exp-201609:
-	rm -f log-exp-201609.csv
-	echo "Directory,Time, #instructions,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,Untraversed path count" >> log-exp-201609.csv; \
-	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
+	rm -f ${EXP201609_CSV}
+	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,Untraversed path count,Uncovered path count" >> ${EXP201609_CSV}; \
+	for ext in .klee1 .klee2 .klee3 .klee4 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
-		for program in Regexp RegexpSize10 RegexpSize15 RegexpSize8 RegexpSize9 bubble12 bubble12_unsafe bubble9 bubble9_unsafe; \
+		for program in ${EXP201609_SET} ; \
 		do \
 			if [ -d $$program$$ext ]; then \
-				printf "$$program$$ext," >> log-exp-201609.csv; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "KLEE: done:     program exit paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "average branching depth of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "average instructions of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "average instructions of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
+				printf "$$program$$ext," >> ${EXP201609_CSV}; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				`ls $$program$$ext | grep err | wc -l` >> ${EXP201609_CSV} ; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "KLEE: done:     program exit paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "average branching depth of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "average instructions of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "average instructions of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
 				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
-					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> log-exp-201609.csv; \
+					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> ${EXP201609_CSV}; \
 				fi ; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\2/' | tr -d ')\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "Average solver calls per subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
-				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> log-exp-201609.csv; \
-				printf ", " >> log-exp-201609.csv; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\2/' | tr -d ')\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "Average solver calls per subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
+				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV}; \
 			fi ; \
-			if [ $$ext == .tracerx1 -o $$ext == .tracerx2 -o $$ext == .tracerx3 -o $$ext == .tracerx4 ] ;  then \
+			if [ $$ext = .tracerx1 -o $$ext = .tracerx2 ] ;  then \
+				TRACERPATH_COUNT=0 ; \
+				TRACERPATHUNCOVERED_COUNT=0 ; \
 				UNTRAVERSEDKLEEPATH_COUNT=0 ; \
 				for PATHFILE in $$program$$ext/*.path ; \
 				do \
+					TRACERPATH_COUNT=$$((TRACERPATH_COUNT+1)) ; \
 					LENTRACERPATH=`cat $$PATHFILE | wc -l` ; \
+					TRACERPATHCOVERED=0 ; \
 					for KLEEPATHFILE in $$program.klee1/*.path ; \
 					do \
 						LENKLEEPATH=`cat $$KLEEPATHFILE | wc -l` ; \
@@ -203,14 +223,30 @@ csv-exp-201609:
 							diff $$PATHFILE $$KLEEPATHFILE.short > /dev/null ; \
 							if [ "$$?" -eq "0" ] ; \
 							then \
+								TRACERPATHCOVERED=1 ; \
 								UNTRAVERSEDKLEEPATH_COUNT=$$((UNTRAVERSEDKLEEPATH_COUNT+1)) ; \
+							fi ; \
+						elif [ "$$LENTRACERPATH" -eq "$$LENKLEEPATH" ] ; \
+						then \
+							diff $$PATHFILE $$KLEEPATHFILE > /dev/null ; \
+							if [ "$$?" -eq "0" ] ; \
+							then \
+								TRACERPATHCOVERED=1 ; \
 							fi ; \
 						fi ; \
 					done ; \
+					if [ "$$TRACERPATHCOVERED" -eq "0" ] ; \
+					then \
+						TRACERPATHUNCOVERED_COUNT=$$((TRACERPATHUNCOVERED_COUNT+1)) ; \
+					fi ; \
 				done ; \
-				printf $$UNTRAVERSEDKLEEPATH_COUNT >> log-exp-201609.csv; \
+				printf $$UNTRAVERSEDKLEEPATH_COUNT >> ${EXP201609_CSV}; \
+				printf ", " >> ${EXP201609_CSV} ; \
+				printf $$TRACERPATHUNCOVERED_COUNT >> ${EXP201609_CSV}; \
+			else \
+				printf ", " >> ${EXP201609_CSV} ; \
 			fi ; \
-			printf "\n" >> log-exp-201609.csv; \
+			printf "\n" >> ${EXP201609_CSV}; \
 		done ; \
 	done
 
@@ -227,7 +263,7 @@ csv-exp-201609:
 csv-exp-201609-llbmc:
 	rm -f ${LLBMC_OUTPUT_DIR}/log-llbmc.csv ; \
 	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-	for program in Regexp RegexpSize10 RegexpSize15 RegexpSize8 RegexpSize9 bubble12 bubble12_unsafe bubble9 bubble9_unsafe ; \
+	for program in ${EXP201609_SET} ; \
 	do \
 		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
 			printf "$$program," >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
