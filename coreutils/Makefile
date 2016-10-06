@@ -58,6 +58,7 @@ KLEESTP_TARGETS=$(TARGETS:=.stpklee)
 
 # Coreutils benchmark set for September 2016 experiment
 EXP201609_SET=cut expand join sum tsort uniq wc factor seq comm dirname head pathchk split
+EXP201609_SET=cut
 
 EXP201609_CSV=exp-201609.csv
 
@@ -145,28 +146,28 @@ sandbox:
 	)
 
 %.klee1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --search=nurs:covnew -solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --search=nurs:covnew -solver-backend=stp -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.klee2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.klee3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=stp -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.klee4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=90 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
 # can be seen in %.klee1, %.klee2, %.klee3, %.klee4, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
