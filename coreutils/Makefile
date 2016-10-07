@@ -410,6 +410,7 @@ sandbox:
 
 clean:
 	rm -rf ${KLEE_TARGETS} ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXP201609_CSV} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
+	( cd utils ; make clean )
 
 realclean: clean
 	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} 
