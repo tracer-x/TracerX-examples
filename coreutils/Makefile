@@ -429,8 +429,9 @@ exp-201609:
 
 # This target is used for collecting data from experiment exp-201609 result into exp-201609.csv file.
 csv-exp-201609:
+	( cd utils ; CC=${CC} make treecmp ) 
 	rm -f ${EXP201609_CSV}
-	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,Untraversed path count,Uncovered path count" >> ${EXP201609_CSV}; \
+	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,Untraversed KLEE paths,Traversed new paths" >> ${EXP201609_CSV}; \
 	for ext in .klee1 .klee2 .klee3 .klee4 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in ${EXP201609_SET} ; \
@@ -485,48 +486,10 @@ csv-exp-201609:
 				printf ", " >> ${EXP201609_CSV}; \
 			fi ; \
 			if [ $$ext = .tracerx1 -o $$ext = .tracerx2 ] ;  then \
-				TRACERPATH_COUNT=0 ; \
-				TRACERPATHUNCOVERED_COUNT=0 ; \
-				UNTRAVERSEDKLEEPATH_COUNT=0 ; \
-				for PATHFILE in $$program$$ext/*.path ; \
-				do \
-					TRACERPATH_COUNT=$$((TRACERPATH_COUNT+1)) ; \
-					LENTRACERPATH=`cat $$PATHFILE | wc -l` ; \
-					TRACERPATHCOVERED=0 ; \
-					for KLEEPATHFILE in $$program.klee1/*.path ; \
-					do \
-						LENKLEEPATH=`cat $$KLEEPATHFILE | wc -l` ; \
-						if [ "$$LENTRACERPATH" -lt "$$LENKLEEPATH" ] ; \
-						then \
-							rm -f $$KLEEPATHFILE.short ; \
-							head --lines=$$LENTRACERPATH $$KLEEPATHFILE > $$KLEEPATHFILE.short ; \
-							diff $$PATHFILE $$KLEEPATHFILE.short > /dev/null ; \
-							if [ "$$?" -eq "0" ] ; \
-							then \
-								TRACERPATHCOVERED=1 ; \
-								UNTRAVERSEDKLEEPATH_COUNT=$$((UNTRAVERSEDKLEEPATH_COUNT+1)) ; \
-							fi ; \
-						elif [ "$$LENTRACERPATH" -eq "$$LENKLEEPATH" ] ; \
-						then \
-							diff $$PATHFILE $$KLEEPATHFILE > /dev/null ; \
-							if [ "$$?" -eq "0" ] ; \
-							then \
-								TRACERPATHCOVERED=1 ; \
-							fi ; \
-						fi ; \
-					done ; \
-					if [ "$$TRACERPATHCOVERED" -eq "0" ] ; \
-					then \
-						TRACERPATHUNCOVERED_COUNT=$$((TRACERPATHUNCOVERED_COUNT+1)) ; \
-					fi ; \
-				done ; \
-				printf $$UNTRAVERSEDKLEEPATH_COUNT >> ${EXP201609_CSV}; \
-				printf ", " >> ${EXP201609_CSV} ; \
-				printf $$TRACERPATHUNCOVERED_COUNT >> ${EXP201609_CSV}; \
+				( utils/treecmp cut.klee2 cut.tracerx2 | sed -e 's/\W/\,/'  ) >> ${EXP201609_CSV} ; \
 			else \
-				printf ", " >> ${EXP201609_CSV} ; \
+				printf "\n" >> ${EXP201609_CSV}; \
 			fi ; \
-			printf "\n" >> ${EXP201609_CSV}; \
 		done ; \
 	done
 
