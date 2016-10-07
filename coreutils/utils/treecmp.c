@@ -222,8 +222,7 @@ int main(int argc, char **argv) {
   
   closedir(dir2_f);
 
-  printf("%d\n", saved_traversal);
-  printf("%d\n", uncovered_path_count);
+  printf("%d %d\n", saved_traversal, uncovered_path_count);
   
   return 0;
 }
