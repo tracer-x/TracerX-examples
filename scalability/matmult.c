@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: matmult.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /* matmult.c */
@@ -16,6 +19,8 @@
  * This is a program that was developed from mm.c to matmult.c by
  * Thomas Lundqvist at Chalmers.
  *----------------------------------------------------------------------*/
+#include <klee/klee.h>
+
 #define UPPSALAWCET 1
 
 
@@ -49,7 +54,7 @@ void Initialize(matrix Array);
 int RandomInteger(void);
 #endif
 
-void main()
+int main()
 {
    InitSeed();
 /* ***UPPSALA WCET***:
@@ -58,7 +63,13 @@ void main()
    printf("\n   *** MATRIX MULTIPLICATION BENCHMARK TEST ***\n\n");
    printf("RESULTS OF THE TEST:\n");
 #endif
+
+   klee_make_symbolic(ArrayA, UPPERLIMIT * UPPERLIMIT * sizeof(int), "ArrayA");
+   klee_make_symbolic(ArrayB, UPPERLIMIT * UPPERLIMIT * sizeof(int), "ArrayB");
+   klee_make_symbolic(ResultArray, UPPERLIMIT * UPPERLIMIT * sizeof(int), "ResultArray");
+   
    Test(ArrayA, ArrayB, ResultArray);
+   return 0;
 }
 
 
