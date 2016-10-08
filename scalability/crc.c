@@ -1,3 +1,7 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added. This is essentially a straight-line
+ * program with no decision made on the input value. */
+
 /* $Id: crc.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /*************************************************************************/
@@ -47,6 +51,7 @@
 /*                                                                       */
 /*************************************************************************/
 
+#include <klee/klee.h>
 
 typedef unsigned char uchar;
 #define LOBYTE(x) ((uchar)((x) & 0xFF))
@@ -116,6 +121,9 @@ int main(void)
   unsigned long n;
 
   n=40;
+
+  klee_make_symbolic(lin, 256 * sizeof(unsigned char), "lin");
+  
   lin[n+1]=0;
   i1=icrc(0,n,(short)0,1);
   lin[n+1]=HIBYTE(i1);

@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added. */
+
 /* MDH WCET BENCHMARK SUITE. */
 /* 2012/09/28, Jan Gustafsson <jan.gustafsson@mdh.se>
  * Changes:
@@ -34,6 +37,8 @@
 #include "arith.c"
 #include "string.c"
 #endif
+
+#include <klee/klee.h>
 
 // Cosine Transform Coefficients
 
@@ -233,7 +238,9 @@ void fdct(short int *blk, int lx)
 int main(void)
 {
 /*  int i; */
-
+  /* We symbolicize the block */
+  klee_make_symbolic(block, 64 * sizeof(short int), "block");
+		     
   fdct (block, 8);  // 8x8 Blocks, DC precision value = 0, Quantization coefficient (mquant) = 64   
   
   #ifdef IO

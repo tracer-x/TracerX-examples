@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * a straight-line program */
+
 int swi120(int c)
 {
 	int i;

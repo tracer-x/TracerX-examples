@@ -1,6 +1,11 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: cnt.c,v 1.3 2005/04/04 11:34:58 csg Exp $ */
 
 /* sumcntmatrix.c */
+
+#include <klee/klee.h>
 
 //#include <sys/types.h>
 //#include <sys/times.h>
@@ -38,22 +43,24 @@ int main (void)
 
 int Test(matrix Array)
 {
-   long StartTime, StopTime;
-   float TotalTime;
+  // long StartTime, StopTime;
+  // float TotalTime;
 
-   Initialize(Array);
-   StartTime = 1000.0; //ttime();
-   Sum(Array);
-   StopTime = 1500.0; //ttime();
+  // Initialize(Array);
+  // StartTime = 1000.0; //ttime();
 
-   TotalTime = (StopTime - StartTime) / 1000.0;
+  klee_make_symbolic(Array, MAXSIZE * MAXSIZE * sizeof(int), "Array");
+  Sum(Array);
+  // StopTime = 1500.0; //ttime();
 
-   //printf("    - Size of array is %d\n", MAXSIZE);
-   //printf("    - Num pos was %d and Sum was %d\n", Poscnt, Postotal);
-   //printf("    - Num neg was %d and Sum was %d\n", Negcnt, Negtotal);
-   //printf("    - Num neg was %d\n", Negcnt);
-   //printf("    - Total sum time is %3.3f seconds\n\n", TotalTime);
-   return 0;
+  // TotalTime = (StopTime - StartTime) / 1000.0;
+
+  //printf("    - Size of array is %d\n", MAXSIZE);
+  //printf("    - Num pos was %d and Sum was %d\n", Poscnt, Postotal);
+  //printf("    - Num neg was %d and Sum was %d\n", Negcnt, Negtotal);
+  //printf("    - Num neg was %d\n", Negcnt);
+  //printf("    - Total sum time is %3.3f seconds\n\n", TotalTime);
+  return 0;
 }
 
 

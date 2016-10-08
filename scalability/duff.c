@@ -1,3 +1,7 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added. This is essentially a straight-line
+ * program with no decision made on the inputs. */
+
 /* $Id: duff.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /*----------------------------------------------------------------------
@@ -15,6 +19,8 @@
  *  as a way to express loop unrolling in C.
  *
  *----------------------------------------------------------------------*/
+
+#include <klee/klee.h>
 
 #define ARRAYSIZE  100
 #define INVOCATION_COUNT 43	/* exec time depends on this one! */
@@ -50,10 +56,14 @@ void initialize( char *arr, int length)
 char source[ARRAYSIZE];
 char target[ARRAYSIZE];
 
-void main(void)
+int main(void)
 {
-  initialize( source, ARRAYSIZE );
+  /* We replace the initialization with KLEE symbolicization */
+  /* initialize( source, ARRAYSIZE ); */
+  klee_make_symbolic(source, ARRAYSIZE * sizeof(char), "source");
+  klee_make_symbolic(target, ARRAYSIZE * sizeof(char), "target");
   duffcopy( source, target, INVOCATION_COUNT );
+  return 0;
 }
 
 

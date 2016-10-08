@@ -1,5 +1,10 @@
 /* bsort100.c */
 
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
+#include <klee/klee.h>
+
 /* All output disabled for wcsim */
 #define WCSIM 1
 
@@ -26,10 +31,12 @@
  * randomly generated integers.
  */
 
+int BubbleSort(int Array[]);
+
 int Array[MAXDIM], Seed;
 int factor;
 
-main()
+int main()
 {
    long  StartTime, StopTime;
    float TotalTime;
@@ -38,7 +45,11 @@ main()
    printf("\n *** BUBBLE SORT BENCHMARK TEST ***\n\n");
    printf("RESULTS OF TEST:\n\n");
 #endif
-   Initialize(Array);
+   /* The following is replaced with KLEE symbolic array after it. */
+   /* Initialize(Array); */
+
+   klee_make_symbolic(Array, MAXDIM * sizeof(int), "Array");
+   
    /*   StartTime = ttime (); */
    BubbleSort(Array);
    /*   StopTime = ttime(); */
@@ -47,6 +58,7 @@ main()
    printf("     - Number of elements sorted is %d\n", NUMELEMS);
    printf("     - Total time sorting is %3.3f seconds\n\n", TotalTime);
 #endif
+   return 0;
 }
 
 
@@ -65,28 +77,28 @@ int ttime()
 }
 
 
-Initialize(Array)
+void Initialize(Array)
 int Array[];
 /*
  * Initializes given array with randomly generated integers.
  */
 {
-   int  Index, fact;
+  int  Index, fact;
 
 #ifdef WORSTCASE
-   factor = -1;
+  factor = -1;
 #else
-   factor = 1;
+  factor = 1;
 #endif
 
-fact = factor;
-for (Index = 1; Index <= NUMELEMS; Index ++)
+  fact = factor;
+  for (Index = 1; Index <= NUMELEMS; Index ++)
     Array[Index] = Index*fact * KNOWN_VALUE;
 }
 
 
 
-BubbleSort(Array)
+int BubbleSort(Array)
 int Array[];
 /*
  * Sorts an array of integers of size NUMELEMS in ascending order.
@@ -124,4 +136,5 @@ int Array[];
    else
       fprintf(stderr, "array was unsuccessfully sorted in %d passes\n", i-1);
 #endif
+   return 0;
 }

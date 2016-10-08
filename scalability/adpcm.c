@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: adpcm.c,v 1.7 2005/06/15 07:27:31 ael01 Exp $ */
 /*************************************************************************/
 /*                                                                       */
@@ -47,6 +50,8 @@
 /*                                                                       */
 /*                                                                       */
 /*************************************************************************/
+
+#include <klee/klee.h>
 
 /* To be able to run with printouts 
 #include <stdio.h> */
@@ -836,10 +841,18 @@ int main()
   /* XXmain_0, MAX: 2 */
   /* Since the number of times we loop in my_sin depends on the argument we
      add the fact: xxmain_0:[]: */
-  for(i = 0 ; i < SIZE ; i++) {
-    test_data[i] = (int)j*my_cos(f*PI*i); 
-  }
 
+  /* This is replaced with KLEE symbolic arrays after it */
+  /*
+    for(i = 0 ; i < SIZE ; i++) {
+    test_data[i] = (int)j*my_cos(f*PI*i); 
+    }
+  */
+
+  klee_make_symbolic(test_data, SIZE * 2 * sizeof(int), "test_data");
+  klee_make_symbolic(compressed, SIZE * sizeof(int), "compressed");
+  klee_make_symbolic(result, SIZE * 2 * sizeof(int), "result");
+  
   /* MAX: 2 */
 
   /*******Antar att test_data[0] = 10 och test_data[1]=-6 från ovan,          *******
@@ -856,6 +869,7 @@ int main()
     result[i] = xout1;
     result[i+1] = xout2;
   }
+
   /*
     for( ; j < 32767 ; j++) {
     i=IN_END-1;
@@ -871,6 +885,3 @@ int main()
   return result[i]+result[i+1];
 }
 #endif
-
-
-

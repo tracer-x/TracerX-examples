@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: expint.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /************************************************************************
@@ -10,19 +13,30 @@
  *
  ***********************************************************************/
 
+#include <klee/klee.h>
 
 long int expint(int n, long int x);
 
-void main(void)
+int main(void)
 {
-  expint(50,1);
   // with  expint(50,21) as argument, runs the short path
   // in expint.   expint(50,1)  gives the longest execution time
+
+  // We make the second argument symbolic
+  // expint(50,1);
+
+  long int x;
+  klee_make_symbolic(&x, sizeof(x), "x");
+  klee_assume(x >= 1);
+  klee_assume(x <= 21);
+  
+  expint(50,x);
+  return 0;
 }
 
 long int foo(long int x)
 {
-  return x*x+(8*x)<<4-x;
+  return (x*x+(8*x))<<(4-x);
 }
 
 
