@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added, and floats replaced with ints. */
+
 /*************************************************************************/
 /*                                                                       */
 /*   SNU-RT Benchmark Suite for Worst Case Timing Analysis               */
@@ -43,22 +46,23 @@
 /*                                                                       */
 /*************************************************************************/
 
-
-
-
+#include <klee/klee.h>
 
 #define SWAP(a,b) temp=(a);(a)=(b);(b)=temp;
 
+/*
 float arr[20] = {
   5, 4, 10.3, 1.1, 5.7, 100, 231, 111, 49.5, 99,
   10, 150, 222.22, 101, 77, 44, 35, 20.54, 99.99, 888.88
 };
+*/
 
+int arr[20];
 
-float select(unsigned long k, unsigned long n)
+int select(unsigned long k, unsigned long n)
 {
 	unsigned long i,ir,j,l,mid;
-	float a,temp;
+	int a,temp;
 	int flag, flag2;
 
 	l=1;
@@ -105,8 +109,10 @@ float select(unsigned long k, unsigned long n)
 	return arr[k];
 }
 
-main()
+int main()
 {
+  klee_make_symbolic(arr, 20 * sizeof(int), "arr");
   select(10, 20);
+  return 0;
 }
 

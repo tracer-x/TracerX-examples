@@ -1,7 +1,12 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: recursion.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /* Generate an example of recursive code, to see  *
  * how it can be modeled in the scope graph.      */
+
+#include <klee/klee.h>
 
 /* self-recursion  */
 int fib(int i)
@@ -32,9 +37,16 @@ int anka(int i)
     return kalle(i-1);
 }
 
-extern volatile int In;
+/* extern volatile */ int In;
 
-void main(void)
+int main(void)
 {
-  In = fib(10);
+  int a;
+  
+  klee_make_symbolic(&a, sizeof(int), "a");
+  klee_assume(a >= 0);
+  klee_assume(a <= 10);
+
+  In = fib(a);
+  return 0;
 }

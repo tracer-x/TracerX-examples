@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with KLEE harnessing added and floats replaces with ints. */
 
 /*************************************************************************/
 /*                                                                       */
