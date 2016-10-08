@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: fibcall.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /*************************************************************************/
@@ -42,7 +45,7 @@
 /*                                                                       */
 /*************************************************************************/
 
-
+#include <klee/klee.h>
 
 int fib(int n)
 {
@@ -65,7 +68,13 @@ int main()
 {
   int a;
 
-  a = 30;
+  /* We make a symbolic */
+  /* a = 30; */
+
+  klee_make_symbolic(&a, sizeof(int), "a");
+  klee_assume(a >= 0);
+  klee_assume(a <= 30);
+	      
   fib(a);
   return a;
 }

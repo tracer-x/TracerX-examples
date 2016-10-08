@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: jfdctint.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /*************************************************************************/
@@ -44,6 +47,7 @@
 /*                                                                       */
 /*************************************************************************/
 
+#include <klee/klee.h>
 
 /**********************************************************************
     Functions to be timed
@@ -358,17 +362,24 @@ jpeg_fdct_islow ()
    The switching latency, including the function call/return time,
    is measured to be equal to 1.1us (22 clock cycles).
 */
-void main(void)
+int main(void)
 {
   int i, seed;
 
+  /* We replace the random values below with symbolic values */
+  
   /* Worst case settings */
   /* Set array to random values */
+  /*
   seed = 1;
   for (i = 0; i < 64; i++) {
     seed = ((seed * 133) + 81) % 65535;
     data[i] = seed;
   }
+  */
 
+  klee_make_symbolic(data, 64 * sizeof(DCTELEM), "data");
   jpeg_fdct_islow();
+
+  return 0;
 }

@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* MDH WCET BENCHMARK SUITE. */
 
 /* 2012/09/28, Jan Gustafsson <jan.gustafsson@mdh.se>
@@ -33,6 +36,9 @@
  * Added explicit sizes of the arrays to work-around a bug in the
  * NIC-compiler. Christer Sandberg
  */
+
+#include <klee/klee.h>
+
 /* #define LOOPS 720 */
 #define LOOPS 1
 
@@ -214,6 +220,11 @@ int main()
 {
   long  output[OUTSIZE];
 
+  klee_make_symbolic(fir_int, 36 * sizeof(long), "fir_int");
+  klee_make_symbolic(in_data, 701 * sizeof(long), "in_data");
+  klee_make_symbolic(out_data, 720 * sizeof(long), "out_data");
+  klee_make_symbolic(output, OUTSIZE * sizeof(long), "outputx");
+  
   fir_filter_int(in_data,output,700,fir_int,35,285); 
 //  fir_filter_int(in_data,output,10,fir_int,35,285);Changed JG/Ebbe
 

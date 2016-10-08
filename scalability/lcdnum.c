@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* MDH WCET BENCHMARK SUITE. */
 
 /* 2012/09/28, Jan Gustafsson <jan.gustafsson@mdh.se>
@@ -15,6 +18,7 @@
  *
  ***********************************************************************/
 
+#include <klee/klee.h>
 
 unsigned char num_to_lcd(unsigned char a)
 {
@@ -59,7 +63,10 @@ int main(void)
   n = 10;
   for(i=0; i< n; i++)
     {
-      a = IN;                   /* scan port */
+      /* a = IN; */                  /* scan port */
+      /* We assume the input is symbolic */
+      klee_make_symbolic(&a, sizeof(unsigned char), "a");
+      
       if(i<5)
         {
           a = a &0x0F;

@@ -1,3 +1,5 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
 
 /*----------------------------------------------------------------------
  *  WCET Benchmark created by Andreas Ermedahl, Uppsala university, 
@@ -25,6 +27,8 @@
  *   inner loop max:   5   9   8   7   4   2   1   1   1   1    1 
  *
  *----------------------------------------------------------------------*/
+
+#include <klee/klee.h>
 
 int complex(int a, int b)
 {
@@ -55,6 +59,16 @@ int main()
      {a = 1; b = 1;}
      else
      {a = 30; b = 30;} */
+
+  klee_make_symbolic(&a, sizeof(a), "a");
+  klee_make_symbolic(&b, sizeof(b), "b");
+  klee_make_symbolic(&answer, sizeof(answer), "answer");
+
+  klee_assume(a >= 1);
+  klee_assume(a <= 30);
+  klee_assume(b >= 1);
+  klee_assume(b <= 30);
+  
   answer = complex(a, b);
   return answer;
 }

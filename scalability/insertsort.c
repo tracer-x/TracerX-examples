@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: insertsort.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /*************************************************************************/
@@ -43,7 +46,7 @@
 /*                                                                       */
 /*************************************************************************/
 
-
+#include <klee/klee.h>
 
 #ifdef DEBUG
 int cnt1, cnt2;
@@ -55,9 +58,13 @@ int main()
 {
   int  i,j, temp;
 
-  a[0] = 0;   /* assume all data is positive */
-  a[1] = 11; a[2]=10;a[3]=9; a[4]=8; a[5]=7; a[6]=6; a[7]=5;
-  a[8] =4; a[9]=3; a[10]=2;
+  /* We replace the following concrete input with symbolic ones */
+  // a[0] = 0;   /* assume all data is positive */
+  // a[1] = 11; a[2]=10;a[3]=9; a[4]=8; a[5]=7; a[6]=6; a[7]=5;
+  // a[8] =4; a[9]=3; a[10]=2;
+
+  klee_make_symbolic(a, 11 * sizeof(unsigned int), "a");
+  
   i = 2;
   while(i <= 10){
 #ifdef DEBUG
