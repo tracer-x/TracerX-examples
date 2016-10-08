@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: nsichneu.c,v 1.3 2005/04/15 09:18:42 jgn Exp $ */
 
 /***************************************************************************
@@ -23,6 +26,8 @@
 ***************************************************************************/
 // #define DO_TRACING
 
+#include <klee/klee.h>
+
 #ifdef DO_TRACING   // ON PC
 
 #include <stdio.h>
@@ -42,12 +47,12 @@ void trace(char *s)
 
 
 
-volatile int	P1_is_marked = 3;
-volatile long	P1_marking_member_0[3];
-volatile int	P2_is_marked = 5;
-volatile long	P2_marking_member_0[5];
-volatile int	P3_is_marked = 0;
-volatile long	P3_marking_member_0[6];
+/* volatile */ int	P1_is_marked = 3;
+/* volatile */ long	P1_marking_member_0[3];
+/* volatile */ int	P2_is_marked = 5;
+/* volatile */ long	P2_marking_member_0[5];
+/* volatile */ int	P3_is_marked = 0;
+/* volatile */ long	P3_marking_member_0[6];
 
 
 
@@ -58,6 +63,13 @@ int main()
 /*   dummy_i = 17; Takes too much time */
    dummy_i = 2;
 
+   klee_make_symbolic(P1_marking_member_0, 3 * sizeof(long), "P1_marking_member_0");
+   klee_make_symbolic(&P1_is_marked, sizeof(int), "P1_is_marked");
+   klee_make_symbolic(P2_marking_member_0, 5 * sizeof(long), "P2_marking_member_0");
+   klee_make_symbolic(&P2_is_marked, sizeof(int), "P2_is_marked");
+   klee_make_symbolic(P3_marking_member_0, 6 * sizeof(long), "P3_marking_member_0");
+   klee_make_symbolic(&P3_is_marked, sizeof(int), "P3_is_marked");
+   
    while (dummy_i > 0) {
 
       dummy_i--;

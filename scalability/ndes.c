@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* MDH WCET BENCHMARK SUITE. */
 
 /* 2012/10/03, Jan Gustafsson <jan.gustafsson@mdh.se>
@@ -6,6 +9,7 @@
  *  - warning: array subscript is of type 'char': fixed in three places
  */
 
+#include <klee/klee.h>
 
 /* #include <math.h> -- no include files in Uppsala tests, plz */
 
@@ -223,10 +227,22 @@ int main(void)
    immense inp, key, out;
    int newkey, isw;
 
+   /* We turn KNOWN_VALUE to symbolic input */
+   /*
    inp.l = KNOWN_VALUE * 35;
    inp.r = KNOWN_VALUE * 26;
    key.l = KNOWN_VALUE * 2;
    key.r = KNOWN_VALUE * 16;
+   */
+
+   int known_value;
+
+   klee_make_symbolic(&known_value, sizeof(known_value), "known_value");
+   
+   inp.l = known_value * 35;
+   inp.r = known_value * 26;
+   key.l = known_value * 2;
+   key.r = known_value * 16;
 
    newkey = value;
    isw = value;

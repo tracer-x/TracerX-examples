@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* $Id: ns.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
 /* Test of deeply nested loops and non-local exits */
@@ -35,6 +38,7 @@
  *
  *-------------------------------------------------- */
 
+#include <klee/klee.h>
 
 /* -------------------------------------------------- *
  *  Define TEST to check the # iterations in inner loop,
@@ -521,11 +525,14 @@ int foo(int x)
 }
 
 
-void main(void)
+int main(void)
 {
+  klee_make_symbolic(keys, 5 * 5 * 5 * 5 * sizeof(int), "keys");
+  
 #ifdef TEST
   printf("result=%d\n",foo(400));
 #else
   foo(400);
 #endif
+  return 0;
 }

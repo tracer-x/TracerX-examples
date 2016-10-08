@@ -1,8 +1,13 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* MDH WCET BENCHMARK SUITE. */
 
 /* Changes:
  * JG 2005/12/08: Prototypes added, and changed exit to return in main.
  */
+
+#include <klee/klee.h>
 
 typedef  unsigned char  bool;
 typedef  unsigned int   uint;
@@ -40,6 +45,10 @@ void swap (uint* a, uint* b) {
 int main () {
   uint x =  21649;
   uint y = 513239;
+
+  klee_make_symbolic(&x, sizeof(uint), "x");
+  klee_make_symbolic(&y, sizeof(uint), "y");
+  
   swap (&x, &y);
   return (!(prime(x) && prime(y)));
 }

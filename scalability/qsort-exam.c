@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /*************************************************************************/
 /*                                                                       */
 /*   SNU-RT Benchmark Suite for Worst Case Timing Analysis               */
@@ -41,15 +44,20 @@
 /*                                                                       */
 /*************************************************************************/
 
+#include <klee/klee.h>
 
 #define SWAP(a,b) temp=(a);(a)=(b);(b)=temp;
 #define M 7
 #define NSTACK 50
 
+/*
 float arr[20] = {
   5, 4, 10.3, 1.1, 5.7, 100, 231, 111, 49.5, 99,
   10, 150, 222.22, 101, 77, 44, 35, 20.54, 99.99, 88.88
 };
+*/
+
+int arr[20];
 
 int istack[100];
 
@@ -58,7 +66,7 @@ void sort(unsigned long n)
 	unsigned long i,ir=n,j,k,l=1;
 	int jstack=0;
 	int flag;
-	float a,temp;
+	int a,temp;
 
 	flag = 0;
 	for (;;) {
@@ -112,8 +120,10 @@ void sort(unsigned long n)
 	}
 }
 
-main()
+int main()
 {
+  klee_make_symbolic(arr, sizeof(int) * 20, "arr");
   sort(20);
+  return 0;
 }
 
