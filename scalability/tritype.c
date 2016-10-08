@@ -1,7 +1,10 @@
 /* 
- * From Williams et al.: PathCrawler: Automatic Generation of Path
- * Tests by Combining Static and Dynamic Analysis
+ * From Williams et al.: "PathCrawler: Automatic Generation of Path
+ * Tests by Combining Static and Dynamic Analysis," with added KLEE
+ * harness.
  */
+
+#include <klee/klee.h>
 
 int tritype(int i, int j, int k){
   int trityp;
@@ -22,4 +25,15 @@ int tritype(int i, int j, int k){
     else trityp = 4;
   }
   return trityp;
+}
+
+int main(int argc, char **argv) {
+  int i, j, k;
+
+  klee_make_symbolic(&i, sizeof(i), "i");
+  klee_make_symbolic(&j, sizeof(j), "j");
+  klee_make_symbolic(&k, sizeof(k), "k");
+
+  tritype(i, j, k);
+  return 0;
 }
