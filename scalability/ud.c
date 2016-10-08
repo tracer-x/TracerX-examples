@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /* MDH WCET BENCHMARK SUITE. File version $Id: ud.c,v 1.4 2005/11/11 10:32:53 ael01 Exp $ */
 
 
@@ -72,7 +75,7 @@
 **                 (from the book C Programming for EEs by Hyun Soon Ahn)
 */
 
-
+#include <klee/klee.h>
 
 long int a[50][50], b[50], x[50];
 
@@ -88,7 +91,7 @@ int ludcmp(int nmax, int n);
 /*    return f; */
 /*  } */
 
-void main()
+int main()
 {
   int      i, j, nmax = 50, n = 5, chkerr;
   long int /* eps, */ w;
@@ -96,18 +99,22 @@ void main()
   /* eps = 1.0e-6; */
 
   /* Init loop */
-  for(i = 0; i <= n; i++)
-    {
-      w = 0.0;              /* data to fill in cells */
-      for(j = 0; j <= n; j++)
-        {
-          a[i][j] = (i + 1) + (j + 1);
-          if(i == j)            /* only once per loop pass */
-            a[i][j] *= 2.0;
-          w += a[i][j];
-        }
-      b[i] = w;
-    }
+  /* for(i = 0; i <= n; i++) */
+  /*   { */
+  /*     w = 0.0;              /\* data to fill in cells *\/ */
+  /*     for(j = 0; j <= n; j++) */
+  /*       { */
+  /*         a[i][j] = (i + 1) + (j + 1); */
+  /*         if(i == j)            /\* only once per loop pass *\/ */
+  /*           a[i][j] *= 2.0; */
+  /*         w += a[i][j]; */
+  /*       } */
+  /*     b[i] = w; */
+  /*   } */
+
+  klee_make_symbolic(a, 50 * 50 * sizeof(long int), "a");
+  klee_make_symbolic(b, 50 * sizeof(long int), "b");
+  klee_make_symbolic(x, 50 * sizeof(long int), "x");
 
   /*  chkerr = ludcmp(nmax, n, eps); */
   chkerr = ludcmp(nmax,n);

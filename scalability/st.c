@@ -1,11 +1,12 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added. Also redefined double to long. */
+
 /* stats.c */
 
 /* 2012/09/28, Jan Gustafsson <jan.gustafsson@mdh.se>
  * Changes:
  *  - time is only enabled if the POUT flag is set
  *  - st.c:30:1:  main () warning: type specifier missing, defaults to 'int': fixed
- */
-
  */
 
 /* 2011/10/18, Benedikt Huber <benedikt@vmars.tuwien.ac.at>
@@ -15,12 +16,17 @@
  *  - Changed return type of InitSeed from 'missing (default int)' to 'void'
  */
 
+#include <klee/klee.h>
 #include <sys/types.h>
 #include <sys/times.h>
 #include <math.h>
 
 
 #define MAX 1000
+
+/* We change double to long int.
+ */
+#define double long
 
 void InitSeed(void);
 int RandomInteger();
@@ -55,11 +61,21 @@ int main ()
    StartTime = ttime();
 #endif
 
-   Initialize(ArrayA);
+   // Initialize(ArrayA);
+   klee_make_symbolic(ArrayA, MAX * sizeof(double), "ArrayA");
+   klee_make_symbolic(&MeanA, sizeof(MeanA), "MeanA");
+   klee_make_symbolic(&SumA, sizeof(SumA), "SumA");
+   klee_make_symbolic(&VarA, sizeof(VarA), "VarA");
+   
    Calc_Sum_Mean(ArrayA, &SumA, &MeanA);
    Calc_Var_Stddev(ArrayA, MeanA, &VarA, &StddevA);
 
-   Initialize(ArrayB);
+   // Initialize(ArrayB);
+   klee_make_symbolic(ArrayB, MAX * sizeof(double), "ArrayB");
+   klee_make_symbolic(&MeanB, sizeof(MeanB), "MeanB");
+   klee_make_symbolic(&SumB, sizeof(SumB), "SumB");
+   klee_make_symbolic(&VarB, sizeof(VarB), "VarB");
+   
    Calc_Sum_Mean(ArrayB, &SumB, &MeanB);
    Calc_Var_Stddev(ArrayB, MeanB, &VarB, &StddevB);
 
