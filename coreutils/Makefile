@@ -63,8 +63,6 @@ EXP201609_CSV=exp-201609.csv
 
 KLEE_TARGETS1=$(EXP201609_SET:=.klee1)
 KLEE_TARGETS2=$(EXP201609_SET:=.klee2)
-KLEE_TARGETS3=$(EXP201609_SET:=.klee3)
-KLEE_TARGETS4=$(EXP201609_SET:=.klee4)
 TRACERX_TARGETS1=$(EXP201609_SET:=.tracerx1)
 TRACERX_TARGETS2=$(EXP201609_SET:=.tracerx2)
 TRACERX_TARGETS3=$(EXP201609_SET:=.tracerx3)
@@ -145,15 +143,9 @@ sandbox:
 	)
 
 %.klee1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
-
-%.klee2 : 
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -no-interpolation -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
-%.klee3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=stp -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
-
-%.klee4 : 
+%.klee2 : 
 	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 %.tracerx1 : 
@@ -169,7 +161,7 @@ sandbox:
 	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
-# can be seen in %.klee1, %.klee2, %.klee3, %.klee4, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
+# can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
 %.klee-exp-201609: build sandbox
 	@echo =================================================================
 	@echo Running Tracer-X on $* ...
@@ -420,8 +412,6 @@ exp-201609:
 	do \
 		make $$program.klee1;    \
 		make $$program.klee2;    \
-		make $$program.klee3;    \
-		make $$program.klee4;    \
 		make $$program.tracerx1; \
 		make $$program.tracerx2; \
 		make $$program.tracerx3; \
@@ -430,10 +420,10 @@ exp-201609:
 
 # This target is used for collecting data from experiment exp-201609 result into exp-201609.csv file.
 csv-exp-201609:
-	( cd utils ; CC=${CC} make treecmp ) 
+	( cd ../utils ; CC=${CC} make treecmp ) 
 	rm -f ${EXP201609_CSV}
 	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,Untraversed KLEE paths,Traversed new paths" >> ${EXP201609_CSV}; \
-	for ext in .klee1 .klee2 .klee3 .klee4 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
+	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in ${EXP201609_SET} ; \
 		do \
@@ -487,7 +477,7 @@ csv-exp-201609:
 				printf ", " >> ${EXP201609_CSV}; \
 			fi ; \
 			if [ $$ext = .tracerx1 -o $$ext = .tracerx2 ] ;  then \
-				( utils/treecmp cut.klee2 cut.tracerx2 | sed -e 's/\W/\,/'  ) >> ${EXP201609_CSV} ; \
+				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\W/\,/'  ) >> ${EXP201609_CSV} ; \
 			else \
 				printf "\n" >> ${EXP201609_CSV}; \
 			fi ; \

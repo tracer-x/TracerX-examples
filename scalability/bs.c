@@ -1,3 +1,6 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
 /*************************************************************************/
 /*                                                                       */
 /*   SNU-RT Benchmark Suite for Worst Case Timing Analysis               */
@@ -40,7 +43,7 @@
 /*                                                                       */
 /*************************************************************************/
 
-
+#include <klee/klee.h>
 
 
 struct DATA {
@@ -68,12 +71,15 @@ struct DATA data[15] = { {1, 100},
 	     {17, 133},
 	     {18, 10} };
 
-main()
+int binary_search(int);
+
+int main()
 {
-	binary_search(8);
+  klee_make_symbolic(data, 15 * sizeof(struct DATA), "data");
+  binary_search(8);
 }
 
-binary_search(x)
+int binary_search(int x)
 {
   int fvalue, mid, up, low ;
 
