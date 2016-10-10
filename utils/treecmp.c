@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 
   global_root = new_tnode();
 
-  while (dir1 = readdir(dir1_f)) {
+  while ((dir1 = readdir(dir1_f)) != NULL) {
     int l = strlen(dir1->d_name);
     if (l < 6)
       continue;
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
   int uncovered_path_count = 0;
   int saved_traversal = 0;
 
-  while (dir2 = readdir(dir2_f)) {
+  while ((dir2 = readdir(dir2_f)) != NULL) {
     int l = strlen(dir2->d_name);
     if (l < 6)
       continue;
