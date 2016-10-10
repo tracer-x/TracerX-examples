@@ -208,7 +208,9 @@ int main(int argc, char **argv) {
 
       if (!uncovered_path &&
 	  (current->left != NULL || current->right != NULL)) {
-	saved_traversal += current->leaves_count;
+	/* We reduce one path as the subsumed path itself is not
+	   saved. */
+	saved_traversal += (current->leaves_count - 1);
       }
       
       fclose(fp);

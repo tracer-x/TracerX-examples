@@ -121,9 +121,15 @@ clean: standard-clean
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	if [ $* = "Regexp" ] ; then \
 		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
+	elif [ $* = "echo" ] ; then \
+		KLEE_MORE_OPTIONS="--only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-args 0 2 4" ; \
+	elif [ $* = "tr" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -output-dir=${OUTPUT_DIR} ${CURDIR}/$*.bc ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -output-dir=${OUTPUT_DIR} ${CURDIR}/$*.bc ${KLEE_PROGRAM_OPTIONS} ; \
 	rm -f $*.bc; \
 	if [ -e ${OUTPUT_DIR}/tree.dot ]; then \
 		dot -Tsvg ${OUTPUT_DIR}/tree.dot -o ${OUTPUT_DIR}/$*.svg ; \
