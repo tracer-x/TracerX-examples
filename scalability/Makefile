@@ -162,7 +162,7 @@ csv-exp-201609:
 				printf ", " >> ${EXP201609_CSV}; \
 				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> ${EXP201609_CSV}; \
 				printf ", " >> ${EXP201609_CSV}; \
-				`ls $$program$$ext | grep err | wc -l` >> ${EXP201609_CSV} ; \
+				echo -n `ls $$program$$ext | grep err | wc -l` >> ${EXP201609_CSV} ; \
 				printf ", " >> ${EXP201609_CSV}; \
 				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> ${EXP201609_CSV}; \
 				printf ", " >> ${EXP201609_CSV}; \
