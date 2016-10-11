@@ -151,7 +151,7 @@ exp-201609:
 csv-exp-201609:
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	rm -f ${EXP201609_CSV}
-	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,Untraversed path count,Uncovered path count" >> ${EXP201609_CSV}; \
+	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXP201609_CSV}; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in ${EXP201609_SET} ; \
@@ -202,7 +202,7 @@ csv-exp-201609:
 				printf ", " >> ${EXP201609_CSV}; \
 			fi ; \
 			if [ $$ext = .tracerx1 -o $$ext = .tracerx2 ] ;  then \
-				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\W/\,/'  ) >> ${EXP201609_CSV} ; \
+				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXP201609_CSV} ; \
 			else \
 				printf "\n" >> ${EXP201609_CSV}; \
 			fi ; \

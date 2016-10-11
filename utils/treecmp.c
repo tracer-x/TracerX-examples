@@ -2,11 +2,19 @@
  * Comparing KLEE path files in two separate directories. The first
  * directory contains path files for KLEE runs without lazy
  * annotation. The second directory contains path files for KLEE runs
- * with lazy annotation. This utility prints two numbers in separate
- * lines: The first number is the number of proper extensions in the
- * first directory, of a path in the second directory. The second
- * number is the number of paths in the second directory, that are
- * never traversed in the first directory.
+ * with lazy annotation. This utility prints consecutively three
+ * numbers in one line:
+ * 
+ * 1) The number of proper extensions in the first directory, of a
+ *    path in the second directory minus the number of those paths in
+ *    the second directory that are being extended.
+ * 2) The number of paths in the second directory, that are never
+ *    traversed in the first directory.
+ * 3) The earliest time the last path in the second directory is
+ *    visited by the paths in the first directory. Time here is the
+ *    number of the path files in the first directory, which can be
+ *    read from the file name. -1 if the last path in the second
+ *    directory is never visited by any path of the first directory.
  */
 
 #include <sys/types.h>
@@ -19,15 +27,19 @@
 
 struct tnode {
   int leaves_count;
+  int min_time_reached; /* The earliest time this node is reached: It
+			   is the number of the path file (from the
+			   file name) */
   struct tnode *left;
   struct tnode *right;
 };
 
 struct tnode *global_root = NULL;
 
-struct tnode *new_tnode() {
+struct tnode *new_tnode(int time) {
   struct tnode *new_node = (struct tnode *)malloc(sizeof(struct tnode));
   new_node->leaves_count = 0;
+  new_node->min_time_reached = time;
   new_node->left = NULL;
   new_node->right = NULL;
   return new_node;
@@ -55,7 +67,7 @@ void print_tree(int depth, struct tnode *n) {
     return;
   }
   
-  printf("%d: %d\t", depth, n->leaves_count);
+  printf("%d: %d %d\t", depth, n->leaves_count, n->min_time_reached);
   printf("left: "); 
   print_tree(depth + 1, n->left);
   printf("right: ");
@@ -100,7 +112,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  global_root = new_tnode();
+  global_root = new_tnode(1);
 
   while ((dir1 = readdir(dir1_f)) != NULL) {
     int l = strlen(dir1->d_name);
@@ -113,6 +125,10 @@ int main(int argc, char **argv) {
     if (!strcmp(p, ".path")) {
       FILE *fp;
       char file_name[BUFFER_SIZE], line_buf[BUFFER_SIZE];
+      int time;
+
+      /* Get the "time" of the path */
+      sscanf(dir1->d_name, "test%6d.path", &time);
 
       sprintf(file_name, "%s/%s", argv[1], dir1->d_name);
       
@@ -124,14 +140,20 @@ int main(int argc, char **argv) {
 	switch (*line_buf) {
 	case '0': {
 	  if (!current->left) {
-	    current->left = new_tnode();
+	    current->left = new_tnode(time);
+	  }
+	  if (current->min_time_reached > time) {
+	    current->min_time_reached = time;
 	  }
 	  current = current->left;
 	  break;
 	}
 	case '1': {
 	  if (!current->right) {
-	    current->right = new_tnode();
+	    current->right = new_tnode(time);
+	  }
+	  if (current->min_time_reached > time) {
+	    current->min_time_reached = time;
 	  }
 	  current = current->right;
 	  break;
@@ -160,8 +182,15 @@ int main(int argc, char **argv) {
   int uncovered_path_count = 0;
   int saved_traversal = 0;
 
+  /* Of the latest-generated second directory paths scanned in so far,
+     if it is reached by a path in the first directory, this is the
+     fastest time it is reached. Otherwise, this is -1. */
+  int fastest_time_reached = -1;
+
   while ((dir2 = readdir(dir2_f)) != NULL) {
     int l = strlen(dir2->d_name);
+    int max_time = -1;
+    
     if (l < 6)
       continue;
 
@@ -170,7 +199,20 @@ int main(int argc, char **argv) {
       FILE *fp;
       char file_name[BUFFER_SIZE], line_buf[BUFFER_SIZE];
       int uncovered_path = 0;
+      int time;
+      
+      /* Time the path of the first directory reached earliest. */
+      int time_reached; 
 
+      /* Get the "time" of the path, this time we want to determine if
+	 this was the latest-generated path. */
+      sscanf(dir2->d_name, "test%6d.path", &time);
+      
+      if (time > max_time) {
+	/* This is the latest-generated path scanned in so far */
+	max_time = time;
+      }
+      
       sprintf(file_name, "%s/%s", argv[2], dir2->d_name);
 
       if ((fp = fopen(file_name, "r")) == NULL) {
@@ -194,6 +236,7 @@ int main(int argc, char **argv) {
 	  if (!current->right) {
 	    uncovered_path = 1;
 	    uncovered_path_count++;
+	    break;
 	  }
 	  current = current->right;
 	  break;
@@ -201,6 +244,7 @@ int main(int argc, char **argv) {
 	default:
 	  break;
 	} 
+	time_reached = current->min_time_reached;
 	if (uncovered_path) {
 	  break;
 	}
@@ -211,6 +255,14 @@ int main(int argc, char **argv) {
 	/* We reduce one path as the subsumed path itself is not
 	   saved. */
 	saved_traversal += (current->leaves_count - 1);
+      }
+
+      if (time == max_time) {
+	if (!uncovered_path) {
+	  fastest_time_reached = time_reached;
+	} else {
+	  fastest_time_reached = -1;
+	}
       }
       
       fclose(fp);
@@ -224,7 +276,7 @@ int main(int argc, char **argv) {
   
   closedir(dir2_f);
 
-  printf("%d %d\n", saved_traversal, uncovered_path_count);
+  printf("%d %d %d\n", saved_traversal, uncovered_path_count, fastest_time_reached);
   
   return 0;
 }
