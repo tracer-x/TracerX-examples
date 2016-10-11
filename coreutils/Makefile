@@ -58,7 +58,7 @@ KLEESTP_TARGETS=$(TARGETS:=.stpklee)
 
 # Coreutils benchmark set for September 2016 experiment
 EXP201609_SET=cut expand join sum tsort uniq wc factor seq comm dirname head pathchk split
-EXP201609_SET=cut
+
 EXP201609_CSV=exp-201609.csv
 
 KLEE_TARGETS1=$(EXP201609_SET:=.klee1)
