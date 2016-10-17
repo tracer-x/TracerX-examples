@@ -75,6 +75,12 @@ include ../Makefile.common
 
 build: ${COREUTILS_LLVM_DIR} ${COREUTILS_GCOV_DIR} test.env
 
+cut-test: build sandbox test.env
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} PROGRAM_ARGS="-d: -f1,5,7 --sym-stdin 20 --sym-stdout" time ${KLEE} --interpolation-stat --search=dfs --solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ --libc=uclibc --posix-runtime --output-tree ${COREUTILS_LLVM_DIR}/src/cut.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	if [ -e cut-test/tree.dot ]; then \
+		dot -Tsvg cut-test/tree.dot -o cut-test/tree.svg ; \
+	fi
+
 test.env:
 	env -i ${BASH} -c '( source testing-env.sh ; env > test.env )'
 
