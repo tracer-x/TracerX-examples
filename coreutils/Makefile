@@ -41,6 +41,7 @@ KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --o
 
 # From http://klee.github.io/docs/coreutils-experiments/
 TARGETS=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut date dd df dircolors dirname du echo env expand expr factor false fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
+TARGETS=printf
 
 DEFAULT_ARGS=--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
 DD_ARGS=--sym-args 0 3 10 --sym-files 1 8 -sym-stdin 8 --sym-stdout
@@ -125,23 +126,6 @@ ${COREUTILS_LLVM_DIR}:
 		done \
 	)
 
-# The testing sandbox reconstructed here is from
-# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
-sandbox:
-	@echo =================================================================
-	@echo Creating the sandbox ...
-	@echo =================================================================
-	mkdir sandbox
-	( cd sandbox ; \
-		ln -s /dev/null a ; \
-		ln -s /dev/random b ; \
-		echo "#!/bin/sh" > c ; \
-		echo "echo \"Hello world!\"" >> c ; \
-		chmod +x c ; \
-		touch d ; \
-		mkdir e \
-	)
-
 %.klee1 : 
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -no-interpolation -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-exp-201609
 
@@ -162,7 +146,22 @@ sandbox:
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
 # can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
-%.klee-exp-201609: build sandbox
+%.klee-exp-201609: build
+	# The testing sandbox reconstructed here is from
+	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
+	@echo =================================================================
+	@echo Creating the sandbox ...
+	@echo =================================================================
+	mkdir sandbox
+	( cd sandbox ; \
+		ln -s /dev/null a ; \
+		ln -s /dev/random b ; \
+		echo "#!/bin/sh" > c ; \
+		echo "echo \"Hello world!\"" >> c ; \
+		chmod +x c ; \
+		touch d ; \
+		mkdir e \
+	)
 	@echo =================================================================
 	@echo Running Tracer-X on $* ...
 	@echo =================================================================
@@ -246,7 +245,22 @@ sandbox:
 	@echo =================================================================
 	sloccount ${COREUTILS_SRC}/$*.c > ${OUTPUT_DIR}/SLocCountLog.txt 2>&1
 
-%.klee: build sandbox
+%.klee: build
+	# The testing sandbox reconstructed here is from
+	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
+	@echo =================================================================
+	@echo Creating the sandbox ...
+	@echo =================================================================
+	mkdir sandbox
+	( cd sandbox ; \
+		ln -s /dev/null a ; \
+		ln -s /dev/random b ; \
+		echo "#!/bin/sh" > c ; \
+		echo "echo \"Hello world!\"" >> c ; \
+		chmod +x c ; \
+		touch d ; \
+		mkdir e \
+	)
 	@echo =================================================================
 	@echo Running Tracer-X on $* ...
 	@echo =================================================================
@@ -326,7 +340,22 @@ sandbox:
 	) > ${CURDIR}/$@/GcovLog.txt 2>&1
 	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
 
-%.stpklee: build sandbox
+%.stpklee: build
+	# The testing sandbox reconstructed here is from
+	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
+	@echo =================================================================
+	@echo Creating the sandbox ...
+	@echo =================================================================
+	mkdir sandbox
+	( cd sandbox ; \
+		ln -s /dev/null a ; \
+		ln -s /dev/random b ; \
+		echo "#!/bin/sh" > c ; \
+		echo "echo \"Hello world!\"" >> c ; \
+		chmod +x c ; \
+		touch d ; \
+		mkdir e \
+	)
 	@echo =================================================================
 	@echo Running KLEE with STP on $* ...
 	@echo =================================================================
