@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Copyright 2016 National University of Singapore
+#
+# For rebuilding GNU Coreutils not from scratch. This is useful for
+# example, for tweaking a coreutils utility for experiments, and
+# rebuilding just that one. This requires a pre-built Coreutils
+# bitcore in coreutils/coreutils-6.10/obj-llvm.
+
+COREUTILS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/../coreutils/coreutils-6.10/obj-llvm
+if [ ! -d $COREUTILS_DIR ] ; then
+    echo "Coreutils not found: " $COREUTILS_DIR
+    exit 1
+fi
+export EXTRA_PATH=@EXTRA_PATH@
+export WHOLE_PROGRAM_LLVM=@WLLVM@
+export LLVM_COMPILER=clang
+export PATH=$EXTRA_PATH:$PATH
+export CC=$WHOLE_PROGRAM_LLVM/wllvm
+export CXX=$WHOLE_PROGRAM_LLVM/wllvm++
+unset C_INCLUDE_PATH
+unset CPLUS_INCLUDE_PATH
+(cd $COREUTILS_DIR ; make )
+rm -f $COREUTILS_DIR/src/*.gcov
+( cd $COREUTILS_DIR/src; \
+                EXEC_LIST=`find . -executable -type f | sed 's/.\/groups//'` ; \
+                for EXEC_FILE in $EXEC_LIST ; do \
+                        $WHOLE_PROGRAM_LLVM/extract-bc $EXEC_FILE ; \
+                done \
+        )
+
