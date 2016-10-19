@@ -124,6 +124,8 @@ clean: standard-clean
 # can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
 %.klee-exp-201609: 
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
+	unset KLEE_MORE_OPTIONS ; \
+	unset KLEE_PROGRAM_OPTIONS ; \
 	if [ $* = "Regexp" ] ; then \
 		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
 	elif [ $* = "echo" ] ; then \
@@ -134,7 +136,7 @@ clean: standard-clean
 		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -output-dir=${OUTPUT_DIR} ${CURDIR}/$*.bc ${KLEE_PROGRAM_OPTIONS} ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -output-dir=${OUTPUT_DIR} ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
 	rm -f $*.bc; \
 	if [ -e ${OUTPUT_DIR}/tree.dot ]; then \
 		dot -Tsvg ${OUTPUT_DIR}/tree.dot -o ${OUTPUT_DIR}/$*.svg ; \
