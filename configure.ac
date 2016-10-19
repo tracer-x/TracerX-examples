@@ -131,4 +131,4 @@ fi
 AC_SUBST(EXTRA_PATH, ["$extra_path"])
 
 AC_OUTPUT(Makefile.common)
-AC_OUTPUT(utils/rebuild.sh)
+AC_OUTPUT(environ.sh)

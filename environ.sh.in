@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Copyright 2016 National University of Singapore
+#
+# Environment variable settings to be used by shell scripts.
+
+export EXTRA_PATH=@EXTRA_PATH@
+export WHOLE_PROGRAM_LLVM=@WLLVM@
+export LLVM_COMPILER=@CC@
+export PATH=@EXTRA_PATH@:$PATH
+export CC=$WHOLE_PROGRAM_LLVM/wllvm
+export CXX=$WHOLE_PROGRAM_LLVM/wllvm++

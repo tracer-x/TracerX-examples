@@ -4365,7 +4365,7 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
-ac_config_files="$ac_config_files utils/rebuild.sh"
+ac_config_files="$ac_config_files environ.sh"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5073,7 +5073,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile.common") CONFIG_FILES="$CONFIG_FILES Makefile.common" ;;
-    "utils/rebuild.sh") CONFIG_FILES="$CONFIG_FILES utils/rebuild.sh" ;;
+    "environ.sh") CONFIG_FILES="$CONFIG_FILES environ.sh" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

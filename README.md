@@ -1,12 +1,12 @@
-Simple examples for running with KLEE
--------------------------------------
+Simple examples for running with Tracer-X KLEE
+----------------------------------------------
 
 Copyright 2015, 2016 National University of Singapore
 
 To run the examples using KLEE, first edit Makefile.common to set the
 right variable values for your system.
 
-Each directory contains a suite of simple examples.
+Each directory except **utils** contains a suite of simple examples.
 
 - **basic**  - Basic examples.
 
@@ -24,6 +24,8 @@ Each directory contains a suite of simple examples.
 
 - **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
 
+- **utils** - Scripts and other utilities.
+
 Running
 -------
 
@@ -37,7 +39,7 @@ To run any of the examples, first you need to execute the provided `configure` s
 ```
 - The following option is relevant only for running **join** examples
 ```
-  --with-clpr             The directory of CLPR (defaults to /usr/local)
+  --with-clpr             The directory of CLP(R) (defaults to /usr/local)
 ```
 - The following options are relevant only for running **coreutils** examples
 ```
