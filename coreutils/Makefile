@@ -42,15 +42,15 @@ KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --o
 # From http://klee.github.io/docs/coreutils-experiments/
 TARGETS=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut date dd df dircolors dirname du echo env expand expr factor false fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
 
-DEFAULT_ARGS=--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-DD_ARGS=--sym-args 0 3 10 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-DIRCOLORS_ARGS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
-ECHO_ARGS=--sym-args 0 4 300 --sym-files 2 30 -sym-stdin 30 --sym-stdout
-EXPR_ARGS=--sym-args 0 1 10 --sym-args 0 3 2 --sym-stdout
-MKNOD_ARGS=--sym-args 0 1 10 --sym-args 0 3 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-OD_ARGS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
-PATHCHK_ARGS=--sym-args 0 1 2 --sym-args 0 1 300 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-PRINTF_ARGS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
+DEFAULT_OPTIONS=--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
+DD_OPTIONS=--sym-args 0 3 10 --sym-files 1 8 -sym-stdin 8 --sym-stdout
+DIRCOLORS_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
+ECHO_OPTIONS=--sym-args 0 4 300 --sym-files 2 30 -sym-stdin 30 --sym-stdout
+EXPR_OPTIONS=--sym-args 0 1 10 --sym-args 0 3 2 --sym-stdout
+MKNOD_OPTIONS=--sym-args 0 1 10 --sym-args 0 3 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
+OD_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
+PATHCHK_OPTIONS=--sym-args 0 1 2 --sym-args 0 1 300 --sym-files 1 8 -sym-stdin 8 --sym-stdout
+PRINTF_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
 
 KLEE_TARGETS=$(TARGETS:=.klee)
 
@@ -165,26 +165,26 @@ ${COREUTILS_LLVM_DIR}:
 	@echo Running Tracer-X on $* ...
 	@echo =================================================================
 	if [ $* = "dd" ]; then \
-		PROGRAM_ARGS="${DD_ARGS}" ; \
+		PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
 	elif [ $* = "dircolors" ]; then \
-		PROGRAM_ARGS="${DIRCOLORS_ARGS}" ; \
+		PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
 	elif [ $* = "echo" ]; then \
-		PROGRAM_ARGS="${ECHO_ARGS}" ; \
+		PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
 	elif [ $* = "expr" ]; then \
-		PROGRAM_ARGS="${EXPR_ARGS}" ; \
+		PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
 	elif [ $* = "mknod" ]; then \
-		PROGRAM_ARGS="${MKNOD_ARGS}" ; \
+		PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
 	elif [ $* = "od" ]; then \
-		PROGRAM_ARGS="${OD_ARGS}" ; \
+		PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
 	elif [ $* = "pathchk" ]; then \
-		PROGRAM_ARGS="${PATHCHK_ARGS}" ; \
+		PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
 	elif [ $* = "printf" ]; then \
-		PROGRAM_ARGS="${PRINTF_ARGS}" ; \
+		PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
 	else \
-		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
+		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} ${KLEE_COREUTILS_MORE_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} ${KLEE_COREUTILS_MORE_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -264,26 +264,26 @@ ${COREUTILS_LLVM_DIR}:
 	@echo Running Tracer-X on $* ...
 	@echo =================================================================
 	if [ $* = "dd" ]; then \
-		PROGRAM_ARGS="${DD_ARGS}" ; \
+		PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
 	elif [ $* = "dircolors" ]; then \
-		PROGRAM_ARGS="${DIRCOLORS_ARGS}" ; \
+		PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
 	elif [ $* = "echo" ]; then \
-		PROGRAM_ARGS="${ECHO_ARGS}" ; \
+		PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
 	elif [ $* = "expr" ]; then \
-		PROGRAM_ARGS="${EXPR_ARGS}" ; \
+		PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
 	elif [ $* = "mknod" ]; then \
-		PROGRAM_ARGS="${MKNOD_ARGS}" ; \
+		PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
 	elif [ $* = "od" ]; then \
-		PROGRAM_ARGS="${OD_ARGS}" ; \
+		PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
 	elif [ $* = "pathchk" ]; then \
-		PROGRAM_ARGS="${PATHCHK_ARGS}" ; \
+		PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
 	elif [ $* = "printf" ]; then \
-		PROGRAM_ARGS="${PRINTF_ARGS}" ; \
+		PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
 	else \
-		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
+		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_OPTIONS} -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_OPTIONS} -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -359,26 +359,26 @@ ${COREUTILS_LLVM_DIR}:
 	@echo Running KLEE with STP on $* ...
 	@echo =================================================================
 	if [ $* = "dd" ]; then \
-		PROGRAM_ARGS="${DD_ARGS}" ; \
+		PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
 	elif [ $* = "dircolors" ]; then \
-		PROGRAM_ARGS="${DIRCOLORS_ARGS}" ; \
+		PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
 	elif [ $* = "echo" ]; then \
-		PROGRAM_ARGS="${ECHO_ARGS}" ; \
+		PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
 	elif [ $* = "expr" ]; then \
-		PROGRAM_ARGS="${EXPR_ARGS}" ; \
+		PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
 	elif [ $* = "mknod" ]; then \
-		PROGRAM_ARGS="${MKNOD_ARGS}" ; \
+		PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
 	elif [ $* = "od" ]; then \
-		PROGRAM_ARGS="${OD_ARGS}" ; \
+		PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
 	elif [ $* = "pathchk" ]; then \
-		PROGRAM_ARGS="${PATHCHK_ARGS}" ; \
+		PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
 	elif [ $* = "printf" ]; then \
-		PROGRAM_ARGS="${PRINTF_ARGS}" ; \
+		PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
 	else \
-		PROGRAM_ARGS="${DEFAULT_ARGS}" ; \
+		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_OPTIONS} -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_ARGS -max-fail 1 ;
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_OPTIONS} -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ;
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -511,33 +511,39 @@ csv-exp-201609:
 		done ; \
 	done
 
-# This target is used for running coreutils experiment with LLBMC. #Arguments in PROGRAM_ARGS have lengths matching that of KLEE runs. For example, Klee runs with --sym-args 0 1 10 --sym-args 0 2 2 which defined in DEFAULT_ARGS, means coreutils programs are triggered with 2 short options (length 2) and 1 long option (length 10). This arguments example in KLEE run is translated into "xx xx xxxxxxxxxx".
+# This target is used for running coreutils experiment with
+# LLBMC. Arguments in PROGRAM_OPTIONS have lengths matching that of
+# KLEE runs. For example, Klee runs with --sym-args 0 1 10 --sym-args
+# 0 2 2 which defined in DEFAULT_OPTIONS, means coreutils programs are
+# triggered with 2 short options (length 2) and 1 long option (length
+# 10). This arguments example in KLEE run is translated into "xx xx
+# xxxxxxxxxx".
 %.llbmc :
 	if [ $* = "dd" ]; then \
-		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
 	elif [ $* = "dircolors" ]; then \
-		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
 	elif [ $* = "echo" ]; then \
-		PROGRAM_ARGS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
 	elif [ $* = "expr" ]; then \
-		PROGRAM_ARGS="xxx xxx xxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
 	elif [ $* = "mknod" ]; then \
-		PROGRAM_ARGS="xxx xxx xxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
 	elif [ $* = "od" ]; then \
-		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
 	elif [ $* = "pathchk" ]; then \
-		PROGRAM_ARGS="x x" ; \
+		PROGRAM_OPTIONS="x x" ; \
 	elif [ $* = "printf" ]; then \
-		PROGRAM_ARGS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
 	else \
-		PROGRAM_ARGS="xx xx xxxxxxxxxx" ; \
+		PROGRAM_OPTIONS="xx xx xxxxxxxxxx" ; \
 	fi ; \
 	if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
 		mkdir ${LLBMC_OUTPUT_DIR}; \
 	fi ; \
 	${CC} -emit-llvm -c ${CFLAGS_LLBMC_COREUTILS} ${COREUTILS_SRC}/$*.c -o ${COREUTILS_SRC}/$*.bc ; \
 	export PATH=${EXTRA_PATH}:$$PATH ; \
-	llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_ARGS" ${COREUTILS_SRC}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+	llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_SRC}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
 	rm -rf ${COREUTILS_SRC}/$*.bc ; \
 
 # This target is used for collecting data from coreutils LLBMC experiment into log-llbmc file.
