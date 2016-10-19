@@ -23,6 +23,10 @@ example taken from [KLEE OSDI paper 2008]
 
 - **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
 
+- **taint** - Assortment of examples extracted from known vulnerabilities.
+
+- **klee-taint**  - Examples from the regression suite of [a version of KLEE with taint propagation](https://github.com/feliam/klee-taint.git).
+
 - **utils** - Scripts and other utilities.
 
 Running
@@ -143,3 +147,6 @@ This will run **coreutils** and **scalability** examples with KLEE, Tracer-X KLE
 - For running experiment exp-201609 in Coreutils 6.10 program, please go to coreutils directory (`cd coreutils`) and run `make exp-201609`. The experiment will run different kinds of settings which can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, %.tracerx4 on selected coreutils programs under exp-201609 target. To collect all the experiment results into csv file, please run `make csv-exp-201609`.
 
 - For running experiment exp-201609 under Scalability folder, please go to coreutils directory (`cd scalability`) and run `make exp-201609`. To collect all the experiment results into csv file, please run `make csv-exp-201609`. 
+
+
+
