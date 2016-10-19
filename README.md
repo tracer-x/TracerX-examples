@@ -16,7 +16,10 @@ Each directory except **utils** contains a suite of simple examples.
 
 - **llbmc-bench** - Examples of C/C++ programs, with the fix suggested by Jonas Wagner. There are several modifications from the original version at http://llbmc.org/files/downloads/llbmc-bench-1.1.tgz for running with KLEE, e.g., replaced LLBMC API calls with the corresponding KLEE API calls.
 
-- **join** - Examples for testing `klee_join` API.
+- **join** - Examples for testing `klee_join` API. This directory also contains
+academic programs focusing on program equivalence analysis, with an
+example taken from [KLEE OSDI paper 2008]
+(https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf).
 
 - **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
 
