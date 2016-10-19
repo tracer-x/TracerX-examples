@@ -1,6 +1,12 @@
 # Makefile to build and run the examples using KLEE.
 #
 # Copyright 2015, 2016 National University of Singapore
+#
+# Environment variables that can be set externally include:
+#
+# EXTRA_OPTIONS   - Extra KLEE options
+# PROGRAM_OPTIONS - Extra options for the tested program, e.g.,
+#                   --sym-arg
 
 # Extra executable path to include. This is used for building
 # coreutils 6.10 as older utilites may be needed, such as Texinfo 4.13.
@@ -54,7 +60,7 @@ standard-clean:
 
 # For running KLEE with Z3 and interpolation
 .bc.klee:
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $< ${PROGRAM_OPTIONS}
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 	# Create SVGs from *.dot files
@@ -88,7 +94,7 @@ standard-clean:
 	fi
 # For running KLEE with STP without interpolation
 .bc.stpklee:
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=stp -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=stp -output-dir=$@ $< ${PROGRAM_OPTIONS}
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
 	# Create SVGs from .dot files

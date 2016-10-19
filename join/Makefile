@@ -6,6 +6,10 @@
 # in this directory are small.
 EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2 -clpr-log
 
+# This is for the options passed onto the tested program, e.g.,
+# --sym-arg
+PROGRAM_OPTIONS=
+
 JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum
 
 default: ${JOIN_TARGETS}

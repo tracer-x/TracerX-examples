@@ -2,7 +2,12 @@
 #
 # Copyright 2016 National University of Singapore
 
+# This is for extra KLEE options
 EXTRA_OPTIONS=-interpolation-stat
+
+# This is for the options passed onto the tested program, e.g.,
+# --sym-arg
+PROGRAM_OPTIONS=
 
 # We remove bubble_llbmc.klee from KLEE targets, as it
 # is to be run with LLBMC
