@@ -21,7 +21,7 @@ clean: standard-clean
 
 # For testing -use-clpr option in loading multiple CLP(R) files
 test-use-clpr: join1.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=dummy1.clpr -use-clpr=dummy2.clpr -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -use-clpr=dummy2.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
@@ -31,7 +31,7 @@ test-use-clpr: join1.bc
 
 # For testing actual klee_join mechanism
 test-join: join2.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=dummy1.clpr -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
@@ -41,7 +41,7 @@ test-join: join2.bc
 
 # Simple test for no subsumption I
 test-nosub1: join3.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
 	mv -f /tmp/clpr-* $@/clpr.log
 	mv -f $@.log $@/klee.log
 	# Create SVGs from *.dot files
@@ -53,7 +53,7 @@ test-nosub1: join3.bc
 
 # Simple test for no subsumption II
 test-nosub2: join4.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
 	mv -f /tmp/clpr-* $@/clpr.log
 	mv -f $@.log $@/klee.log
 	# Create SVGs from *.dot files
@@ -65,7 +65,7 @@ test-nosub2: join4.bc
 
 # Simple test for subsumption
 test-sub: join5.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
 	mv -f /tmp/clpr-* $@/clpr.log
 	mv -f $@.log $@/klee.log
 	# Create SVGs from *.dot files
@@ -77,7 +77,7 @@ test-sub: join5.bc
 
 # For testing the count example
 test-count: count.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=count.clpr -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=count.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
@@ -87,7 +87,7 @@ test-count: count.bc
 
 # For testing the sum example
 test-sum: sum.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=sum.clpr -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=sum.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
