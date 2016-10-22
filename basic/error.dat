@@ -21,6 +21,7 @@ arraysimple5.c		0
 arraysimple6.c		0
 branch.c		0
 bubble.c		0
+double-free.c		1
 even.c			0
 interproc.c		0
 local.c			0
@@ -28,7 +29,9 @@ loop_safe1.c		0
 loop_safe2.c		0
 loop_unsafe1.c		1
 malloc1.c		1
+memory-access.c		1
 openssl.c		1
+openssl_partial_fix.c	1
 polynomial.c		0
 regexp_nonrecursive1.c	0
 regexp_nonrecursive2.c	0
