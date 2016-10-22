@@ -13,7 +13,7 @@ PROGRAM_OPTIONS=
 # is to be run with LLBMC
 TARGETS=$(subst bubble_llbmc.klee,,$(patsubst %.c,%.klee,$(wildcard *.c)))
 
-EXP201609_SET=Regexp bubble9 adpcm bs cnt compress cover crc duff echo edn expint fac fdct fibcall fir insertsort janne_complex jfdctint lcdnum ludcmp matmult merge minver ndes ns nsichneu prime qsort-exam recursion sample select statemate st tr tritype ud
+EXP201609_SET=Regexp bubble9 adpcm bs cnt compress edn expint fac fibcall insertsort janne_complex lcdnum ludcmp merge ns nsichneu prime recursion sample statemate tr tritype ud
 
 EXP201609_CSV=exp-201609.csv
 
@@ -28,11 +28,10 @@ LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
-ECHO_TARGETS=echo.echo0 echo_nosyscall.echo0 echo_small.echo0
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
 BUBBLE_TARGETS=bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
 
-EXTRA_REMOVAL=${TR_TARGETS} ${ECHO_TARGETS} ${BUBBLE_TARGETS}
+EXTRA_REMOVAL=${TR_TARGETS} ${BUBBLE_TARGETS}
 
 include ../Makefile.common
 
@@ -42,13 +41,11 @@ include ../Makefile.common
 # To run all programs under specific group targets, please run:                 #
 #   Make <group_target>                                                         #
 #     Example:                                                                  #
-#       Make echo  ==> run echo, echo_nosyscall and echo_small                  #
 #       Make tr  ==> run tr, tr_nosyscall, and tr_small                         #
 #       Make bubble  ==> run bubble9, bubble12, bubble9_unsafe, bubble12_unsafe #
 # To run only a specific program, please run:                                   #
 #   Make <program_name>.<suffixes_group>                                        #
 #     Example:                                                                  #
-#       Make echo_nosyscall.echo0 (only run echo_nosyscall)                     #
 #       Make tr_nosyscall.tr0 (only run tr_nosyscall)                           #
 #       Make bubble9.bubble0 (only run bubble9)                                 #
 #################################################################################
@@ -56,10 +53,6 @@ include ../Makefile.common
 bubble_llbmc: bubble_llbmc.c
 	${CC} -c -g -emit-llvm -I${LLBMC}/examples bubble_llbmc.c -o bubble_llbmc.o
 	llbmc -max-loop-iterations=10 bubble_llbmc.o
-
-echo: ${ECHO_TARGETS}
-	rm -rf klee-*
-	rm -f $^
 
 # For running Minix tr versions
 tr: ${TR_TARGETS}
@@ -74,12 +67,7 @@ bubble: ${BUBBLE_TARGETS}
 clean: standard-clean
 	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXP201609_CSV}
 
-.SUFFIXES: .tr0 .echo0 .bubble0
-
-.bc.echo0:
-	rm -rf $@ klee-*
-	time ${KLEE} -solver-backend=z3 -max-time=600 -interpolation-stat --only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls $< --sym-args 0 2 4
-	touch $@
+.SUFFIXES: .tr0 .bubble0
 
 .bc.tr0:
 	rm -rf $@ klee-*
@@ -128,9 +116,6 @@ clean: standard-clean
 	unset KLEE_PROGRAM_OPTIONS ; \
 	if [ $* = "Regexp" ] ; then \
 		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-	elif [ $* = "echo" ] ; then \
-		KLEE_MORE_OPTIONS="--only-output-states-covering-new --libc=uclibc --posix-runtime --allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-args 0 2 4" ; \
 	elif [ $* = "tr" ] ; then \
 		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
 		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
