@@ -3,16 +3,18 @@ Simple examples for running with Tracer-X KLEE
 
 Copyright 2015, 2016 National University of Singapore
 
+This software includes third-party software. Some sample programs are from LLBMC 2013.1 distribution, modified for running with KLEE. The LLBMC license information is included in the `license/LLBMC_LICENSE` file. This software also includes GNU Coreutils 6.10: Refer to its license in `license/COPYING`.
+
 To run the examples using KLEE, first edit Makefile.common to set the
 right variable values for your system.
 
 Each directory except **utils** contains a suite of simple examples.
 
-- **basic**  - Basic examples. Some examples are from LLBMC 2013.1 distribution, but modified for running with KLEE. The LLBMC license information is included in the `license/LLBMC_LICENSE` file.
+- **basic**  - Basic examples. 
 
 - **abstract** - Examples for testing `klee_abstract` API.
 
-- **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials. Some examples from Hansen, Schachte, Sondergaard's paper *State Joining and Splitting for the Symbolic Execution of Binaries.* These test various aspects of symbolic execution.
+- **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials.
 
 - **llbmc-bench** - Examples of C/C++ programs, with the fix suggested by Jonas Wagner. There are several modifications from the original version at http://llbmc.org/files/downloads/llbmc-bench-1.1.tgz for running with KLEE, e.g., replaced LLBMC API calls with the corresponding KLEE API calls.
 
