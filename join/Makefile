@@ -10,7 +10,7 @@ EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,
 # --sym-arg
 PROGRAM_OPTIONS=
 
-JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum test-bubble9
+JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum test-bubble9 test-png_sig_cmp
 
 default: ${JOIN_TARGETS}
 
