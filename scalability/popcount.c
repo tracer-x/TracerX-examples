@@ -1,3 +1,9 @@
+/* KLEE adaptation of popcount.c in LLBMC 2013.1
+ * Portions Copyright 2016 National University of Singapore
+ *
+ * See also LLBMC copyright and license in license/LLBMC_LICENSE.
+ */
+
 #include <stdint.h>
 #include <assert.h>
 #include <klee/klee.h>

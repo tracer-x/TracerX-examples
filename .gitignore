@@ -1,6 +1,14 @@
+.project
+.cproject
 autom4te.cache
 config.log
 config.status
+environ.sh
+Makefile.common
+*/*.bc
+*/*.ll
+*/*.klee
+*/*.stpklee
 coreutils/coreutils-6.10/autom4te.cache/requests
 coreutils/coreutils-6.10/config.h.in
 coreutils/coreutils-6.10/doc/coreutils.info
@@ -10,11 +18,4 @@ coreutils/coreutils-6.10/obj-llvm
 coreutils/coreutils-6.10/obj-gcov
 coreutils/sandbox
 coreutils/test.env
-Makefile.common
-/.project
-/.cproject
-*/*.bc
-*/*.ll
-*/*.klee
-*/*.stpklee
-
+utils/treecmp

@@ -1,28 +1,31 @@
-Simple examples for running with KLEE
--------------------------------------
+Simple examples for running with Tracer-X KLEE
+----------------------------------------------
 
 Copyright 2015, 2016 National University of Singapore
+
+This software includes third-party software. Some sample programs are from LLBMC 2013.1 distribution, modified for running with KLEE. The LLBMC license information is included in the `license/LLBMC_LICENSE` file. This software also includes GNU Coreutils 6.10: Refer to its license in `license/COPYING`.
 
 To run the examples using KLEE, first edit Makefile.common to set the
 right variable values for your system.
 
-Each directory contains a suite of simple examples.
+Each directory except **utils** contains a suite of simple examples.
 
-- **basic**  - Basic examples.
+- **basic**  - Basic examples. 
 
 - **abstract** - Examples for testing `klee_abstract` API.
 
-- **hansen** - Examples from Hansen, Schachte, Sondergaard's paper *State Joining and Splitting for the Symbolic Execution of Binaries.* These test various aspects of symbolic execution.
-
-- **llbmc** - Examples from LLBMC 2013.1 distribution. The examples were modified on 17 November 2015 for running with KLEE, e.g., adding main method and replaced LLBMC API calls with the corresponding KLEE API calls. The LLBMC license information is included in the `license/LLBMC_LICENSE` file.
-
-- **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials
+- **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials.
 
 - **llbmc-bench** - Examples of C/C++ programs, with the fix suggested by Jonas Wagner. There are several modifications from the original version at http://llbmc.org/files/downloads/llbmc-bench-1.1.tgz for running with KLEE, e.g., replaced LLBMC API calls with the corresponding KLEE API calls.
 
-- **join** - Examples for testing `klee_join` API.
+- **join** - Examples for testing `klee_join` API. This directory also contains
+academic programs focusing on program equivalence analysis, with an
+example taken from [KLEE OSDI paper 2008]
+(https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf).
 
 - **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
+
+- **utils** - Scripts and other utilities.
 
 Running
 -------
@@ -37,7 +40,7 @@ To run any of the examples, first you need to execute the provided `configure` s
 ```
 - The following option is relevant only for running **join** examples
 ```
-  --with-clpr             The directory of CLPR (defaults to /usr/local)
+  --with-clpr             The directory of CLP(R) (defaults to /usr/local)
 ```
 - The following options are relevant only for running **coreutils** examples
 ```

@@ -1,7 +1,11 @@
-/*
+/* KLEE adaptation of openssl.c in LLBMC 2013.1
+ * Portions Copyright 2016 National University of Singapore
+ *
  * This is a version of openssl.c with the out-of-bound
  * error after the loop fixed. (Thanks to the LLBMC team
  * for discussing.)
+ *
+ * See also LLBMC copyright and license in license/LLBMC_LICENSE.
  */
 
 #include <stdlib.h>

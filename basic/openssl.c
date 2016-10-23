@@ -1,8 +1,7 @@
-/*
- * openssl.c from LLBMC test programs.
- * Copyright (c) 2010-2013 Stephan Falke, Florian Merz, Carsten Sinz
+/* KLEE adaptation of openssl.c in LLBMC 2013.1
+ * Portions Copyright 2016 National University of Singapore
  *
- * See license/LLBMC_LICENSE for the license.
+ * See also LLBMC copyright and license in license/LLBMC_LICENSE.
  */
 
 #include <stdlib.h>
