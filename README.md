@@ -3,7 +3,7 @@ Simple examples for running with Tracer-X KLEE
 
 Copyright 2015, 2016 National University of Singapore
 
-This software includes third-party software. Some sample programs are from LLBMC 2013.1 distribution, modified for running with KLEE. The LLBMC license information is included in the `license/LLBMC_LICENSE` file. This software also includes GNU Coreutils 6.10: Refer to its license in `license/COPYING`.
+This software includes third-party software, including some sample programs are from LLBMC 2013.1 distribution modified for running with KLEE, GNU Coreutils 6.10, and portions of libPNG. Their license information is included in the `license/LLBMC_LICENSE`, `license/COPYING`, and `license/LIBPNG_LICENSE`.
 
 To run the examples using KLEE, first edit Makefile.common to set the
 right variable values for your system.
