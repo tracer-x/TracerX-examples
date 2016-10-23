@@ -33,11 +33,11 @@
 
 #include <klee/klee.h>
 
-#define bool unsigned char
+#define bool signed char
 #define false 0
-#define true 0
+#define true 1
 #define _(X) X
-#define FATAL_ERROR(X) fprintf(stderr, X)
+#define FATAL_ERROR(X) exit(1)
 #define isblank(c) ((c) == ' ' || (c) == '\t')
 #define ISDIGIT(c) ((unsigned int)(c) - '0' <= 9)
 #define TYPE_SIGNED(t) (!((t)0 < (t) - 1))
