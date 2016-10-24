@@ -12,6 +12,9 @@ PROGRAM_OPTIONS=
 
 JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum test-bubble9 test-png_sig_cmp test-set_fields
 
+# Standard targets
+TARGETS=$(patsubst %.c,%.klee,$(wildcard *c))
+
 default: ${JOIN_TARGETS}
 
 include ../Makefile.common
@@ -97,7 +100,7 @@ test-sum: sum.bc
 	done
 
 test-bubble9: bubble9.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=bubble_max.clpr -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=bubble_max.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
@@ -107,7 +110,7 @@ test-bubble9: bubble9.bc
 
 test-png_sig_cmp: png_sig_cmp.bc
 	# In the future we need to add -use-clpr= option here
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
@@ -116,7 +119,7 @@ test-png_sig_cmp: png_sig_cmp.bc
 	done
 
 test-set_fields: set_fields.bc
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=set_fields.clpr -output-dir=$@ $<
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=set_fields.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
 	# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
