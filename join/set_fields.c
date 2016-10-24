@@ -210,6 +210,9 @@ static bool set_fields(const char *fieldstr) {
      It also sets EOL_RANGE_START if appropriate.  */
 
   for (;;) {
+    klee_join("set_fields", dash_found, eol_range_start, field_found, fieldstr,
+              in_digits, initial, lhs_specified, rhs_specified, value);
+
     if (*fieldstr == '-') {
       in_digits = false;
       /* Starting a range. */

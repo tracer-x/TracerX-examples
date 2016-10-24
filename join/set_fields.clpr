@@ -6,10 +6,27 @@ correct_range_pair(Low, High) :-
 incorrect_range_pair(Low, High) :-
     Low = 0; High = 0.
 
-set_fields(_H, DashFound, _EolRangeStart, _FieldFound,
-	   FieldStr, _InDigits,
-	   _Initial, _LhsSpecified, _RhsSpecified,
-	   _Value) :-
+set_fields_recurse_when_correct(_H, _DashFound, _EolRangeStart, _FieldFound, _FieldStr, _InDigits, Initial, _LhsSpecified, _RhsSpecified, Value) :-
+    incorrect_range_pair(Initial, Value).
+set_fields_recurse_when_correct(H, DashFound, EolRangeStart, FieldFound, FieldStr, InDigits, Initial, LhsSpecified, RhsSpecified, Value) :-
+    correct_range_pair(Initial, Value),
+    set_fields_recurse(H, DashFound, EolRangeStart, FieldFound, FieldStr, InDigits, Initial, LhsSpecified, RhsSpecified, Value).
+
+set_fields_recurse(H, _DashFound, _EolRangeStart, _FieldFound, FieldStr, _InDigits, _Initial, _LhsSpecified, _RhsSpecified, _Value) :-
+    mcc_select(H, FieldStr, 48).
+
+set_fields_recurse(H, DashFound, EolRangeStart, _FieldFound, FieldStr, InDigits, Initial, _LhsSpecified, _RhsSpecified, _Value) :-
+    ( Tmp0 < 48 ; Tmp0 > 48 ),
+    mcc_select(H, FieldStr, Tmp0),
+    NextFieldFound = 1,
+    NextValue = 0,
+    NextFieldStr = FieldStr + 1,
+    NextLhsSpecified = 0,
+    NextRhsSpecified = 0,
+    set_fields(H, DashFound, EolRangeStart, NextFieldFound, NextFieldStr, InDigits, Initial, NextLhsSpecified, NextRhsSpecified, NextValue).
+
+
+set_fields(H, DashFound, _EolRangeStart, _FieldFound, FieldStr, _InDigits, _Initial, _LhsSpecified, _RhsSpecified, _Value) :-
     mcc_select(H, FieldStr, 45),
     DashFound = 1.
 
@@ -37,7 +54,7 @@ set_fields(H, DashFound, _EolRangeStart, _FieldFound,
     ( mcc_select(H, FieldStr, 44) ;
       mcc_select(H, FieldStr, 9) ;
       mcc_select(H, FieldStr, 32) ;
-      mcc_select(H, FieldStr, 48) ),
+      mcc_select(H, FieldStr, 0) ),
     NextInDigits = 0,
     ( DashFound = 1, NextDashFound = 0,
       (
@@ -59,112 +76,22 @@ set_fields(H, DashFound, _EolRangeStart, _FieldFound,
 		  (
 		      ( EolRangeStart <= Value,
 			NextEolRangeStart = Initial,
-			NextFieldFound = 1,
-			NextValue = 0,
-			( mcc_select(H, FieldStr, 48) ;
-			  ( (Tmp0 < 48 ; Tmp0 > 48 ),
-			    mcc_select(H, FieldStr, Tmp0),
-			    NextFieldStr = FieldStr + 1,
-			    NextLhsSpecified = 0,
-			    NextRhsSpecified = 0,
-			    set_fields(H, NextDashFound,
-				       NextEolRangeStart,
-				       NextFieldFound, NextFieldStr,
-				       InDigits, Initial,
-				       NextLhsSpecified,
-				       NextRhsSpecified,
-				       NextValue) )
-			) ) ;
+			set_fields_recurse(H, NextDashFound, NextEolRangeStart, FieldFound, FieldStr, NextInDigits, Initial, LhsSpecified, RhsSpecified, Value)
+		      ) ;
 		      ( EolRangeStart > Value,
-			( ( correct_range_pair(Initial, Value),
-			    NextFieldFound = 1,
-			    NextValue = 0,
-			    NextFieldFound = 1,
-			    NextValue = 0,
-			    ( mcc_select(H, FieldStr, 48) ;
-			      ( (Tmp1 < 48 ; Tmp1 > 48 ),
-				mcc_select(H, FieldStr, Tmp1),
-				NextFieldStr = FieldStr + 1,
-				NextLhsSpecified = 0,
-				NextRhsSpecified = 0,
-				set_fields(H, NextDashFound,
-					   NextEolRangeStart,
-					   NextFieldFound,
-					   NextFieldStr,
-					   InDigits, Initial,
-					   NextLhsSpecified,
-					   NextRhsSpecified,
-					   NextValue) ) )
-			  ) ;
-			  ( incorrect_range_pair(Initial, Value) ) )
+			set_fields_recurse_when_correct(H, NextDashFound, NextEolRangeStart, FieldFound, FieldStr, NextInDigits, Initial, LhsSpecified, RhsSpecified, Value)
 		      )
 		  )
 		) ;
 		( EolRangeStart = 0,
-		  (
-		      (
-			  correct_range_pair(Initial, Value),
-			  NextFieldFound = 1,
-			  NextValue = 0,
-			  (
-			      mcc_select(H, FieldStr, 48) ;
-			      (
-				  (Tmp2 < 48 ; Tmp2 > 48),
-				  mcc_select(H, FieldStr, Tmp2),
-				  NextFieldStr = FieldStr + 1,
-				  NextLhsSpecified = 0,
-				  NextRhsSpecified = 0,
-				  set_fields(H, NextDashFound,
-					     EolRangeStart,
-					     NextFieldFound,
-					     NextFieldStr,
-					     InDigits, Initial,
-					     NextLhsSpecified,
-					     NextRhsSpecified,
-					     NextValue )
-			      )
-			  )
-		      ) ;
-		      (
-			  incorrect_range_pair(Initial, Value)
-		      )
-		  )
+		  set_fields_recurse_when_correct(H, NextDashFound, EolRangeStart, FieldFound, FieldStr, NextInDigits, Initial, LhsSpecified, RhsSpecified, Value)
 		)
 	    )
 	  )
       )
     ) ;
-    (
-	DashFound = 0,
-	(
-	    (
-		correct_range_pair(Initial, Value),
-		NextValue = 0,
-		NextFieldFound = 1,
-		(
-		    mcc_select(H, FieldStr, 48) ;
-		    (
-			(Tmp3 < 48 ; Tmp3 > 48 ),
-			mcc_select(H, FieldStr, Tmp3),
-			NextFieldStr = FieldStr + 1,
-			NextLhsSpecified = 0,
-			NextRhsSpecified = 0,
-			set_fields(H, DashFound,
-				   EolRangeStart,
-				   NextFieldFound,
-				   NextFieldStr,
-				   InDigits, Initial,
-				   NextLhsSpecified,
-				   NextRhsSpecified,
-				   NextValue )
-		    )
-		),
-			   
-	    ) ;
-	    (
-		incorrect_range_pair(Initial, Value)
-	    )
-	)
+    ( DashFound = 0,
+      set_fields_recurse_when_correct(H, DashFound, EolRangeStart, FieldFound, FieldStr, NextInDigits, Initial, LhsSpecified, RhsSpecified, Value)
     ).
       
 set_fields(H, DashFound, EolRangeStart, FieldFound,
@@ -175,13 +102,18 @@ set_fields(H, DashFound, EolRangeStart, FieldFound,
     mcc_select(H, FieldStr, Tmp0),
     NextInDigits = 1,
     (
-	( DashFound = 1, NextRhsSpecified = 1 ) ;
-	( DashFound = 0, NextLhsSpecified = 1 )
+	( DashFound = 1, NextRhsSpecified = 1, NextLhsSpecified = LhsSpecified ) ;
+	( DashFound = 0, NextRhsSpecified = RhsSpecified, NextLhsSpecified = 1 )
     ),
     NextValue = Value * 10 + (Tmp0 - 48),
     NextFieldStr = FieldStr + 1,
-    set_fields(H, DashFound, EolRangeStart, FieldFound,
-	       NextFieldStr, NextInDigits,
-	       Initial, LhsSpecified, RhsSpecified,
-	       NextValue).
+    set_fields(H, DashFound, EolRangeStart, FieldFound, NextFieldStr, NextInDigits, Initial, NextLhsSpecified, NextRhsSpecified, NextValue).
 	    
+set_fields(H, _DashFound, _EolRangeStart, _FieldFound, FieldStr, _InDigits, _Initial, _LhsSpecified, _RhsSpecified, _Value) :-
+    ( Tmp0 >= 1, Tmp0 <= 8 ;
+      Tmp0 >= 10, Tmp0 <= 31 ;
+      Tmp0 >= 33, Tmp0 <= 43 ;
+      Tmp0 = 46 ;
+      Tmp0 >= 58 ),
+    mcc_select(H, FieldStr, Tmp0).
+    

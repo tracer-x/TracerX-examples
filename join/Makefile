@@ -10,7 +10,7 @@ EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,
 # --sym-arg
 PROGRAM_OPTIONS=
 
-JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum test-bubble9 test-png_sig_cmp
+JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum test-bubble9 test-png_sig_cmp test-set_fields
 
 default: ${JOIN_TARGETS}
 
@@ -115,4 +115,12 @@ test-png_sig_cmp: png_sig_cmp.bc
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
 	done
 
+test-set_fields: set_fields.bc
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -use-clpr=set_fields.clpr -output-dir=$@ $<
+	mv -f /tmp/clpr-* $@/clpr.log
+	# Create SVGs from *.dot files
+	for DOTFILE in $@/*.dot ; do \
+		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
+		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+	done
 
