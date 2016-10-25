@@ -80,6 +80,37 @@ struct range_pair {
   size_t hi;
 };
 
+size_t partition(struct range_pair *a, size_t lo, size_t hi) {
+  struct range_pair pivot = a[hi - 1];
+  size_t i = lo;
+  for (size_t j = lo; j < hi - 2; ++j) {
+    int a_start = a[j].lo;
+    int b_start = pivot.lo;
+    if ((a_start < b_start ? -1 : a_start > b_start) <= 0) {
+      struct range_pair tmp = a[i];
+      a[i] = a[j];
+      a[j] = tmp;
+      ++i;
+    }
+  }
+  struct range_pair tmp = a[i];
+  a[i] = a[hi - 1];
+  a[hi - 1] = tmp;
+  return i;
+}
+
+void my_qsort_internal(struct range_pair *a, size_t lo, size_t hi) {
+  if (lo < hi - 1) {
+    size_t p = partition(a, lo, hi);
+    my_qsort_internal(a, lo, p - 1);
+    my_qsort_internal(a, p + 1, hi);
+  }
+}
+
+void my_qsort(struct range_pair *base, size_t nmemb) {
+  my_qsort_internal(base, 0, nmemb);
+}
+
 /* Change the size of an allocated block of memory P to N bytes,
    with error checking.  */
 
@@ -158,14 +189,6 @@ static size_t eol_range_start;
    (K <= MAX_RANGE_ENDPOINT and is_printable_field(K))
     || (EOL_RANGE_START > 0 && K >= EOL_RANGE_START).  */
 static unsigned char *printable_field;
-
-/* Comparison function for qsort to order the list of
-   struct range_pairs.  */
-static int compare_ranges(const void *a, const void *b) {
-  int a_start = ((const struct range_pair *)a)->lo;
-  int b_start = ((const struct range_pair *)b)->lo;
-  return a_start < b_start ? -1 : a_start > b_start;
-}
 
 static inline void mark_printable_field(size_t i) {
   size_t n = i / CHAR_BIT;
@@ -327,7 +350,7 @@ static bool set_fields(const char *fieldstr) {
 
   printable_field = xzalloc(max_range_endpoint / CHAR_BIT + 1);
 
-  qsort(rp, n_rp, sizeof(rp[0]), compare_ranges);
+  my_qsort(rp, n_rp);
 
   /* Set the array entries corresponding to integers in the ranges of RP.  */
   for (i = 0; i < n_rp; i++) {
