@@ -24,7 +24,7 @@
 
    Rewrite cut_fields and cut_bytes -- Jim Meyering.  */
 
-#define INPUT_SIZE 5
+#define INPUT_SIZE 7
 
 #include <limits.h>
 #include <stdio.h>
