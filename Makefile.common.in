@@ -124,7 +124,7 @@ standard-clean:
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .klee,,$<) $$KTEST ) ; \
 	done	
 	llvm-cov -gcno=$(subst .klee,.gcno,$<) -gcda=$(subst .klee,.gcda,$<) > $@
-	echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .klee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	@echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .klee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 .stpklee.stpcov:
 	####################################################################
@@ -146,7 +146,7 @@ standard-clean:
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .stpklee,,$<) $$KTEST ) ; \
 	done	
 	llvm-cov -gcno=$(subst .stpklee,.gcno,$<) -gcda=$(subst .stpklee,.gcda,$<) > $@
-	echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .stpklee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	@echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .stpklee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 .klee.inputs:
 	for KTEST in $</*.ktest ; do \
