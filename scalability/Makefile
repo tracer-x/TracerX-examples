@@ -134,9 +134,15 @@ clean: standard-clean
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
 	for KTEST in ${OUTPUT_DIR}/*.ktest ; do \
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done	
-	llvm-cov -gcno=$*.gcno -gcda=$*.gcda > ${OUTPUT_DIR}/$*.cov
-	@echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' ${OUTPUT_DIR}/$*.cov |wc -l` of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	done
+	touch ${OUTPUT_DIR}/$*.cov
+	if [ -e $*.gcda ] ; then \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> ${OUTPUT_DIR}/$*.cov ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' ${OUTPUT_DIR}/$*.cov |wc -l` ; \
+	else \
+		LINE_COVERAGE=0 ; \
+	fi ; \
+	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 core-experiment:
 	for program in ${EXPERIMENT_SET} ; \

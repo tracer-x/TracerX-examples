@@ -92,6 +92,7 @@ standard-clean:
 			fi ; \
 		fi ; \
 	fi
+
 # For running KLEE with STP without interpolation
 .bc.stpklee:
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=stp -output-dir=$@ $< ${PROGRAM_OPTIONS}
@@ -119,12 +120,18 @@ standard-clean:
 	# See the generated .cov file for the detailed execution count of  #
 	# each line.                                                       #
 	####################################################################
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $(subst .klee,.c,$<) -o $(subst .klee,,$<)
+	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
 	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .klee,,$<) $$KTEST ) ; \
-	done	
-	llvm-cov -gcno=$(subst .klee,.gcno,$<) -gcda=$(subst .klee,.gcda,$<) > $@
-	@echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .klee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+	done
+	touch $@
+	if [ -e $*.gcda ] ; then \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
+	else \
+		LINE_COVERAGE=0 ; \
+	fi ; \
+	echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 .stpklee.stpcov:
 	####################################################################
@@ -141,12 +148,18 @@ standard-clean:
 	# See the generated .stpcov file for the detailed execution count  #
 	# of each line.                                                    #
 	####################################################################
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $(subst .stpklee,.c,$<) -o $(subst .stpklee,,$<)
+	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
 	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $(subst .stpklee,,$<) $$KTEST ) ; \
-	done	
-	llvm-cov -gcno=$(subst .stpklee,.gcno,$<) -gcda=$(subst .stpklee,.gcda,$<) > $@
-	@echo Line coverage = `grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` of `sloccount $(subst .stpklee,.c,$<) |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+	done
+	touch $@ 
+	if [ -e $*.gcda ] ; then \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
+	else \
+		LINE_COVERAGE=0 ; \
+	fi ; \
+	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 .klee.inputs:
 	for KTEST in $</*.ktest ; do \
