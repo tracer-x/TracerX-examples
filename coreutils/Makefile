@@ -7,7 +7,6 @@
 
 COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
-COREUTILS_GCOV_DIR=${COREUTILS_DIR}/obj-gcov
 COREUTILS_SRC=${COREUTILS_DIR}/src
 CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_SRC} -I/${COREUTILS_DIR}/lib
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
@@ -63,6 +62,8 @@ EXPERIMENT_CSV=experiment.csv
 
 EXPERIMENT_TIMEOUT=3600
 
+LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
+
 KLEE_TARGETS1=$(EXPERIMENT_SET:=.klee1)
 KLEE_TARGETS2=$(EXPERIMENT_SET:=.klee2)
 TRACERX_TARGETS1=$(EXPERIMENT_SET:=.tracerx1)
@@ -75,29 +76,14 @@ all: ${KLEE_TARGETS} ${KLEESTP_TARGETS}
 
 include ../Makefile.common
 
-build: ${COREUTILS_LLVM_DIR} ${COREUTILS_GCOV_DIR} test.env
+build: ${COREUTILS_LLVM_DIR} test.env
 
 test.env:
 	env -i ${BASH} -c '( source testing-env.sh ; env > test.env )'
 
-${COREUTILS_GCOV_DIR}:
-	@echo =================================================================
-	@echo Building Coreutils using GCC ...
-	@echo =================================================================
-	rm -rf ${COREUTILS_GCOV_DIR}	
-	mkdir ${COREUTILS_GCOV_DIR}
-	( cd ${COREUTILS_GCOV_DIR}; \
-		export PATH=${EXTRA_PATH}:$$PATH; \
-		unset C_INCLUDE_PATH; \
-		unset CPLUS_INCLUDE_PATH; \
-		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage" --enable-install-program=arch,hostname ; \
-		make; \
-		make -C src arch hostname \
-	)
-
 # In the following target:
-# * We build arch and hostname after make is executed, as it appears that
-#   make does not build them.
+# * We build src, arch and hostname after make is executed, as it
+#   appears that make does not build them.
 # * We skip whole-program bitcode creation for groups as it is a script.
 ${COREUTILS_LLVM_DIR}:
 	@echo =================================================================
@@ -113,9 +99,9 @@ ${COREUTILS_LLVM_DIR}:
 		export CXX=${WHOLE_PROGRAM_LLVM}/wllvm++; \
 		unset C_INCLUDE_PATH; \
 		unset CPLUS_INCLUDE_PATH; \
-		../configure --disable-nls CFLAGS="-g" --enable-install-program=arch,hostname ; \
+		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage" --enable-install-program=arch,hostname ; \
 		make ; \
-		rm -f src/*.gcov \
+		make -C src arch hostname \
 	)
 	@echo =================================================================
 	@echo Creating whole-program bitcode file for each utility ...
@@ -128,26 +114,28 @@ ${COREUTILS_LLVM_DIR}:
 	)
 
 %.klee1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -no-interpolation -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -no-interpolation -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -no-interpolation -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tracerx1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tracerx2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tracerx3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tracerx4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
-# This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
-# can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
-%.klee-experiment: build
+# This target can be used for running experiments. The conducted
+# experiments involved different option settings of KLEE and Tracer-X
+# which can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2,
+# %.tracerx3, and %.tracerx4 target.
+%.klee: build
 	# The testing sandbox reconstructed here is from
 	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
 	@echo =================================================================
@@ -199,147 +187,83 @@ ${COREUTILS_LLVM_DIR}:
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
 	if [ $* = "arch" ]; then \
-		GCOV_OBJECTS="uname uname-arch" ; \
+		LCOV_OBJECTS="uname uname-arch" ; \
+		LCOV_SOURCES="uname uname-arch" ; \
 	elif [ $* = "[" ]; then \
-		GCOV_OBJECTS="lbracket" ; \
+		LCOV_OBJECTS="lbracket" ; \
+		LCOV_SOURCES="lbracket" ; \
 	elif [ $* = "cp" ]; then \
-		GCOV_OBJECTS="cp copy cp-hash" ; \
+		LCOV_OBJECTS="cp copy cp-hash" ; \
+		LCOV_SOURCES="cp copy cp-hash" ; \
 	elif [ $* = "dir" ]; then \
-		GCOV_OBJECTS="ls ls-dir" ; \
+		LCOV_OBJECTS="ls ls-dir" ; \
+		LCOV_SOURCES="ls ls-dir" ; \
 	elif [ $* = "vdir" ]; then \
-		GCOV_OBJECTS="ls ls-vdir" ; \
+		LCOV_OBJECTS="ls ls-vdir" ; \
+		LCOV_SOURCES="ls ls-vdir" ; \
 	elif [ $* = "ls" ]; then \
-		GCOV_OBJECTS="ls ls-ls" ; \
+		LCOV_OBJECTS="ls ls-ls" ; \
+		LCOV_SOURCES="ls ls-ls" ; \
 	elif [ $* = "chown" ]; then \
-		GCOV_OBJECTS="chown chown-core" ; \
+		LCOV_OBJECTS="chown chown-core" ; \
+		LCOV_SOURCES="chown chown-core" ; \
 	elif [ $* = "chgrp" ]; then \
-		GCOV_OBJECTS="chgrp chown-core" ; \
+		LCOV_OBJECTS="chgrp chown-core" ; \
+		LCOV_SOURCES="chgrp chown-core" ; \
 	elif [ $* = "mv" ]; then \
-		GCOV_OBJECTS="mv remove copy cp-hash" ; \
+		LCOV_OBJECTS="mv remove copy cp-hash" ; \
+		LCOV_SOURCES="mv remove copy cp-hash" ; \
 	elif [ $* = "rm" ]; then \
-		GCOV_OBJECTS="rm remove" ; \
+		LCOV_OBJECTS="rm remove" ; \
+		LCOV_SOURCES="rm remove" ; \
 	elif [ $* = "uname" ]; then \
-		GCOV_OBJECTS="uname uname-uname" ; \
+		LCOV_OBJECTS="uname uname-uname" ; \
+		LCOV_SOURCES="uname uname-uname" ; \
+	elif [ $* = "md5sum" ]; then \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha1sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha224sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha256sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha384sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha512sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	else \
-		GCOV_OBJECTS=$* ; \
+		LCOV_OBJECTS=$* ; \
+		LCOV_SOURCES=$* ; \
 	fi ; \
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
-	( cd ${COREUTILS_GCOV_DIR}/src ; \
+	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; \
+	( cd ${COREUTILS_LLVM_DIR}/src ; \
 		${KLEE_REPLAY} $* ${OUTPUT_DIR}/*.ktest ; \
-		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
-			gcov -o $$GCOV_OBJ $* ; \
-		done \
-	) > ${OUTPUT_DIR}/GcovLog.txt 2>&1
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
-	@echo =================================================================
-	@echo Measure number of lines of code by using SLOCCount...
-	@echo =================================================================
-	sloccount ${COREUTILS_SRC}/$*.c > ${OUTPUT_DIR}/SLocCountLog.txt 2>&1
-
-%.klee: build
-	# The testing sandbox reconstructed here is from
-	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
-	@echo =================================================================
-	@echo Creating the sandbox ...
-	@echo =================================================================
-	mkdir sandbox
-	( cd sandbox ; \
-		ln -s /dev/null a ; \
-		ln -s /dev/random b ; \
-		echo "#!/bin/sh" > c ; \
-		echo "echo \"Hello world!\"" >> c ; \
-		chmod +x c ; \
-		touch d ; \
-		mkdir e \
-	)
-	@echo =================================================================
-	@echo Running Tracer-X on $* ...
-	@echo =================================================================
-	if [ $* = "dd" ]; then \
-		PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
-	elif [ $* = "dircolors" ]; then \
-		PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
-	elif [ $* = "echo" ]; then \
-		PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
-	elif [ $* = "expr" ]; then \
-		PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
-	elif [ $* = "mknod" ]; then \
-		PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
-	elif [ $* = "od" ]; then \
-		PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
-	elif [ $* = "pathchk" ]; then \
-		PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
-	elif [ $* = "printf" ]; then \
-		PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
-	else \
-		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
-	fi ; \
-	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_OPTIONS} -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
-	# Delete the sandbox
-	rm -rf sandbox sandbox.temps
-	@echo =================================================================
-	@echo Create SVGs from tree.dot file if any ...
-	@echo =================================================================
-	if [ -e ${CURDIR}/$@/tree.dot ]; then \
-		dot -Tsvg ${CURDIR}/$@/tree.dot -o ${CURDIR}/$@/$*.svg ; \
-	fi
-	@echo =================================================================
-	@echo Running generated tests to compute coverage ...
-	@echo =================================================================
-	if [ $* = "arch" ]; then \
-		GCOV_OBJECTS="uname uname-arch" ; \
-	elif [ $* = "[" ]; then \
-		GCOV_OBJECTS="lbracket" ; \
-	elif [ $* = "cp" ]; then \
-		GCOV_OBJECTS="cp copy cp-hash" ; \
-	elif [ $* = "dir" ]; then \
-		GCOV_OBJECTS="ls ls-dir" ; \
-	elif [ $* = "vdir" ]; then \
-		GCOV_OBJECTS="ls ls-vdir" ; \
-	elif [ $* = "ls" ]; then \
-		GCOV_OBJECTS="ls ls-ls" ; \
-	elif [ $* = "chown" ]; then \
-		GCOV_OBJECTS="chown chown-core" ; \
-	elif [ $* = "chgrp" ]; then \
-		GCOV_OBJECTS="chgrp chown-core" ; \
-	elif [ $* = "mv" ]; then \
-		GCOV_OBJECTS="mv remove copy cp-hash" ; \
-	elif [ $* = "rm" ]; then \
-		GCOV_OBJECTS="rm remove" ; \
-	elif [ $* = "uname" ]; then \
-		GCOV_OBJECTS="uname uname-uname" ; \
-	elif [ $* = "sha1sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
-	elif [ $* = "sha224sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
-	elif [ $* = "sha256sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
-	elif [ $* = "sha384sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
-	elif [ $* = "sha512sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
-	else \
-		GCOV_OBJECTS=$* ; \
-	fi ; \
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
-	( cd ${COREUTILS_GCOV_DIR}/src ; \
-		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
-			gcov -o $$GCOV_OBJ $* ; \
-		done \
-	) > ${CURDIR}/$@/GcovLog.txt 2>&1
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
+		LINE_COVERAGE_TOTAL=0 ; \
+		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
+			LINE_COVERAGE=0 ; \
+			if [ -e $$LCOV_OBJ.gcda ] ; then \
+				LINE_COVERAGE=`llvm-cov -gcno=$$LCOV_OBJ.gcno -gcda=$$LCOV_OBJ.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			fi ; \
+			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
+		done ; \
+		LOC_TOTAL=0 ; \
+		for LCOV_SRC in $$LCOV_SOURCES ; do \
+			LOC=0 ; \
+			if [ -e ${COREUTILS_SRC}/$$LCOV_SRC.c ] ; then \
+				LOC=`sloccount ${COREUTILS_SRC}/$$LCOV_SRC.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
+			fi ; \
+			LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
+		done ; \
+		( echo -n $$LINE_COVERAGE_TOTAL > ${OUTPUT_DIR}/LcovLog.txt ) ; \
+		( echo -n $$LOC_TOTAL > ${OUTPUT_DIR}/SLocCountLog.txt ) \
+	) ; \
+	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; 
 
 %.stpklee: build
 	# The testing sandbox reconstructed here is from
@@ -387,54 +311,89 @@ ${COREUTILS_LLVM_DIR}:
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
 	if [ $* = "arch" ]; then \
-		GCOV_OBJECTS="uname uname-arch" ; \
+		LCOV_OBJECTS="uname uname-arch" ; \
+		LCOV_SOURCES="uname uname-arch" ; \
 	elif [ $* = "[" ]; then \
-		GCOV_OBJECTS="lbracket" ; \
+		LCOV_OBJECTS="lbracket" ; \
+		LCOV_SOURCES="lbracket" ; \
 	elif [ $* = "cp" ]; then \
-		GCOV_OBJECTS="cp copy cp-hash" ; \
+		LCOV_OBJECTS="cp copy cp-hash" ; \
+		LCOV_SOURCES="cp copy cp-hash" ; \
 	elif [ $* = "dir" ]; then \
-		GCOV_OBJECTS="ls ls-dir" ; \
+		LCOV_OBJECTS="ls ls-dir" ; \
+		LCOV_SOURCES="ls ls-dir" ; \
 	elif [ $* = "vdir" ]; then \
-		GCOV_OBJECTS="ls ls-vdir" ; \
+		LCOV_OBJECTS="ls ls-vdir" ; \
+		LCOV_SOURCES="ls ls-vdir" ; \
 	elif [ $* = "ls" ]; then \
-		GCOV_OBJECTS="ls ls-ls" ; \
+		LCOV_OBJECTS="ls ls-ls" ; \
+		LCOV_SOURCES="ls ls-ls" ; \
 	elif [ $* = "chown" ]; then \
-		GCOV_OBJECTS="chown chown-core" ; \
+		LCOV_OBJECTS="chown chown-core" ; \
+		LCOV_SOURCES="chown chown-core" ; \
 	elif [ $* = "chgrp" ]; then \
-		GCOV_OBJECTS="chgrp chown-core" ; \
+		LCOV_OBJECTS="chgrp chown-core" ; \
+		LCOV_SOURCES="chgrp chown-core" ; \
 	elif [ $* = "mv" ]; then \
-		GCOV_OBJECTS="mv remove copy cp-hash" ; \
+		LCOV_OBJECTS="mv remove copy cp-hash" ; \
+		LCOV_SOURCES="mv remove copy cp-hash" ; \
 	elif [ $* = "rm" ]; then \
-		GCOV_OBJECTS="rm remove" ; \
+		LCOV_OBJECTS="rm remove" ; \
+		LCOV_SOURCES="rm remove" ; \
 	elif [ $* = "uname" ]; then \
-		GCOV_OBJECTS="uname uname-uname" ; \
+		LCOV_OBJECTS="uname uname-uname" ; \
+		LCOV_SOURCES="uname uname-uname" ; \
+	elif [ $* = "md5sum" ]; then \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha1sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha224sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha256sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha384sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	elif [ $* = "sha512sum" ]; then \
-		GCOV_OBJECTS="md5sum" ; \
+		LCOV_OBJECTS="$*-md5sum" ; \
+		LCOV_SOURCES="md5sum" ; \
 	else \
-		GCOV_OBJECTS=$* ; \
+		LCOV_OBJECTS=$* ; \
+		LCOV_SOURCES=$* ; \
 	fi ; \
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; \
-	( cd ${COREUTILS_GCOV_DIR}/src ; \
-		${KLEE_REPLAY} $* ${CURDIR}/$@/*.ktest ; \
-		for GCOV_OBJ in $$GCOV_OBJECTS ; do \
-			gcov -o $$GCOV_OBJ $* ; \
-		done \
-	) > ${CURDIR}/$@/GcovLog.txt 2>&1
-	rm -f ${COREUTILS_GCOV_DIR}/src/*.gcda; 
+	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; \
+	( cd ${COREUTILS_LLVM_DIR}/src ; \
+		${KLEE_REPLAY} $* ${OUTPUT_DIR}/*.ktest ; \
+		LINE_COVERAGE_TOTAL=0 ; \
+		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
+			LINE_COVERAGE=0 ; \
+			if [ -e $$LCOV_OBJ.gcda ] ; then \
+				LINE_COVERAGE=`llvm-cov -gcno=$$LCOV_OBJ.gcno -gcda=$$LCOV_OBJ.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			fi ; \
+			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
+		done ; \
+		LOC_TOTAL=0 ; \
+		for LCOV_SRC in $$LCOV_SOURCES ; do \
+			LOC=0 ; \
+			if [ -e ${COREUTILS_SRC}/$$LCOV_SRC.c ] ; then \
+				LOC=`sloccount ${COREUTILS_SRC}/$$LCOV_SRC.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
+			fi ; \
+			LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
+		done ; \
+		( echo -n $$LINE_COVERAGE_TOTAL > ${OUTPUT_DIR}/LcovLog.txt ) ; \
+		( echo -n $$LOC_TOTAL > ${OUTPUT_DIR}/SLocCountLog.txt ) \
+	) ; \
+	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; 
 
 clean:
-	rm -rf ${KLEE_TARGETS} ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV} ${KLEESTP_TARGETS} sandbox sandbox.temps test.env
+	rm -rf ${KLEE_TARGETS} ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${KLEESTP_TARGETS} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
 
 realclean: clean
-	rm -rf ${COREUTILS_GCOV_DIR} ${COREUTILS_LLVM_DIR} 
+	rm -rf ${COREUTILS_LLVM_DIR} 
 
 core-experiment:
 	for program in ${EXPERIMENT_SET} ; \
@@ -448,10 +407,9 @@ core-experiment:
 	done
 
 # This target is used for collecting data from experimental results into experiment.csv file.
-experiment: core-experiment
+${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	rm -f ${EXPERIMENT_CSV}
-	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,Gcov,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
+	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
@@ -484,12 +442,12 @@ experiment: core-experiment
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
-				if [ -e $$program$$ext/GcovLog.txt ]; then \
-					grep -A1 -P "/$$program.c" ${CURDIR}/$$program$$ext/GcovLog.txt | grep "Lines executed" | sed -E  's/(.*):(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				if [ -e $$program$$ext/LcovLog.txt ]; then \
+					cat $$program$$ext/LcovLog.txt | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				fi ; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
-					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> ${EXPERIMENT_CSV}; \
+					cat ${CURDIR}/$$program$$ext/SLocCountLog.txt | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				fi ; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
@@ -549,8 +507,7 @@ experiment: core-experiment
 	rm -rf ${COREUTILS_SRC}/$*.bc ; \
 
 # This target is used for collecting data from coreutils LLBMC experiment into log-llbmc file.
-experiment-llbmc:
-	rm -f ${LLBMC_OUTPUT_DIR}/log-llbmc.csv ; \
+${LLBMC_EXPERIMENT_CSV}:
 	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
 	for program in ${TARGETS} ; \
 	do \

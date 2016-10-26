@@ -30,7 +30,7 @@ LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
-LLBMC_EXPERIMENT_CSV=${LLBMC_OUTPUT_DIR}/${EXPERIMENT_CSV}
+LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
 BUBBLE_TARGETS=bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
@@ -69,7 +69,7 @@ bubble: ${BUBBLE_TARGETS}
 
 
 clean: standard-clean
-	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV}
+	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
 
 .SUFFIXES: .tr0 .bubble0
 
@@ -158,10 +158,9 @@ core-experiment:
 	done
 
 # This target is used for collecting data from the experiment's result into experiment.csv file.
-experiment: core-experiment
+${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	rm -f ${EXPERIMENT_CSV}
-	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov Line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
+	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
@@ -231,8 +230,7 @@ experiment: core-experiment
 	rm -rf $*.bc ; \
 
 # This target is used for collecting data from LLBMC experiment into CSV file.
-experiment-llbmc:
-	rm -f ${LLBMC_EXPERIMENT_CSV} ; \
+${LLBMC_EXPERIMENT_CSV}:
 	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV} ; \
 	for program in ${EXPERIMENT_SET} ; \
 	do \
