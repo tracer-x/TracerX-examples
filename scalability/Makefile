@@ -17,6 +17,8 @@ EXPERIMENT_SET=Regexp bubble9 adpcm bs cnt compress edn expint fac fibcall inser
 
 EXPERIMENT_CSV=experiment.csv
 
+EXPERIMENT_TIMEOUT=3600
+
 KLEE_TARGETS1=$(EXPERIMENT_SET:=.klee1)
 KLEE_TARGETS2=$(EXPERIMENT_SET:=.klee2)
 TRACERX_TARGETS1=$(EXPERIMENT_SET:=.tracerx1)
@@ -93,22 +95,22 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="--search=dfs -no-interpolation -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=dfs -no-interpolation -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
 
 %.klee2 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
 
 %.tracerx1 : 
-	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
 
 %.tracerx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
 
 %.tracerx3 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
 
 %.tracerx4 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=7200 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
 
 # This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
 # can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
