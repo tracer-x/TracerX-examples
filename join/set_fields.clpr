@@ -5,44 +5,52 @@ correct_range_pair(Low, High) :-
 incorrect_range_pair(Low, High) :-
     Low = 0; High = 0.
 
-set_fields_recurse_when_correct(_H, _DashFound, _EolRangeStart,
-				_FieldStr, _InDigits, Initial,
-				_LhsSpecified, _RhsSpecified, Value)
-				:-
+set_fields_recurse_when_correct([H, DashFound, EolRangeStart,
+				 FieldStr, InDigits, Initial,
+				 LhsSpecified, RhsSpecified, Value],
+				[H, DashFound, EolRangeStart,
+				 FieldStr, InDigits, Initial,
+				 LhsSpecified, RhsSpecified, Value])
+				 :-
     incorrect_range_pair(Initial, Value).
-set_fields_recurse_when_correct(H, DashFound, EolRangeStart, FieldStr,
-				InDigits, Initial, LhsSpecified,
-				RhsSpecified, Value) :-
+set_fields_recurse_when_correct([H, DashFound, EolRangeStart, FieldStr,
+				 InDigits, Initial, LhsSpecified,
+				 RhsSpecified, Value], FinalState) :-
     correct_range_pair(Initial, Value),
-    set_fields_recurse(H, DashFound, EolRangeStart, FieldStr,
-		       InDigits, Initial, LhsSpecified, RhsSpecified,
-		       Value).
+    set_fields_recurse([H, DashFound, EolRangeStart, FieldStr,
+			InDigits, Initial, LhsSpecified, RhsSpecified,
+			Value], FinalState).
 
-set_fields_recurse(H, _DashFound, _EolRangeStart, FieldStr, _InDigits,
-		   _Initial, _LhsSpecified, _RhsSpecified, _Value) :-
+set_fields_recurse([H, DashFound, EolRangeStart, FieldStr, InDigits,
+		    Initial, LhsSpecified, RhsSpecified, Value],
+		   [H, DashFound, EolRangeStart, FieldStr, InDigits,
+		    Initial, LhsSpecified, RhsSpecified, Value]) :-
     mcc_select(H, FieldStr, 48).
 
-set_fields_recurse(H, DashFound, EolRangeStart, FieldStr, InDigits,
-		   Initial, _LhsSpecified, _RhsSpecified, _Value) :-
+set_fields_recurse([H, DashFound, EolRangeStart, FieldStr, InDigits,
+		    Initial, _LhsSpecified, _RhsSpecified, _Value],
+		    FinalState) :-
     ( Tmp0 < 48 ; Tmp0 > 48 ),
     mcc_select(H, FieldStr, Tmp0),
     NextValue = 0,
     NextFieldStr = FieldStr + 1,
     NextLhsSpecified = 0,
     NextRhsSpecified = 0,
-    set_fields(H, DashFound, EolRangeStart, NextFieldStr, InDigits,
-	       Initial, NextLhsSpecified, NextRhsSpecified,
-	       NextValue).
+    set_fields([H, DashFound, EolRangeStart, NextFieldStr, InDigits,
+		Initial, NextLhsSpecified, NextRhsSpecified,
+		NextValue], FinalState).
 
-
-set_fields(H, DashFound, _EolRangeStart, FieldStr, _InDigits,
-	   _Initial, _LhsSpecified, _RhsSpecified, _Value) :-
+set_fields_trans([H, DashFound, EolRangeStart, FieldStr, InDigits, Initial,
+		  LhsSpecified, RhsSpecified, Value],
+		 [H, DashFound, EolRangeStart, FieldStr, InDigits, Initial,
+		  LhsSpecified, RhsSpecified, Value]) :-
     % The character is a dash '-', but dash is already found, so we terminate with error
     mcc_select(H, FieldStr, 45),
     DashFound = 1.
 
-set_fields(H, DashFound, EolRangeStart, FieldStr,
-	   _InDigits, _Initial, LhsSpecified, RhsSpecified, Value) :-
+set_fields_trans([H, DashFound, EolRangeStart, FieldStr, _InDigits,
+		  _Initial, LhsSpecified, RhsSpecified, Value],
+		  FinalState) :-
     % The character is a dash '-', and dash is not yet found
     mcc_select(H, FieldStr, 45),
     DashFound = 0,
@@ -69,12 +77,13 @@ set_fields(H, DashFound, EolRangeStart, FieldStr,
     ),
     % Reset the numeric value to be read to 0
     NextValue = 0,
-    set_fields(H, NextDashFound, EolRangeStart, NextFieldStr,
-	       NextInDigits, NextInitial, LhsSpecified, RhsSpecified,
-	       NextValue).
+    set_fields_trans([H, NextDashFound, EolRangeStart, NextFieldStr,
+		NextInDigits, NextInitial, LhsSpecified, RhsSpecified,
+		NextValue], FinalState).
 
-set_fields(H, DashFound, _EolRangeStart, FieldStr, _InDigits,
-	   _Initial, LhsSpecified, RhsSpecified, Value) :-
+set_fields_trans([H, DashFound, _EolRangeStart, FieldStr, _InDigits,
+	    _Initial, LhsSpecified, RhsSpecified, Value],
+	   FinalState) :-
     % The character is either a comma ',', a tab, a space, or a nil
     ( mcc_select(H, FieldStr, 44) ;
       mcc_select(H, FieldStr, 9) ;
@@ -100,9 +109,10 @@ set_fields(H, DashFound, _EolRangeStart, FieldStr, _InDigits,
 		% We have found 'n-' range from initial value to
 		% end-of-line.
 		NextEolRangeStart = Initial,
-		set_fields(H, NextDashFound, NextEolRangeStart,
-			   FieldStr, NextInDigits, Initial,
-			   LhsSpecified, RhsSpecified, Value)
+		set_fields_trans([H, NextDashFound, NextEolRangeStart,
+			    FieldStr, NextInDigits, Initial,
+			    LhsSpecified, RhsSpecified, Value],
+			   FinalState)
 	    ) ;
 	    (
 		% RHS is specified, which means, we have a range
@@ -124,11 +134,12 @@ set_fields(H, DashFound, _EolRangeStart, FieldStr, _InDigits,
 			% value, may not be contained in the old one
 			% that starts with eol_range_start
 			Initial >= EolRangeStart,
-			set_fields_recurse(H, NextDashFound,
-					   EolRangeStart, FieldStr,
-					   NextInDigits, Initial,
-					   LhsSpecified, RhsSpecified,
-					   Value)
+			set_fields_recurse([H, NextDashFound,
+					    EolRangeStart, FieldStr,
+					    NextInDigits, Initial,
+					    LhsSpecified, RhsSpecified,
+					    Value],
+					   FinalState)
 		    ) ;
 		    (
 			% A range going to the end of line has been
@@ -140,29 +151,31 @@ set_fields(H, DashFound, _EolRangeStart, FieldStr, _InDigits,
 			Initial < EolRangeStart,
 			(
 			    (
-z				% The old range is included in the new
+				% The old range is included in the new
 				% range
 				EolRangeStart <= Value,
 				NextEolRangeStart = Initial,
-				set_fields_recurse(H, NextDashFound,
-						   NextEolRangeStart,
-						   FieldStr, NextInDigits,
-						   Initial, LhsSpecified,
-						   RhsSpecified, Value)
+				set_fields_recurse([H, NextDashFound,
+						    NextEolRangeStart,
+						    FieldStr, NextInDigits,
+						    Initial, LhsSpecified,
+						    RhsSpecified, Value],
+						   FinalState)
 			    ) ;
 			    (
 				% The old range is not included in the
 				% new range
 				EolRangeStart > Value,
-				set_fields_recurse_when_correct(H,
-								NextDashFound,
-								EolRangeStart,
-								FieldStr,
-								NextInDigits,
-								Initial,
-								LhsSpecified,
-								RhsSpecified,
-								Value)
+				set_fields_recurse_when_correct([H,
+								 NextDashFound,
+								 EolRangeStart,
+								 FieldStr,
+								 NextInDigits,
+								 Initial,
+								 LhsSpecified,
+								 RhsSpecified,
+								 Value],
+								FinalState)
 			    )
 			)
 		    ) ;
@@ -170,15 +183,16 @@ z				% The old range is included in the new
 			% Range specification did not go to the end of
 			% line
 			EolRangeStart = 0,
-			set_fields_recurse_when_correct(H,
-							NextDashFound,
-							EolRangeStart,
-							FieldStr,
-							NextInDigits,
-							Initial,
-							LhsSpecified,
-							RhsSpecified,
-							Value)
+			set_fields_recurse_when_correct([H,
+							 NextDashFound,
+							 EolRangeStart,
+							 FieldStr,
+							 NextInDigits,
+							 Initial,
+							 LhsSpecified,
+							 RhsSpecified,
+							 Value],
+							FinalState)
 		    )
 		)
 	    )
@@ -187,14 +201,16 @@ z				% The old range is included in the new
     (
 	% Dash was previously found; simply recurse
 	DashFound = 0,
-	set_fields_recurse_when_correct(H, DashFound, EolRangeStart,
-					FieldStr, NextInDigits,
-					Initial, LhsSpecified,
-					RhsSpecified, Value)
+	set_fields_recurse_when_correct([H, DashFound, EolRangeStart,
+					 FieldStr, NextInDigits,
+					 Initial, LhsSpecified,
+					 RhsSpecified, Value],
+					FinalState)
     ).
       
-set_fields(H, DashFound, EolRangeStart, FieldStr, InDigits, Initial,
-	   LhsSpecified, RhsSpecified, Value) :-
+set_fields_trans([H, DashFound, EolRangeStart, FieldStr, _InDigits,
+		  Initial, LhsSpecified, RhsSpecified, Value],
+		  FinalState) :-
     % Read-in a number, construct the value
     Tmp0 >= 48, Tmp0 <= 57,
     mcc_select(H, FieldStr, Tmp0),
@@ -205,12 +221,14 @@ set_fields(H, DashFound, EolRangeStart, FieldStr, InDigits, Initial,
     ),
     NextValue = Value * 10 + (Tmp0 - 48),
     NextFieldStr = FieldStr + 1,
-    set_fields(H, DashFound, EolRangeStart, NextFieldStr,
-	       NextInDigits, Initial, NextLhsSpecified,
-	       NextRhsSpecified, NextValue).
+    set_fields_trans([H, DashFound, EolRangeStart, NextFieldStr,
+		      NextInDigits, Initial, NextLhsSpecified,
+		      NextRhsSpecified, NextValue], FinalState).
 	    
-set_fields(H, _DashFound, _EolRangeStart, FieldStr, _InDigits,
-	   _Initial, _LhsSpecified, _RhsSpecified, _Value) :-
+set_fields_trans([H, DashFound, EolRangeStart, FieldStr, InDigits,
+		  Initial, LhsSpecified, RhsSpecified, Value],
+		 [H, DashFound, EolRangeStart, FieldStr, InDigits,
+		  Initial, LhsSpecified, RhsSpecified, Value]) :-
     % Read-in other character, this is an error: simply terminate.
     ( Tmp0 >= 1, Tmp0 <= 8 ;
       Tmp0 >= 10, Tmp0 <= 31 ;
@@ -219,3 +237,9 @@ set_fields(H, _DashFound, _EolRangeStart, FieldStr, _InDigits,
       Tmp0 >= 58 ),
     mcc_select(H, FieldStr, Tmp0).
     
+set_fields(H, DashFound, EolRangeStart, FieldStr, InDigits,
+	   Initial, LhsSpecified, RhsSpecified, Value) :-
+    set_fields_trans(_InitialState, [H, DashFound, EolRangeStart,
+		      FieldStr, InDigits, Initial, LhsSpecified,
+		      RhsSpecified, Value]).
+
