@@ -7,6 +7,7 @@
 
 COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
+COREUTILS_COV_DIR=${COREUTILS_DIR}/obj-cov
 COREUTILS_SRC=${COREUTILS_DIR}/src
 CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_SRC} -I/${COREUTILS_DIR}/lib
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
@@ -76,7 +77,7 @@ all: ${KLEE_TARGETS} ${KLEESTP_TARGETS}
 
 include ../Makefile.common
 
-build: ${COREUTILS_LLVM_DIR} test.env
+build: ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} test.env
 
 test.env:
 	env -i ${BASH} -c '( source testing-env.sh ; env > test.env )'
@@ -87,7 +88,7 @@ test.env:
 # * We skip whole-program bitcode creation for groups as it is a script.
 ${COREUTILS_LLVM_DIR}:
 	@echo =================================================================
-	@echo Building Coreutils using LLVM ...
+	@echo Building Coreutils using WLLVM ...
 	@echo =================================================================
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
 	rm -rf ${COREUTILS_LLVM_DIR}	
@@ -99,7 +100,7 @@ ${COREUTILS_LLVM_DIR}:
 		export CXX=${WHOLE_PROGRAM_LLVM}/wllvm++; \
 		unset C_INCLUDE_PATH; \
 		unset CPLUS_INCLUDE_PATH; \
-		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage" --enable-install-program=arch,hostname ; \
+		../configure --disable-nls CFLAGS="-g" --enable-install-program=arch,hostname ; \
 		make ; \
 		make -C src arch hostname \
 	)
@@ -111,6 +112,24 @@ ${COREUTILS_LLVM_DIR}:
 		for EXEC_FILE in $$EXEC_LIST ; do \
 			${WHOLE_PROGRAM_LLVM}/extract-bc $$EXEC_FILE ; \
 		done \
+	)
+
+${COREUTILS_COV_DIR}:
+	@echo =================================================================
+	@echo Building Coreutils with coverage profiling ...
+	@echo =================================================================
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+	rm -rf ${COREUTILS_COV_DIR}	
+	mkdir ${COREUTILS_COV_DIR}
+	( cd ${COREUTILS_COV_DIR}; \
+		export PATH=${EXTRA_PATH}:$$PATH; \
+		export CC=clang; \
+		export CXX=clang++; \
+		unset C_INCLUDE_PATH; \
+		unset CPLUS_INCLUDE_PATH; \
+		../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage" --enable-install-program=arch,hostname ; \
+		make ; \
+		make -C src arch hostname \
 	)
 
 %.klee1 : 
@@ -241,15 +260,23 @@ ${COREUTILS_LLVM_DIR}:
 		LCOV_OBJECTS=$* ; \
 		LCOV_SOURCES=$* ; \
 	fi ; \
-	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; \
-	( cd ${COREUTILS_LLVM_DIR}/src ; \
-		${KLEE_REPLAY} $* ${OUTPUT_DIR}/*.ktest ; \
+	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
+	( cd ${COREUTILS_COV_DIR}/src ; \
+	        for KTEST in ${OUTPUT_DIR}/*.ktest ; do \
+			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		done ) ; \
+	( cd ${COREUTILS_COV_DIR} ; \
 		LINE_COVERAGE_TOTAL=0 ; \
+		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
+		LCOV_SOURCES="" ; \
 		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
-			LINE_COVERAGE=0 ; \
-			if [ -e $$LCOV_OBJ.gcda ] ; then \
-				LINE_COVERAGE=`llvm-cov -gcno=$$LCOV_OBJ.gcno -gcda=$$LCOV_OBJ.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
-			fi ; \
+			LCOV_NAME=${LCOV_OBJ%.*} ; \
+			NEW_SRC_LIST=`llvm-cov -gcno=$$LCOV_NAME.gcno -gcda=$$LCOV_OBJ | grep '0:Source:'` ; \
+			for NEW_SRC_ITEM in $$NEW_SRC_LIST ; do \
+				NEW_SRC_FILE=`echo -n $$NEW_SRC_ITEM | sed s/^[[:space:]]*-:[[:space:]]*0:Source://` ; \
+				LCOV_SOURCES="$$LCOV_SOURCES $$NEW_SRC_FILE" ; \
+			done ; \
+			LINE_COVERAGE=`llvm-cov -gcno=$$LCOV_NAME.gcno -gcda=$$LCOV_OBJ | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
 		done ; \
 		LOC_TOTAL=0 ; \
@@ -262,8 +289,8 @@ ${COREUTILS_LLVM_DIR}:
 		done ; \
 		( echo -n $$LINE_COVERAGE_TOTAL > ${OUTPUT_DIR}/LcovLog.txt ) ; \
 		( echo -n $$LOC_TOTAL > ${OUTPUT_DIR}/SLocCountLog.txt ) \
-	) ; \
-	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; 
+	)
+	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
 
 %.stpklee: build
 	# The testing sandbox reconstructed here is from
@@ -393,7 +420,7 @@ clean:
 	rm -rf ${KLEE_TARGETS} ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${KLEESTP_TARGETS} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
 
 realclean: clean
-	rm -rf ${COREUTILS_LLVM_DIR} 
+	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR}
 
 core-experiment:
 	for program in ${EXPERIMENT_SET} ; \
