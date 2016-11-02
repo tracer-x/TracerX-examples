@@ -205,61 +205,6 @@ ${COREUTILS_COV_DIR}:
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
-	if [ $* = "arch" ]; then \
-		LCOV_OBJECTS="uname uname-arch" ; \
-		LCOV_SOURCES="uname uname-arch" ; \
-	elif [ $* = "[" ]; then \
-		LCOV_OBJECTS="lbracket" ; \
-		LCOV_SOURCES="lbracket" ; \
-	elif [ $* = "cp" ]; then \
-		LCOV_OBJECTS="cp copy cp-hash" ; \
-		LCOV_SOURCES="cp copy cp-hash" ; \
-	elif [ $* = "dir" ]; then \
-		LCOV_OBJECTS="ls ls-dir" ; \
-		LCOV_SOURCES="ls ls-dir" ; \
-	elif [ $* = "vdir" ]; then \
-		LCOV_OBJECTS="ls ls-vdir" ; \
-		LCOV_SOURCES="ls ls-vdir" ; \
-	elif [ $* = "ls" ]; then \
-		LCOV_OBJECTS="ls ls-ls" ; \
-		LCOV_SOURCES="ls ls-ls" ; \
-	elif [ $* = "chown" ]; then \
-		LCOV_OBJECTS="chown chown-core" ; \
-		LCOV_SOURCES="chown chown-core" ; \
-	elif [ $* = "chgrp" ]; then \
-		LCOV_OBJECTS="chgrp chown-core" ; \
-		LCOV_SOURCES="chgrp chown-core" ; \
-	elif [ $* = "mv" ]; then \
-		LCOV_OBJECTS="mv remove copy cp-hash" ; \
-		LCOV_SOURCES="mv remove copy cp-hash" ; \
-	elif [ $* = "rm" ]; then \
-		LCOV_OBJECTS="rm remove" ; \
-		LCOV_SOURCES="rm remove" ; \
-	elif [ $* = "uname" ]; then \
-		LCOV_OBJECTS="uname uname-uname" ; \
-		LCOV_SOURCES="uname uname-uname" ; \
-	elif [ $* = "md5sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha1sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha224sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha256sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha384sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha512sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	else \
-		LCOV_OBJECTS=$* ; \
-		LCOV_SOURCES=$* ; \
-	fi ; \
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
 	( cd ${COREUTILS_COV_DIR}/src ; \
 	        for KTEST in ${OUTPUT_DIR}/*.ktest ; do \
@@ -270,22 +215,25 @@ ${COREUTILS_COV_DIR}:
 		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
 		LCOV_SOURCES="" ; \
 		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
-			LCOV_NAME=${LCOV_OBJ%.*} ; \
-			NEW_SRC_LIST=`llvm-cov -gcno=$$LCOV_NAME.gcno -gcda=$$LCOV_OBJ | grep '0:Source:'` ; \
-			for NEW_SRC_ITEM in $$NEW_SRC_LIST ; do \
-				NEW_SRC_FILE=`echo -n $$NEW_SRC_ITEM | sed s/^[[:space:]]*-:[[:space:]]*0:Source://` ; \
-				LCOV_SOURCES="$$LCOV_SOURCES $$NEW_SRC_FILE" ; \
+			LCOV_NAME=$${LCOV_OBJ%.*} ; \
+			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
+			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
+			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
+			NEW_SRC_LIST=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
+			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
+				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
 			done ; \
-			LINE_COVERAGE=`llvm-cov -gcno=$$LCOV_NAME.gcno -gcda=$$LCOV_OBJ | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			LINE_COVERAGE=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
 		done ; \
 		LOC_TOTAL=0 ; \
 		for LCOV_SRC in $$LCOV_SOURCES ; do \
-			LOC=0 ; \
-			if [ -e ${COREUTILS_SRC}/$$LCOV_SRC.c ] ; then \
-				LOC=`sloccount ${COREUTILS_SRC}/$$LCOV_SRC.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
+			if [ -e $$LCOV_SRC ] ; then \
+				LOC=`sloccount $$LCOV_SRC |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
+				if [ x$$LOC != x ] ; then \
+					LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
+				fi ; \
 			fi ; \
-			LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
 		done ; \
 		( echo -n $$LINE_COVERAGE_TOTAL > ${OUTPUT_DIR}/LcovLog.txt ) ; \
 		( echo -n $$LOC_TOTAL > ${OUTPUT_DIR}/SLocCountLog.txt ) \
