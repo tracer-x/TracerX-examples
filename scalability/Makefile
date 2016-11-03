@@ -19,12 +19,11 @@ EXPERIMENT_CSV=experiment.csv
 
 EXPERIMENT_TIMEOUT=3600
 
-KLEE_TARGETS1=$(EXPERIMENT_SET:=.klee1)
-KLEE_TARGETS2=$(EXPERIMENT_SET:=.klee2)
-TRACERX_TARGETS1=$(EXPERIMENT_SET:=.tracerx1)
-TRACERX_TARGETS2=$(EXPERIMENT_SET:=.tracerx2)
-TRACERX_TARGETS3=$(EXPERIMENT_SET:=.tracerx3)
-TRACERX_TARGETS4=$(EXPERIMENT_SET:=.tracerx4)
+REGEXP_EXPERIMENT_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10
+
+REGEXP_EXPERIMENT_CSV=regexp-experiment.csv
+
+REGEXP_EXPERIMENT_TIMEOUT=3600
 
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
@@ -69,7 +68,9 @@ bubble: ${BUBBLE_TARGETS}
 
 
 clean: standard-clean
-	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
+	rm -rf $(EXPERIMENT_SET:=.klee?) $(EXPERIMENT_SET:=.tracerx?) ${EXPERIMENT_CSV} \
+		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} \
+		$(REGEXP_EXPERIMENT_SET:=.klee?) $(REGEXP_EXPERIMENT_SET:=.tracerx?) ${REGEXP_EXPERIMENT_CSV}
 
 .SUFFIXES: .tr0 .bubble0
 
@@ -157,6 +158,14 @@ core-experiment:
 		make $$program.tracerx4; \
 	done
 
+core-regexp-experiment:
+	for program in ${REGEXP_EXPERIMENT_SET} ; \
+	do \
+		make $$program.klee1;    \
+		make $$program.tracerx1; \
+		make $$program.tracerx2; \
+	done
+
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
@@ -216,6 +225,54 @@ ${EXPERIMENT_CSV}: core-experiment
 				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXPERIMENT_CSV} ; \
 			else \
 				printf "\n" >> ${EXPERIMENT_CSV}; \
+			fi ; \
+		done ; \
+	done
+
+${REGEXP_EXPERIMENT_CSV}: core-regexp-experiment
+	( cd ../utils ; CC=${CC} make treecmp ) 
+	echo "Directory,Time,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Average table entries per subsumption checkpoint,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${REGEXP_EXPERIMENT_CSV}; \
+	for ext in .klee1 .tracerx1 .tracerx2 ; \
+	do \
+		for program in ${REGEXP_EXPERIMENT_SET} ; \
+		do \
+			if [ -d $$program$$ext ]; then \
+				printf "$$program$$ext," >> ${REGEXP_EXPERIMENT_CSV}; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				echo -n `ls $$program$$ext | grep err | wc -l` >> ${REGEXP_EXPERIMENT_CSV} ; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "KLEE: done:     program exit paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "average branching depth of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep '^[[:space:]]*[[:digit:]]\+' $$program$$ext/$$program.cov |wc -l |tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
+					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> ${REGEXP_EXPERIMENT_CSV}; \
+				fi ; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
+				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
+			fi ; \
+			if [ $$ext = .tracerx1 -o $$ext = .tracerx2 ] ;  then \
+				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${REGEXP_EXPERIMENT_CSV} ; \
+			else \
+				printf "\n" >> ${REGEXP_EXPERIMENT_CSV}; \
 			fi ; \
 		done ; \
 	done
