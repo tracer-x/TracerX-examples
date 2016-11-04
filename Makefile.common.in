@@ -7,6 +7,8 @@
 # EXTRA_OPTIONS   - Extra KLEE options
 # PROGRAM_OPTIONS - Extra options for the tested program, e.g.,
 #                   --sym-arg
+# EXTRA_CFLAGS    - Extra CFLAGS options
+# EXTRA_LDFLAGS   - Extra LDFLAGS options
 
 # Extra executable path to include. This is used for building
 # coreutils 6.10 as older utilites may be needed, such as Texinfo 4.13.
@@ -30,8 +32,8 @@ KLEE_REPLAY=${KLEE_HOME}/bin/klee-replay
 KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 
 # In the following, please select suitable include and DLL directories
-CFLAGS=-g -I${KLEE_HOME}/include
-LDFLAGS=-L${KLEE_HOME}/lib -lkleeRuntest
+CFLAGS=-g -I${KLEE_HOME}/include ${EXTRA_CFLAGS}
+LDFLAGS=-L${KLEE_HOME}/lib ${EXTRA_LDFLAGS} -lkleeRuntest
 
 CC=@CC@
 AS=${CC} -S
