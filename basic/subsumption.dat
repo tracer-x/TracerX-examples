@@ -37,3 +37,4 @@ regexp_nonrecursive1.c	4
 regexp_nonrecursive2.c	18
 regexp_nonrecursive3.c	3
 sp.c			1
+testmem.c		23
