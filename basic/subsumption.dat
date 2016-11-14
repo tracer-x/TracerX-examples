@@ -16,11 +16,11 @@ argument2.c		0
 arraysimple1.c		0
 arraysimple2.c		0
 arraysimple3.c		0
-arraysimple4.c		0
+arraysimple4.c		2
 arraysimple5.c		11
 arraysimple6.c		14
 branch.c		0
-bubble.c		5
+bubble.c		6
 double-free.c		0
 even.c			0
 interproc.c		0
