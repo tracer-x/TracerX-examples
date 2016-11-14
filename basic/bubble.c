@@ -3,6 +3,8 @@
  * 
  * From
  * http://www.programmingsimplified.com/c/source-code/c-program-bubble-sort
+ *
+ * With the array modified to be a char array.
  */
 #include <klee/klee.h>
 #include <assert.h>
@@ -10,10 +12,10 @@
 #define ARRAY_SIZE 4
 
 int main() {
-  int a[ARRAY_SIZE];
-  int n, c, d, swap;
+  char a[ARRAY_SIZE], swap;
+  int c, d;
  
-  klee_make_symbolic(a, ARRAY_SIZE * sizeof(int), "a");
+  klee_make_symbolic(a, ARRAY_SIZE * sizeof(a[0]), "a");
 
   for (c = 0 ; c < ( ARRAY_SIZE - 1 ); c++)
   {
@@ -31,4 +33,6 @@ int main() {
   assert (a[0] <= a[1] &&
 	  a[1] <= a[2] &&
 	  a[2] <= a[3]);
+
+  return 0;
 }
