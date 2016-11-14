@@ -20,7 +20,7 @@ arraysimple4.c		0
 arraysimple5.c		11
 arraysimple6.c		14
 branch.c		0
-bubble.c		2
+bubble.c		5
 double-free.c		0
 even.c			0
 interproc.c		0
