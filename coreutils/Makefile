@@ -15,29 +15,6 @@ LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-ite
 
 BASH=/bin/bash
 
-# From http://klee.github.io/docs/coreutils-experiments/
-KLEE_COREUTILS_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
-	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
-	--use-cex-cache --libc=uclibc --posix-runtime \
-	--allow-external-sym-calls --only-output-states-covering-new \
-	--max-sym-array-size=4096 --max-instruction-time=30. --max-time=3600. \
-	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
-	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
-	--randomize-fork --search=random-path --search=nurs:covnew \
-	--use-batching-search --batch-instructions=10000
-
-KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
-	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
-	--use-cex-cache --libc=uclibc --posix-runtime \
-	--allow-external-sym-calls --only-output-states-covering-new \
-	--max-sym-array-size=4096 --max-instruction-time=30. \
-	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
-	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
-	--randomize-fork \
-	--use-batching-search --batch-instructions=10000
-
-# Comment this out if the above options are preferred
-#KLEE_COREUTILS_OPTIONS=--libc=uclibc --posix-runtime --optimize --output-tree --max-time=60.
 
 # From http://klee.github.io/docs/coreutils-experiments/
 TARGETS=[ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut date dd df dircolors dirname du echo env expand expr factor false fmt fold head hostid hostname id ginstall join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup od paste pathchk pinky pr printenv printf ptx pwd readlink rm rmdir runcon seq setuidgid shred shuf sleep sort split stat stty sum sync tac tail tee touch tr tsort tty uname unexpand uniq unlink uptime users wc whoami who yes 
@@ -61,7 +38,24 @@ EXPERIMENT_SET=cut expand join sum tsort uniq wc factor seq comm dirname head pa
 
 EXPERIMENT_CSV=experiment.csv
 
-EXPERIMENT_TIMEOUT=3600
+EXPERIMENT_TIMEOUT=3600.
+
+# From http://klee.github.io/docs/coreutils-experiments/
+# with --search=random-path and --max-time=3600. excluded to be
+# specified via KLEE_COREUTILS_MORE_OPTIONS or
+# KLEE_COREUTILS_DEFAULT_OPTIONS (see below).
+KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
+	--max-memory=1000 --disable-inlining --optimize --use-forked-solver \
+	--use-cex-cache --libc=uclibc --posix-runtime \
+	--allow-external-sym-calls --only-output-states-covering-new \
+	--max-sym-array-size=4096 --max-instruction-time=30. \
+	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
+	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
+	--randomize-fork --search=nurs:covnew \
+	--use-batching-search --batch-instructions=10000
+
+# Comment this out if the above options are preferred
+KLEE_COREUTILS_DEFAULT_OPTIONS=--search=dfs -max-time=${EXPERIMENT_TIMEOUT}
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
@@ -193,7 +187,11 @@ ${COREUTILS_COV_DIR}:
 		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} ${KLEE_COREUTILS_MORE_OPTIONS} --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
+	KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_MORE_OPTIONS}"; \
+	if [ "${KLEE_COREUTILS_MORE_OPTIONS}"="" ] ; then \
+		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=${OUTPUT_DIR} ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -279,90 +277,50 @@ ${COREUTILS_COV_DIR}:
 		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
 	fi ; \
 	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_OPTIONS} -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ;
+	KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_MORE_OPTIONS}"; \
+	if [ "${KLEE_COREUTILS_MORE_OPTIONS}"="" ] ; then \
+		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=${CURDIR}/$@ ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ;
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
-	if [ $* = "arch" ]; then \
-		LCOV_OBJECTS="uname uname-arch" ; \
-		LCOV_SOURCES="uname uname-arch" ; \
-	elif [ $* = "[" ]; then \
-		LCOV_OBJECTS="lbracket" ; \
-		LCOV_SOURCES="lbracket" ; \
-	elif [ $* = "cp" ]; then \
-		LCOV_OBJECTS="cp copy cp-hash" ; \
-		LCOV_SOURCES="cp copy cp-hash" ; \
-	elif [ $* = "dir" ]; then \
-		LCOV_OBJECTS="ls ls-dir" ; \
-		LCOV_SOURCES="ls ls-dir" ; \
-	elif [ $* = "vdir" ]; then \
-		LCOV_OBJECTS="ls ls-vdir" ; \
-		LCOV_SOURCES="ls ls-vdir" ; \
-	elif [ $* = "ls" ]; then \
-		LCOV_OBJECTS="ls ls-ls" ; \
-		LCOV_SOURCES="ls ls-ls" ; \
-	elif [ $* = "chown" ]; then \
-		LCOV_OBJECTS="chown chown-core" ; \
-		LCOV_SOURCES="chown chown-core" ; \
-	elif [ $* = "chgrp" ]; then \
-		LCOV_OBJECTS="chgrp chown-core" ; \
-		LCOV_SOURCES="chgrp chown-core" ; \
-	elif [ $* = "mv" ]; then \
-		LCOV_OBJECTS="mv remove copy cp-hash" ; \
-		LCOV_SOURCES="mv remove copy cp-hash" ; \
-	elif [ $* = "rm" ]; then \
-		LCOV_OBJECTS="rm remove" ; \
-		LCOV_SOURCES="rm remove" ; \
-	elif [ $* = "uname" ]; then \
-		LCOV_OBJECTS="uname uname-uname" ; \
-		LCOV_SOURCES="uname uname-uname" ; \
-	elif [ $* = "md5sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha1sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha224sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha256sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha384sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	elif [ $* = "sha512sum" ]; then \
-		LCOV_OBJECTS="$*-md5sum" ; \
-		LCOV_SOURCES="md5sum" ; \
-	else \
-		LCOV_OBJECTS=$* ; \
-		LCOV_SOURCES=$* ; \
-	fi ; \
-	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; \
-	( cd ${COREUTILS_LLVM_DIR}/src ; \
-		${KLEE_REPLAY} $* ${OUTPUT_DIR}/*.ktest ; \
+	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
+	( cd ${COREUTILS_COV_DIR}/src ; \
+	        for KTEST in ${OUTPUT_DIR}/*.ktest ; do \
+			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		done ) ; \
+	( cd ${COREUTILS_COV_DIR} ; \
 		LINE_COVERAGE_TOTAL=0 ; \
+		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
+		LCOV_SOURCES="" ; \
 		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
-			LINE_COVERAGE=0 ; \
-			if [ -e $$LCOV_OBJ.gcda ] ; then \
-				LINE_COVERAGE=`llvm-cov -gcno=$$LCOV_OBJ.gcno -gcda=$$LCOV_OBJ.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
-			fi ; \
+			LCOV_NAME=$${LCOV_OBJ%.*} ; \
+			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
+			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
+			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
+			NEW_SRC_LIST=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
+			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
+				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
+			done ; \
+			LINE_COVERAGE=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
 		done ; \
 		LOC_TOTAL=0 ; \
 		for LCOV_SRC in $$LCOV_SOURCES ; do \
-			LOC=0 ; \
-			if [ -e ${COREUTILS_SRC}/$$LCOV_SRC.c ] ; then \
-				LOC=`sloccount ${COREUTILS_SRC}/$$LCOV_SRC.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
+			if [ -e $$LCOV_SRC ] ; then \
+				LOC=`sloccount $$LCOV_SRC |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
+				if [ x$$LOC != x ] ; then \
+					LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
+				fi ; \
 			fi ; \
-			LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
 		done ; \
 		( echo -n $$LINE_COVERAGE_TOTAL > ${OUTPUT_DIR}/LcovLog.txt ) ; \
 		( echo -n $$LOC_TOTAL > ${OUTPUT_DIR}/SLocCountLog.txt ) \
-	) ; \
-	rm -f ${COREUTILS_LLVM_DIR}/src/*.gcda; 
+	)
+	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
 
 clean:
 	rm -rf ${KLEE_TARGETS} ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${KLEESTP_TARGETS} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
