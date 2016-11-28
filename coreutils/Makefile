@@ -33,8 +33,8 @@ KLEE_TARGETS=$(TARGETS:=.klee)
 
 KLEESTP_TARGETS=$(TARGETS:=.stpklee)
 
-# Coreutils benchmark set for September 2016 experiment
-EXPERIMENT_SET=cut expand join sum tsort uniq wc factor seq comm dirname head pathchk split
+# Coreutils benchmark set for November 2016 experiment
+EXPERIMENT_SET=cut expand join sum uniq factor comm dirname split
 
 EXPERIMENT_CSV=experiment.csv
 
