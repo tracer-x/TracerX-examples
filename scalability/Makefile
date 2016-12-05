@@ -13,7 +13,8 @@ PROGRAM_OPTIONS=
 # is to be run with LLBMC
 TARGETS=$(subst bubble_llbmc.klee,,$(patsubst %.c,%.klee,$(wildcard *.c)))
 
-EXPERIMENT_SET=Regexp bubble9 adpcm bs cnt compress edn expint fac fibcall insertsort janne_complex lcdnum ludcmp merge ns nsichneu prime recursion sample statemate tr tritype ud
+# Scalability benchmark set for November/December 2016 experiment
+EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall insertsort janne_complex lcdnum ludcmp merge ns nsichneu prime recursion Regexp sample statemate tr tritype ud
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -32,7 +33,7 @@ LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-ite
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
-BUBBLE_TARGETS=bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
+BUBBLE_TARGETS=bubble6.bubble0 bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
 
 EXTRA_REMOVAL=${TR_TARGETS} ${BUBBLE_TARGETS}
 

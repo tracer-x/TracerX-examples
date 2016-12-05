@@ -33,8 +33,8 @@ KLEE_TARGETS=$(TARGETS:=.klee)
 
 KLEESTP_TARGETS=$(TARGETS:=.stpklee)
 
-# Coreutils benchmark set for November 2016 experiment
-EXPERIMENT_SET=cut expand join sum uniq factor comm dirname split
+# Coreutils benchmark set for November/December 2016 experiment
+EXPERIMENT_SET=comm cut dirname expand factor join split sum uniq
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -343,7 +343,7 @@ core-experiment:
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
-	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
+	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4 ; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
 		do \
