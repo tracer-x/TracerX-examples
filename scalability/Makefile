@@ -13,8 +13,11 @@ PROGRAM_OPTIONS=
 # is to be run with LLBMC
 TARGETS=$(subst bubble_llbmc.tracerx,,$(patsubst %.c,%.tracerx,$(wildcard *.c)))
 
-# Regexp-only experiment set
+# Regexp-only experiment set, with fixed "hello" string input
 EXPERIMENT_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10
+
+# Regexp-only experiment set, with varied regular expression and string input sizes
+EXPERIMENT_SET=Regexp-6-3 Regexp-6-4 Regexp-6-5 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-8-3 Regexp-8-4 Regexp-8-5
 
 # Bubble sort-only experiment set
 EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
