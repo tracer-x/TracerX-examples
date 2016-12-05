@@ -9,9 +9,15 @@ EXTRA_OPTIONS=-interpolation-stat
 # --sym-arg
 PROGRAM_OPTIONS=
 
-# We remove bubble_llbmc.klee from KLEE targets, as it
+# We remove bubble_llbmc.tracerx from KLEE targets, as it
 # is to be run with LLBMC
-TARGETS=$(subst bubble_llbmc.klee,,$(patsubst %.c,%.klee,$(wildcard *.c)))
+TARGETS=$(subst bubble_llbmc.tracerx,,$(patsubst %.c,%.tracerx,$(wildcard *.c)))
+
+# Regexp-only experiment set
+EXPERIMENT_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10
+
+# Bubble sort-only experiment set
+EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 
 # Scalability benchmark set for November/December 2016 experiment
 EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall insertsort janne_complex lcdnum ludcmp merge ns nsichneu prime recursion Regexp sample statemate tr tritype ud
@@ -19,12 +25,6 @@ EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall 
 EXPERIMENT_CSV=experiment.csv
 
 EXPERIMENT_TIMEOUT=3600
-
-REGEXP_EXPERIMENT_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10
-
-REGEXP_EXPERIMENT_CSV=regexp-experiment.csv
-
-REGEXP_EXPERIMENT_TIMEOUT=3600
 
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
@@ -70,8 +70,7 @@ bubble: ${BUBBLE_TARGETS}
 
 clean: standard-clean
 	rm -rf $(EXPERIMENT_SET:=.klee?) $(EXPERIMENT_SET:=.tracerx?) ${EXPERIMENT_CSV} \
-		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} \
-		$(REGEXP_EXPERIMENT_SET:=.klee?) $(REGEXP_EXPERIMENT_SET:=.tracerx?) ${REGEXP_EXPERIMENT_CSV}
+		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
 
 .SUFFIXES: .tr0 .bubble0
 
@@ -97,26 +96,28 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="--search=dfs -no-interpolation -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -no-interpolation -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tracerx1 : 
-	KLEE_OPTIONS="--search=dfs -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 %.tracerx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 %.tracerx3 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 %.tracerx4 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -solver-backend=z3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee-experiment
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
-# This target is used for running experiments. The conducted experiments involved different option settings of KLEE and Tracer-X which
-# can be seen in %.klee1, %.klee2, %.tracerx1, %.tracerx2, %.tracerx3, and %.tracerx4 target.
-%.klee-experiment: 
+# The following targets are used for running experiments. The
+# conducted experiments involved different option settings of KLEE and
+# Tracer-X which can be seen in %.klee1, %.klee2, %.tracerx1,
+# %.tracerx2, %.tracerx3, and %.tracerx4 target.
+%.tracerx:
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	unset KLEE_MORE_OPTIONS ; \
 	unset KLEE_PROGRAM_OPTIONS ; \
@@ -125,24 +126,136 @@ clean: standard-clean
 	elif [ $* = "tr" ] ; then \
 		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
 		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	elif [ $* = "tr_nosyscall" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	elif [ $* = "tr_small" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
 	fi ; \
-	rm -rf $@; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -output-dir=${OUTPUT_DIR} ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	if [ -z "${OUTPUT_DIR}" ] ; then \
+		OUTPUT_DIR="${CURDIR}/$@" ; \
+	else \
+		OUTPUT_DIR="${OUTPUT_DIR}" ; \
+	fi ; \
+	rm -rf $$OUTPUT_DIR; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -solver-backend=z3 -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
 	rm -f $*.bc; \
-	if [ -e ${OUTPUT_DIR}/tree.dot ]; then \
-		dot -Tsvg ${OUTPUT_DIR}/tree.dot -o ${OUTPUT_DIR}/$*.svg ; \
-	fi
-	sloccount $*.c > ${OUTPUT_DIR}/SLocCountLog.txt 2>&1
+	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
+		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
+	fi ; \
+	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
 	# Generate line coverage information
 	rm -rf $* $*.gcno $*.gcda
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	for KTEST in ${OUTPUT_DIR}/*.ktest ; do \
+	if [ -z "${OUTPUT_DIR}" ] ; then \
+		OUTPUT_DIR="${CURDIR}/$@" ; \
+	else \
+		OUTPUT_DIR="${OUTPUT_DIR}" ; \
+	fi ; \
+	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done
-	touch ${OUTPUT_DIR}/$*.cov
+	done ; \
+	touch $$OUTPUT_DIR/$*.cov ; \
 	if [ -e $*.gcda ] ; then \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> ${OUTPUT_DIR}/$*.cov ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' ${OUTPUT_DIR}/$*.cov |wc -l` ; \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
+	else \
+		LINE_COVERAGE=0 ; \
+	fi ; \
+	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+
+%.klee:
+	${CC} -emit-llvm ${CFLAGS} -c $*.c
+	unset KLEE_MORE_OPTIONS ; \
+	unset KLEE_PROGRAM_OPTIONS ; \
+	if [ $* = "Regexp" ] ; then \
+		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
+	elif [ $* = "tr" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	elif [ $* = "tr_nosyscall" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	elif [ $* = "tr_small" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	fi ; \
+	if [ -z "${OUTPUT_DIR}" ] ; then \
+		OUTPUT_DIR="${CURDIR}/$@" ; \
+	else \
+		OUTPUT_DIR="${OUTPUT_DIR}" ; \
+	fi ; \
+	rm -rf $$OUTPUT_DIR; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -solver-backend=z3 -no-interpolation -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	rm -f $*.bc; \
+	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
+		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
+	fi ; \
+	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
+	# Generate line coverage information
+	rm -rf $* $*.gcno $*.gcda
+	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
+	if [ -z "${OUTPUT_DIR}" ] ; then \
+		OUTPUT_DIR="${CURDIR}/$@" ; \
+	else \
+		OUTPUT_DIR="${OUTPUT_DIR}" ; \
+	fi ; \
+	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+	done ; \
+	touch $$OUTPUT_DIR/$*.cov ; \
+	if [ -e $*.gcda ] ; then \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
+	else \
+		LINE_COVERAGE=0 ; \
+	fi ; \
+	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+
+%.stpklee: 
+	${CC} -emit-llvm ${CFLAGS} -c $*.c
+	unset KLEE_MORE_OPTIONS ; \
+	unset KLEE_PROGRAM_OPTIONS ; \
+	if [ $* = "Regexp" ] ; then \
+		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
+	elif [ $* = "tr" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	elif [ $* = "tr_nosyscall" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	elif [ $* = "tr_small" ] ; then \
+		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	fi ; \
+	if [ -z "${OUTPUT_DIR}" ] ; then \
+		OUTPUT_DIR="${CURDIR}/$@" ; \
+	else \
+		OUTPUT_DIR="${OUTPUT_DIR}" ; \
+	fi ; \
+	rm -rf $$OUTPUT_DIR; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -solver-backend=stp -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	rm -f $*.bc; \
+	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
+		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
+	fi ; \
+	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
+	# Generate line coverage information
+	rm -rf $* $*.gcno $*.gcda
+	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
+	if [ -z "${OUTPUT_DIR}" ] ; then \
+		OUTPUT_DIR="${CURDIR}/$@" ; \
+	else \
+		OUTPUT_DIR="${OUTPUT_DIR}" ; \
+	fi ; \
+	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+	done ; \
+	touch $$OUTPUT_DIR/$*.cov ; \
+	if [ -e $*.gcda ] ; then \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
 	else \
 		LINE_COVERAGE=0 ; \
 	fi ; \
@@ -157,14 +270,6 @@ core-experiment:
 		make $$program.tracerx2; \
 		make $$program.tracerx3; \
 		make $$program.tracerx4; \
-	done
-
-core-regexp-experiment:
-	for program in ${REGEXP_EXPERIMENT_SET} ; \
-	do \
-		make $$program.klee1;    \
-		make $$program.tracerx1; \
-		make $$program.tracerx2; \
 	done
 
 # This target is used for collecting data from the experiment's result into experiment.csv file.
@@ -230,54 +335,6 @@ ${EXPERIMENT_CSV}: core-experiment
 		done ; \
 	done
 
-${REGEXP_EXPERIMENT_CSV}: core-regexp-experiment
-	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Time,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Average table entries per subsumption checkpoint,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${REGEXP_EXPERIMENT_CSV}; \
-	for ext in .klee1 .tracerx1 .tracerx2 ; \
-	do \
-		for program in ${REGEXP_EXPERIMENT_SET} ; \
-		do \
-			if [ -d $$program$$ext ]; then \
-				printf "$$program$$ext," >> ${REGEXP_EXPERIMENT_CSV}; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				echo -n `ls $$program$$ext | grep err | wc -l` >> ${REGEXP_EXPERIMENT_CSV} ; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "KLEE: done:     program exit paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "average branching depth of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep '^[[:space:]]*[[:digit:]]\+' $$program$$ext/$$program.cov |wc -l |tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
-					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> ${REGEXP_EXPERIMENT_CSV}; \
-				fi ; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${REGEXP_EXPERIMENT_CSV}; \
-				printf ", " >> ${REGEXP_EXPERIMENT_CSV}; \
-			fi ; \
-			if [ $$ext = .tracerx1 -o $$ext = .tracerx2 ] ;  then \
-				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${REGEXP_EXPERIMENT_CSV} ; \
-			else \
-				printf "\n" >> ${REGEXP_EXPERIMENT_CSV}; \
-			fi ; \
-		done ; \
-	done
-
 # This target is used for running experiment with LLBMC.
 %.llbmc :
 	if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
@@ -308,4 +365,3 @@ ${LLBMC_EXPERIMENT_CSV}:
 			printf "\n" >> ${LLBMC_EXPERIMENT_CSV} ; \
 		fi ; \
 	done ; \
-

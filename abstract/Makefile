@@ -6,7 +6,7 @@
 # in this directory are small.
 EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2
 
-TARGETS=$(patsubst %.c,%.klee,$(wildcard *.c))
+TARGETS=$(patsubst %.c,%.tracerx,$(wildcard *.c))
 
 include ../Makefile.common
 

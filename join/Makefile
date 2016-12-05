@@ -13,7 +13,7 @@ PROGRAM_OPTIONS=
 JOIN_TARGETS=test-use-clpr test-join test-nosub1 test-nosub2 test-sub test-count test-sum test-bubble9 test-png_sig_cmp test-set_fields test-fib
 
 # Standard targets
-TARGETS=$(patsubst %.c,%.klee,$(wildcard *c))
+TARGETS=$(patsubst %.c,%.tracerx,$(wildcard *c))
 
 default: ${JOIN_TARGETS}
 

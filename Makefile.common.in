@@ -39,11 +39,12 @@ CC=@CC@
 AS=${CC} -S
 KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
 
-INPUT_TARGETS=$(subst .klee,.inputs,${TARGETS})
-IR_TARGETS=$(subst .klee,.ll,${TARGETS})
-STPKLEE_TARGETS=$(subst .klee,.stpklee,${TARGETS})
-EXECUTABLE_TARGETS=$(subst .klee,,${TARGETS})
-COV_TARGETS=$(subst .klee,.cov,${TARGETS})
+INPUT_TARGETS=$(subst .tracerx,.inputs,${TARGETS})
+IR_TARGETS=$(subst .tracerx,.ll,${TARGETS})
+KLEE_TARGETS=$(subst .tracerx,.klee,${TARGETS})
+STPKLEE_TARGETS=$(subst .tracerx,.stpklee,${TARGETS})
+EXECUTABLE_TARGETS=$(subst .tracerx,,${TARGETS})
+COV_TARGETS=$(subst .tracerx,.cov,${TARGETS})
 
 all: all-ir ${INPUT_TARGETS}
 
@@ -53,15 +54,15 @@ all-replay: ${COV_TARGETS}
 
 standard-clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
-	rm -rf klee-out-* ${TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
+	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
 
-# To prevent the removal of *.klee subdirectories
-.PRECIOUS: %.klee %.stpklee
+# To prevent the removal of *.tracerx subdirectories
+.PRECIOUS: %.tracerx %.klee %.stpklee
 
-.SUFFIXES: .klee .stpklee .inputs .bc .ll .cov .stpcov
+.SUFFIXES: .tracerx .klee .stpklee .inputs .bc .ll .cov .stpcov
 
 # For running KLEE with Z3 and interpolation
-.bc.klee:
+.bc.tracerx:
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $< ${PROGRAM_OPTIONS}
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
@@ -95,6 +96,17 @@ standard-clean:
 		fi ; \
 	fi
 
+# For running KLEE with Z3 without interpolation
+.bc.klee:
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -no-interpolation -output-dir=$@ $< ${PROGRAM_OPTIONS}
+	opt -analyze -dot-cfg $<
+	mv *.dot $@
+	# Create SVGs from .dot files
+	for DOTFILE in $@/*.dot ; do \
+		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
+		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+	done
+
 # For running KLEE with STP without interpolation
 .bc.stpklee:
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=stp -output-dir=$@ $< ${PROGRAM_OPTIONS}
@@ -107,7 +119,7 @@ standard-clean:
 	done
 
 # For replaying the tests and getting coverage information for the tests run
-.klee.cov:
+.tracerx.tracerxcov:
 	####################################################################
 	# KLEE-STATS Statistics                                            #
 	#                                                                  #
@@ -135,7 +147,35 @@ standard-clean:
 	fi ; \
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
-.stpklee.stpcov:
+.klee.kleecov:
+	####################################################################
+	# KLEE-STATS Statistics                                            #
+	#                                                                  #
+	# KLEE displays a low coverage using klee-stats on small examples, #
+	# due to additional code added.  The additional code is displayed  #
+	# in <klee_output_dir>/assembly.ll.                                #
+	####################################################################
+	${KLEE_STATS} $<
+	####################################################################
+	# llvm-cov Statistics for line coverage                            #
+	#                                                                  #
+	# See the generated .cov file for the detailed execution count of  #
+	# each line.                                                       #
+	####################################################################
+	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
+	for KTEST in $</*.ktest ; do \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+	done
+	touch $@
+	if [ -e $*.gcda ] ; then \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
+	else \
+		LINE_COVERAGE=0 ; \
+	fi ; \
+	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+
+.stpklee.stpkleecov:
 	####################################################################
 	# KLEE-STATS Statistics                                            #
 	#                                                                  #
@@ -163,7 +203,7 @@ standard-clean:
 	fi ; \
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
-.klee.inputs:
+.tracerx.inputs:
 	for KTEST in $</*.ktest ; do \
 		( ( ${KTEST_TOOL} --write-ints $$KTEST ) >> $@ ) ; \
 	done
