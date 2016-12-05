@@ -123,8 +123,9 @@ Running *coreutils* examples
    2. You may/may not need an older version of GNU texinfo. The build does not work with texinfo 5.2, but known to work with 4.13. Texinfo 4.13 can be found [here](http://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz).
 
 - Do not forget to run the `configure` script as instructed above, then:
-   1. `cd coreutils`
-   2. Run `make` in any of these ways:
+   1. Set open file limits to 65536 in the following way: `ulimit -n 65536`. The number 65536 seems to work. Please note that this may not work depending on whether the number exceeds your hard limit. You can check the hard limit via `ulimit -H -n`.
+   2. `cd coreutils`
+   3. Run `make` in any of these ways:
        - `make build` - To build Coreutils 6.10 twice: one with for producing whole-program bitcode in `coreutils/coreutils-6.10/obj-llvm/src`, and another with instrumentation for measuring coverage with `llvm-cov` in `coreutils/coreutils-6.10/obj-cov/src`.
        - Just `make` - Runs the test-case generation on all programs: it will build Coreutils 6.10 if this is not done already.
        - `make <program_name>.klee` - Runs the test-case generation on `<program_name>`: it will build Coreutils 6.10 if this is not done already. Here, `<program_name>` is one of the Coreutils programs whose executable file is found as `coreutils/coreutils-6.10/obj-llvm/src/<program_name>`. The output will be the result of Tracer-X KLEE run on the program and its coverage information.
