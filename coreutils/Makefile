@@ -50,7 +50,6 @@ KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --o
 	--randomize-fork --search=nurs:covnew \
 	--use-batching-search --batch-instructions=10000
 
-# Comment this out if the above options are preferred
 KLEE_COREUTILS_DEFAULT_OPTIONS=--search=dfs -max-time=${EXPERIMENT_TIMEOUT}
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
