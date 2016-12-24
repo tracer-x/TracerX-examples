@@ -39,6 +39,7 @@ regexp_nonrecursive1.c	0
 regexp_nonrecursive2.c	0
 regexp_nonrecursive3.c	0
 regexp_small.c		2
+regexp_tiny.c		1
 rutledge.c		1
 sp.c			0
 testmem.c		1
