@@ -29,6 +29,8 @@ EXPERIMENT_CSV=experiment.csv
 
 EXPERIMENT_TIMEOUT=3600
 
+KLEE_DEFAULT_OPTIONS=--search=dfs
+
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
@@ -142,10 +144,14 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -solver-backend=z3 -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	KLEE_OPTIONS=${KLEE_OPTIONS} ; \
+	if [ -z "${KLEE_OPTIONS}" ] ; then \
+		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=z3 -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
+		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
 	fi ; \
 	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
 	# Generate line coverage information
@@ -166,6 +172,7 @@ clean: standard-clean
 	else \
 		LINE_COVERAGE=0 ; \
 	fi ; \
+	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 %.klee:
@@ -190,10 +197,14 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -solver-backend=z3 -no-interpolation -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	KLEE_OPTIONS=${KLEE_OPTIONS} ; \
+	if [ -z "${KLEE_OPTIONS}" ] ; then \
+		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=z3 -no-interpolation -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
+		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
 	fi ; \
 	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
 	# Generate line coverage information
@@ -214,6 +225,7 @@ clean: standard-clean
 	else \
 		LINE_COVERAGE=0 ; \
 	fi ; \
+	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 %.stpklee: 
@@ -238,10 +250,14 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_OPTIONS} $$KLEE_MORE_OPTIONS -solver-backend=stp -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	KLEE_OPTIONS=${KLEE_OPTIONS} ; \
+	if [ -z "${KLEE_OPTIONS}" ] ; then \
+		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=stp -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
+		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
 	fi ; \
 	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
 	# Generate line coverage information
@@ -262,6 +278,7 @@ clean: standard-clean
 	else \
 		LINE_COVERAGE=0 ; \
 	fi ; \
+	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 core-experiment:
@@ -278,7 +295,7 @@ core-experiment:
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Time, #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
+	echo "Directory,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
@@ -286,6 +303,8 @@ ${EXPERIMENT_CSV}: core-experiment
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> ${EXPERIMENT_CSV}; \
 				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \

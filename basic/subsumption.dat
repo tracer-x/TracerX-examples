@@ -1,6 +1,6 @@
 # Program		Subsumptions
 addition.c		0
-addition_safe10.c	0
+addition_safe10.c	2
 addition_safe1.c	2
 addition_safe2.c	3
 addition_safe3.c	0
@@ -18,7 +18,7 @@ arraysimple2.c		0
 arraysimple3.c		0
 arraysimple4.c		2
 arraysimple5.c		11
-arraysimple6.c		14
+arraysimple6.c		18
 branch.c		0
 bubble.c		6
 double-free.c		0
@@ -30,11 +30,13 @@ loop_safe2.c		9
 loop_unsafe1.c		5
 malloc1.c		0
 memory-access.c		3
-openssl.c		0
+openssl.c		3
 openssl_partial_fix.c	0
 polynomial.c		0
 regexp_nonrecursive1.c	4
-regexp_nonrecursive2.c	18
+regexp_nonrecursive2.c	22
 regexp_nonrecursive3.c	3
+regexp_small.c		4
+regexp_tiny.c		2
 sp.c			0
 testmem.c		23
