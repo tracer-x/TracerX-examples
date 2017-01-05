@@ -29,6 +29,8 @@ EXPERIMENT_CSV=experiment.csv
 
 EXPERIMENT_TIMEOUT=3600
 
+EXPERIMENT_MEMORY=15000
+
 KLEE_DEFAULT_OPTIONS=--search=dfs
 
 LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
@@ -101,22 +103,22 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tracerx1 : 
-	KLEE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 %.tracerx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 %.tracerx3 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 %.tracerx4 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 # The following targets are used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
@@ -144,7 +146,7 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	KLEE_OPTIONS=${KLEE_OPTIONS} ; \
+	KLEE_OPTIONS="${KLEE_OPTIONS}" ; \
 	if [ -z "${KLEE_OPTIONS}" ] ; then \
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
