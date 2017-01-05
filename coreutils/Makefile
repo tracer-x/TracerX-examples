@@ -36,7 +36,7 @@ EXPERIMENT_CSV=experiment.csv
 
 EXPERIMENT_TIMEOUT=3600.
 
-EXPERIMENT_MEMORY=15000
+EXPERIMENT_MEMORY=13000
 
 # From http://klee.github.io/docs/coreutils-experiments/
 # with --search, --max-time, and --max-memory excluded to be
