@@ -125,6 +125,11 @@ clean: standard-clean
 # Tracer-X which can be seen in %.klee1, %.klee2, %.tracerx1,
 # %.tracerx2, %.tracerx3, and %.tracerx4 target.
 %.tracerx:
+	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
+	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
+		echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
+		exit 1 ; \
+	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	unset KLEE_MORE_OPTIONS ; \
 	unset KLEE_PROGRAM_OPTIONS ; \
@@ -178,6 +183,11 @@ clean: standard-clean
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 %.klee:
+	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
+	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
+		echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
+		exit 1 ; \
+	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	unset KLEE_MORE_OPTIONS ; \
 	unset KLEE_PROGRAM_OPTIONS ; \
@@ -230,7 +240,12 @@ clean: standard-clean
 	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
-%.stpklee: 
+%.stpklee:
+	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
+	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
+		echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
+		exit 1 ; \
+	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	unset KLEE_MORE_OPTIONS ; \
 	unset KLEE_PROGRAM_OPTIONS ; \
