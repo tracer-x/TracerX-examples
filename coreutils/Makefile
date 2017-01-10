@@ -140,7 +140,7 @@ ${COREUTILS_COV_DIR}:
 	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 %.tracerx4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
 
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
