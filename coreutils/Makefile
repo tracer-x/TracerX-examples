@@ -144,8 +144,7 @@ ${COREUTILS_COV_DIR}:
 
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
-# Tracer-X which can be seen in %.klee1, %.klee2, %.tracerx1,
-# %.tracerx2, %.tracerx3, and %.tracerx4 target.
+# Tracer-X which can be seen in %.klee... and %.tracerx... targets.
 %.tracerx: build
 	# The testing sandbox reconstructed here is from
 	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
@@ -194,7 +193,9 @@ ${COREUTILS_COV_DIR}:
 	if [ -z "${KLEE_COREUTILS_MORE_OPTIONS}" ] ; then \
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
+	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS ; \
+	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -299,7 +300,9 @@ ${COREUTILS_COV_DIR}:
 	if [ -z "${KLEE_COREUTILS_MORE_OPTIONS}" ] ; then \
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -no-interpolation -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
+	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -no-interpolation -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS ; \
+	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -404,7 +407,9 @@ ${COREUTILS_COV_DIR}:
 	if [ "${KLEE_COREUTILS_MORE_OPTIONS}"="" ] ; then \
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
+	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ;
+	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
@@ -470,7 +475,7 @@ core-experiment:
 # This target is used for collecting data from experimental results into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4 ; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
@@ -478,6 +483,8 @@ ${EXPERIMENT_CSV}: core-experiment
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> ${EXPERIMENT_CSV}; \
 				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				cat $$program$$ext/ProgramOptions.txt >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \

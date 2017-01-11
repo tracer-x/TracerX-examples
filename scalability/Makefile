@@ -156,6 +156,7 @@ clean: standard-clean
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=z3 -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
@@ -214,6 +215,7 @@ clean: standard-clean
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=z3 -no-interpolation -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
@@ -272,6 +274,7 @@ clean: standard-clean
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=stp -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
@@ -312,7 +315,7 @@ core-experiment:
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
 	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
@@ -320,6 +323,8 @@ ${EXPERIMENT_CSV}: core-experiment
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> ${EXPERIMENT_CSV}; \
 				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				cat $$program$$ext/ProgramOptions.txt >> ${EXPERIMENT_CSV} ; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
