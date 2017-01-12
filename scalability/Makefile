@@ -210,7 +210,7 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	KLEE_OPTIONS=${KLEE_OPTIONS} ; \
+	KLEE_OPTIONS="${KLEE_OPTIONS}" ; \
 	if [ -z "${KLEE_OPTIONS}" ] ; then \
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
@@ -269,7 +269,7 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	KLEE_OPTIONS=${KLEE_OPTIONS} ; \
+	KLEE_OPTIONS="${KLEE_OPTIONS}" ; \
 	if [ -z "${KLEE_OPTIONS}" ] ; then \
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
