@@ -39,12 +39,12 @@ CC=@CC@
 AS=${CC} -S
 KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
 
-INPUT_TARGETS=$(subst .tracerx,.inputs,${TARGETS})
-IR_TARGETS=$(subst .tracerx,.ll,${TARGETS})
-KLEE_TARGETS=$(subst .tracerx,.klee,${TARGETS})
-STPKLEE_TARGETS=$(subst .tracerx,.stpklee,${TARGETS})
-EXECUTABLE_TARGETS=$(subst .tracerx,,${TARGETS})
-COV_TARGETS=$(subst .tracerx,.cov,${TARGETS})
+INPUT_TARGETS=$(subst .tx,.inputs,${TARGETS})
+IR_TARGETS=$(subst .tx,.ll,${TARGETS})
+KLEE_TARGETS=$(subst .tx,.klee,${TARGETS})
+STPKLEE_TARGETS=$(subst .tx,.stpklee,${TARGETS})
+EXECUTABLE_TARGETS=$(subst .tx,,${TARGETS})
+COV_TARGETS=$(subst .tx,.cov,${TARGETS})
 
 all: all-ir ${INPUT_TARGETS}
 
@@ -56,13 +56,13 @@ standard-clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
 	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
 
-# To prevent the removal of *.tracerx subdirectories
-.PRECIOUS: %.tracerx %.klee %.stpklee
+# To prevent the removal of *.tx subdirectories
+.PRECIOUS: %.tx %.klee %.stpklee
 
-.SUFFIXES: .tracerx .klee .stpklee .inputs .bc .ll .cov .stpcov
+.SUFFIXES: .tx .klee .stpklee .inputs .bc .ll .cov .stpcov
 
 # For running KLEE with Z3 and interpolation
-.bc.tracerx:
+.bc.tx:
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $< ${PROGRAM_OPTIONS}
 	opt -analyze -dot-cfg $<
 	mv *.dot $@
@@ -119,7 +119,7 @@ standard-clean:
 	done
 
 # For replaying the tests and getting coverage information for the tests run
-.tracerx.tracerxcov:
+.tx.txcov:
 	####################################################################
 	# KLEE-STATS Statistics                                            #
 	#                                                                  #
@@ -203,7 +203,7 @@ standard-clean:
 	fi ; \
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
-.tracerx.inputs:
+.tx.inputs:
 	for KTEST in $</*.ktest ; do \
 		( ( ${KTEST_TOOL} --write-ints $$KTEST ) >> $@ ) ; \
 	done

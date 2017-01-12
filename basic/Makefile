@@ -13,7 +13,7 @@ EXTRA_CFLAGS=-Wno-int-conversion
 # --sym-arg
 PROGRAM_OPTIONS=
 
-TARGETS=$(patsubst %.c,%.tracerx,$(wildcard *c))
+TARGETS=$(patsubst %.c,%.tx,$(wildcard *c))
 
 include ../Makefile.common
 

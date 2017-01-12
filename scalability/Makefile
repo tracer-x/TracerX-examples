@@ -9,9 +9,9 @@ EXTRA_OPTIONS=-interpolation-stat
 # --sym-arg
 PROGRAM_OPTIONS=
 
-# We remove bubble_llbmc.tracerx from KLEE targets, as it
+# We remove bubble_llbmc.tx from KLEE targets, as it
 # is to be run with LLBMC
-TARGETS=$(subst bubble_llbmc.tracerx,,$(patsubst %.c,%.tracerx,$(wildcard *.c)))
+TARGETS=$(subst bubble_llbmc.tx,,$(patsubst %.c,%.tx,$(wildcard *.c)))
 
 # Regexp-only experiment set, with fixed "hello" string input
 EXPERIMENT_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10
@@ -76,7 +76,7 @@ bubble: ${BUBBLE_TARGETS}
 
 
 clean: standard-clean
-	rm -rf $(EXPERIMENT_SET:=.klee?) $(EXPERIMENT_SET:=.tracerx?) ${EXPERIMENT_CSV} \
+	rm -rf $(EXPERIMENT_SET:=.klee?) $(EXPERIMENT_SET:=.tx?) ${EXPERIMENT_CSV} \
 		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
 
 .SUFFIXES: .tr0 .bubble0
@@ -108,23 +108,23 @@ clean: standard-clean
 %.klee2 : 
 	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
-%.tracerx1 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+%.tx1 : 
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
-%.tracerx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+%.tx2 : 
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
-%.tracerx3 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+%.tx3 : 
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
-%.tracerx4 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tracerx
+%.tx4 : 
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 # The following targets are used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
-# Tracer-X which can be seen in %.klee1, %.klee2, %.tracerx1,
-# %.tracerx2, %.tracerx3, and %.tracerx4 target.
-%.tracerx:
+# Tracer-X which can be seen in %.klee1, %.klee2, %.tx1,
+# %.tx2, %.tx3, and %.tx4 target.
+%.tx:
 	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
 	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
 		echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
@@ -306,17 +306,17 @@ core-experiment:
 	do \
 		make $$program.klee1;    \
 		make $$program.klee2;    \
-		make $$program.tracerx1; \
-		make $$program.tracerx2; \
-		make $$program.tracerx3; \
-		make $$program.tracerx4; \
+		make $$program.tx1; \
+		make $$program.tx2; \
+		make $$program.tx3; \
+		make $$program.tx4; \
 	done
 
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
-	for ext in .klee1 .klee2 .tracerx1 .tracerx2 .tracerx3 .tracerx4; \
+	for ext in .klee1 .klee2 .tx1 .tx2 .tx3 .tx4; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
 		do \
@@ -371,7 +371,7 @@ ${EXPERIMENT_CSV}: core-experiment
 				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
 			fi ; \
-			if [ $$ext = .tracerx1 -o $$ext = .tracerx2 ] ;  then \
+			if [ $$ext = .tx1 -o $$ext = .tx2 ] ;  then \
 				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXPERIMENT_CSV} ; \
 			else \
 				printf "\n" >> ${EXPERIMENT_CSV}; \
