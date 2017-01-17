@@ -35,6 +35,7 @@ openssl.c		2
 openssl_partial_fix.c	1
 pointer_wp.c		0
 pointer_loop.c		1
+pointer_iterative.c	1
 polynomial.c		0
 regexp_nonrecursive1.c	0
 regexp_nonrecursive2.c	0
