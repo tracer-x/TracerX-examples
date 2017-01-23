@@ -65,7 +65,6 @@ TRACERX_TARGETS3=$(EXPERIMENT_SET:=.tx3)
 TRACERX_TARGETS4=$(EXPERIMENT_SET:=.tx4)
 TRACERX_TARGETS5=$(EXPERIMENT_SET:=.tx5)
 TRACERX_TARGETS6=$(EXPERIMENT_SET:=.tx6)
-TRACERX_TARGETS7=$(EXPERIMENT_SET:=.tx7)
 
 # The first target (default)
 all: ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS}
@@ -151,17 +150,101 @@ ${COREUTILS_COV_DIR}:
 %.tx6 : 
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -exact-address-interpolant -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
+# pr
 %.klee7 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 4 --sym-stdout" make $*.klee
 
 %.klee8 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 5 --sym-stdout" make $*.klee
 
+%.klee9 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 6 --sym-stdout" make $*.klee
+
 %.tx7 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 4 --sym-stdout" make $*.tx
 
 %.tx8 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 5 --sym-stdout" make $*.tx
+
+%.tx9 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 6 --sym-stdout" make $*.tx
+
+# cut
+%.klee10 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-b -sym-arg 3 -sym-stdin 4 --sym-stdout" make $*.klee
+
+%.klee11 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-b -sym-arg 3 -sym-stdin 5 --sym-stdout" make $*.klee
+
+%.klee12 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-b -sym-arg 3 -sym-stdin 6 --sym-stdout" make $*.klee
+
+%.tx10 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-b -sym-arg 3 -sym-stdin 4 --sym-stdout" make $*.tx
+
+%.tx11 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-b -sym-arg 3 -sym-stdin 5 --sym-stdout" make $*.tx
+
+%.tx12 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-b -sym-arg 3 -sym-stdin 6 --sym-stdout" make $*.tx
+
+# printf
+%.klee13 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 1 -sym-arg 1 --sym-stdout" make $*.klee
+
+%.klee14 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 2 -sym-arg 1 --sym-stdout" make $*.klee
+
+%.klee15 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 3 -sym-arg 1 --sym-stdout" make $*.klee
+
+%.tx13 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 1 -sym-arg 1 --sym-stdout" make $*.tx
+
+%.tx14 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 2 -sym-arg 1 --sym-stdout" make $*.tx
+
+%.tx15 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 3 -sym-arg 1 --sym-stdout" make $*.tx
+
+# basename
+%.klee16 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout" make $*.klee
+
+%.klee17 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="--sym-args 0 1 10 --sym-args 0 2 3 --sym-files 1 8 -sym-stdin 8 --sym-stdout" make $*.klee
+
+%.klee18 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="--sym-args 0 1 10 --sym-args 0 2 4 --sym-files 1 8 -sym-stdin 8 --sym-stdout" make $*.klee
+
+%.tx16 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout" make $*.tx
+
+%.tx17 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="--sym-args 0 1 10 --sym-args 0 2 3 --sym-files 1 8 -sym-stdin 8 --sym-stdout" make $*.tx
+
+%.tx18 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="--sym-args 0 1 10 --sym-args 0 2 4 --sym-files 1 8 -sym-stdin 8 --sym-stdout" make $*.tx
+
+# head
+%.klee19 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 2 -sym-stdin 8 --sym-stdout" make $*.klee
+
+%.klee20 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 3 -sym-stdin 8 --sym-stdout" make $*.klee
+
+%.klee21 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 4 -sym-stdin 8 --sym-stdout" make $*.klee
+
+%.tx19 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 2 -sym-stdin 8 --sym-stdout" make $*.tx
+
+%.tx20 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 3 -sym-stdin 8 --sym-stdout" make $*.tx
+
+%.tx21 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 4 -sym-stdin 8 --sym-stdout" make $*.tx
+
 
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
@@ -484,7 +567,7 @@ ${COREUTILS_COV_DIR}:
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
 
 clean:
-	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${TRACERX_TARGETS5} ${TRACERX_TARGETS6} ${TRACERX_TARGETS7} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${TRACERX_TARGETS} ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
+	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR}
@@ -509,6 +592,107 @@ ${EXPERIMENT_CSV}: core-experiment
 	for ext in .klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6 ; \
 	do \
 		for program in ${EXPERIMENT_SET} ; \
+		do \
+			if [ -d $$program$$ext ]; then \
+				printf "$$program$$ext," >> ${EXPERIMENT_CSV}; \
+				cat $$program$$ext/ProgramOptions.txt >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				echo -n `ls $$program$$ext | grep err | wc -l` >> ${EXPERIMENT_CSV} ; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "KLEE: done:     program exit paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "average branching depth of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "average instructions of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "average instructions of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				if [ -e $$program$$ext/LcovLog.txt ]; then \
+					cat $$program$$ext/LcovLog.txt | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				fi ; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
+					cat ${CURDIR}/$$program$$ext/SLocCountLog.txt | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				fi ; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\2/' | tr -d ')\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "Average solver calls per subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
+				printf ", " >> ${EXPERIMENT_CSV}; \
+			fi ; \
+			if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
+				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXPERIMENT_CSV} ; \
+			else \
+				printf "\n" >> ${EXPERIMENT_CSV}; \
+			fi ; \
+		done ; \
+	done
+
+cav-core-experiment:
+	make pr.klee7
+	make pr.klee8
+	make pr.klee9
+	make pr.tx7
+	make pr.tx8
+	make pr.tx9
+	make cut.klee10
+	make cut.klee11
+	make cut.klee12
+	make cut.tx10
+	make cut.tx11
+	make cut.tx12
+	make printf.klee13
+	make printf.klee14
+	make printf.klee15
+	make printf.tx13
+	make printf.tx14
+	make printf.tx15
+	make basename.klee16
+	make basename.klee17
+	make basename.klee18
+	make basename.tx16
+	make basename.tx17
+	make basename.tx18
+	make head.klee19
+	make head.klee20
+	make head.klee21
+	make head.tx19
+	make head.tx20
+	make head.tx21
+
+# This target is used for collecting data from experimental results into experiment.csv file.
+cav-${EXPERIMENT_CSV}: cav-core-experiment
+	( cd ../utils ; CC=${CC} make treecmp ) 
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> ${EXPERIMENT_CSV}; \
+	for ext in .klee7 .klee8 .klee9 .klee10 .klee11 .klee12 .klee13 .klee14 .klee15 .klee16 .klee17 .klee18 .klee19 .klee20 .klee21 .tx7 .tx8 .tx9 .tx10 .tx11 .tx12 .tx13 .tx14 .tx15 .tx16 .tx17 .tx18 .tx19 .tx20 .tx21 ; \
+	do \
+		for program in pr cut printf basename head ; \
 		do \
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> ${EXPERIMENT_CSV}; \
