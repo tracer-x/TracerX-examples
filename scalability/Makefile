@@ -136,19 +136,25 @@ clean: standard-clean
 		exit 1 ; \
 	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
-	unset KLEE_MORE_OPTIONS ; \
-	unset KLEE_PROGRAM_OPTIONS ; \
-	if [ $* = "Regexp" ] ; then \
-		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-	elif [ $* = "tr" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-	elif [ $* = "tr_nosyscall" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-	elif [ $* = "tr_small" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	if [ -z "$$KLEE_MORE_OPTIONS" ] ; then \
+		if [ $* = "Regexp" ] ; then \
+			KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
+		elif [ $* = "tr" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		elif [ $* = "tr_nosyscall" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		elif [ $* = "tr_small" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		fi ; \
+	fi ; \
+	if [ -z "$$KLEE_PROGRAM_OPTIONS" ] ; then \
+		if [ $* = "tr" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		elif [ $* = "tr_nosyscall" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		elif [ $* = "tr_small" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		fi ; \
 	fi ; \
 	if [ -z "${OUTPUT_DIR}" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
@@ -195,19 +201,25 @@ clean: standard-clean
 		exit 1 ; \
 	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
-	unset KLEE_MORE_OPTIONS ; \
-	unset KLEE_PROGRAM_OPTIONS ; \
-	if [ $* = "Regexp" ] ; then \
-		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-	elif [ $* = "tr" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-	elif [ $* = "tr_nosyscall" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-	elif [ $* = "tr_small" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	if [ -z "$$KLEE_MORE_OPTIONS" ] ; then \
+		if [ $* = "Regexp" ] ; then \
+			KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
+		elif [ $* = "tr" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		elif [ $* = "tr_nosyscall" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		elif [ $* = "tr_small" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		fi ; \
+	fi ; \
+	if [ -z "$$KLEE_PROGRAM_OPTIONS" ] ; then \
+		if [ $* = "tr" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		elif [ $* = "tr_nosyscall" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		elif [ $* = "tr_small" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		fi ; \
 	fi ; \
 	if [ -z "${OUTPUT_DIR}" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
@@ -254,19 +266,25 @@ clean: standard-clean
 		exit 1 ; \
 	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
-	unset KLEE_MORE_OPTIONS ; \
-	unset KLEE_PROGRAM_OPTIONS ; \
-	if [ $* = "Regexp" ] ; then \
-		KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-	elif [ $* = "tr" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-	elif [ $* = "tr_nosyscall" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-	elif [ $* = "tr_small" ] ; then \
-		KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+	if [ -z "$$KLEE_MORE_OPTIONS" ] ; then \
+		if [ $* = "Regexp" ] ; then \
+			KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
+		elif [ $* = "tr" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		elif [ $* = "tr_nosyscall" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		elif [ $* = "tr_small" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		fi ; \
+	fi ; \
+	if [ -z "$$KLEE_PROGRAM_OPTIONS" ] ; then \
+		if [ $* = "tr" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		elif [ $* = "tr_nosyscall" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		elif [ $* = "tr_small" ] ; then \
+			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
+		fi ; \
 	fi ; \
 	if [ -z "${OUTPUT_DIR}" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \

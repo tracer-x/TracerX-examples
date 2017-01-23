@@ -15,7 +15,6 @@ LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-ite
 
 BASH=/bin/bash
 
-
 # From http://klee.github.io/docs/coreutils-experiments/
 TARGETS=[.tx arch.tx base64.tx basename.tx cat.tx chcon.tx chgrp.tx chmod.tx chown.tx chroot.tx cksum.tx comm.tx cp.tx csplit.tx cut.tx date.tx dd.tx df.tx dircolors.tx dirname.tx du.tx echo.tx env.tx expand.tx expr.tx factor.tx false.tx fmt.tx fold.tx head.tx hostid.tx hostname.tx id.tx ginstall.tx join.tx kill.tx link.tx ln.tx logname.tx ls.tx md5sum.tx mkdir.tx mkfifo.tx mknod.tx mktemp.tx mv.tx nice.tx nl.tx nohup.tx od.tx paste.tx pathchk.tx pinky.tx pr.tx printenv.tx printf.tx ptx.tx pwd.tx readlink.tx rm.tx rmdir.tx runcon.tx seq.tx setuidgid.tx shred.tx shuf.tx sleep.tx sort.tx split.tx stat.tx stty.tx sum.tx sync.tx tac.tx tail.tx tee.tx touch.tx tr.tx tsort.tx tty.tx uname.tx unexpand.tx uniq.tx unlink.tx uptime.tx users.tx wc.tx whoami.tx who.tx yes.tx 
 
@@ -31,6 +30,7 @@ PRINTF_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
 
 # Coreutils benchmark set for November/December 2016 experiment
 EXPERIMENT_SET=comm cut dirname expand factor join split sum uniq
+EXPERIMENT_SET=pr
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -63,8 +63,9 @@ TRACERX_TARGETS1=$(EXPERIMENT_SET:=.tx1)
 TRACERX_TARGETS2=$(EXPERIMENT_SET:=.tx2)
 TRACERX_TARGETS3=$(EXPERIMENT_SET:=.tx3)
 TRACERX_TARGETS4=$(EXPERIMENT_SET:=.tx4)
-TRACERX_TARGETS4=$(EXPERIMENT_SET:=.tx5)
-TRACERX_TARGETS4=$(EXPERIMENT_SET:=.tx6)
+TRACERX_TARGETS5=$(EXPERIMENT_SET:=.tx5)
+TRACERX_TARGETS6=$(EXPERIMENT_SET:=.tx6)
+TRACERX_TARGETS7=$(EXPERIMENT_SET:=.tx7)
 
 # The first target (default)
 all: ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS}
@@ -150,6 +151,18 @@ ${COREUTILS_COV_DIR}:
 %.tx6 : 
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -exact-address-interpolant -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
+%.klee7 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 4 --sym-stdout" make $*.klee
+
+%.klee8 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 5 --sym-stdout" make $*.klee
+
+%.tx7 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 4 --sym-stdout" make $*.tx
+
+%.tx8 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-a -sym-stdin 5 --sym-stdout" make $*.tx
+
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
 # Tracer-X which can be seen in %.klee... and %.tx... targets.
@@ -172,24 +185,26 @@ ${COREUTILS_COV_DIR}:
 	@echo =================================================================
 	@echo Running Tracer-X on $* ...
 	@echo =================================================================
-	if [ $* = "dd" ]; then \
-		PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
-	elif [ $* = "dircolors" ]; then \
-		PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
-	elif [ $* = "echo" ]; then \
-		PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
-	elif [ $* = "expr" ]; then \
-		PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
-	elif [ $* = "mknod" ]; then \
-		PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
-	elif [ $* = "od" ]; then \
-		PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
-	elif [ $* = "pathchk" ]; then \
-		PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
-	elif [ $* = "printf" ]; then \
-		PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
-	else \
-		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
+	if [ -z "$$PROGRAM_OPTIONS" ] ; then \
+		if [ $* = "dd" ]; then \
+			PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
+		elif [ $* = "dircolors" ]; then \
+			PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
+		elif [ $* = "echo" ]; then \
+			PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
+		elif [ $* = "expr" ]; then \
+			PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
+		elif [ $* = "mknod" ]; then \
+			PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
+		elif [ $* = "od" ]; then \
+			PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
+		elif [ $* = "pathchk" ]; then \
+			PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
+		elif [ $* = "printf" ]; then \
+			PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
+		else \
+			PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
+		fi ; \
 	fi ; \
 	if [ -z "${OUTPUT_DIR}" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
@@ -202,6 +217,7 @@ ${COREUTILS_COV_DIR}:
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
+	echo PROGRAM_OPTIONS="$$PROGRAM_OPTIONS" ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS ; \
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
@@ -279,24 +295,26 @@ ${COREUTILS_COV_DIR}:
 	@echo =================================================================
 	@echo Running KLEE with Z3 on $* ...
 	@echo =================================================================
-	if [ $* = "dd" ]; then \
-		PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
-	elif [ $* = "dircolors" ]; then \
-		PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
-	elif [ $* = "echo" ]; then \
-		PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
-	elif [ $* = "expr" ]; then \
-		PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
-	elif [ $* = "mknod" ]; then \
-		PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
-	elif [ $* = "od" ]; then \
-		PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
-	elif [ $* = "pathchk" ]; then \
-		PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
-	elif [ $* = "printf" ]; then \
-		PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
-	else \
-		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
+	if [ -z "$$PROGRAM_OPTIONS" ] ; then \
+		if [ $* = "dd" ]; then \
+			PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
+		elif [ $* = "dircolors" ]; then \
+			PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
+		elif [ $* = "echo" ]; then \
+			PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
+		elif [ $* = "expr" ]; then \
+			PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
+		elif [ $* = "mknod" ]; then \
+			PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
+		elif [ $* = "od" ]; then \
+			PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
+		elif [ $* = "pathchk" ]; then \
+			PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
+		elif [ $* = "printf" ]; then \
+			PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
+		else \
+			PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
+		fi ; \
 	fi ; \
 	if [ -z "${OUTPUT_DIR}" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
@@ -386,24 +404,26 @@ ${COREUTILS_COV_DIR}:
 	@echo =================================================================
 	@echo Running KLEE with STP on $* ...
 	@echo =================================================================
-	if [ $* = "dd" ]; then \
-		PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
-	elif [ $* = "dircolors" ]; then \
-		PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
-	elif [ $* = "echo" ]; then \
-		PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
-	elif [ $* = "expr" ]; then \
-		PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
-	elif [ $* = "mknod" ]; then \
-		PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
-	elif [ $* = "od" ]; then \
-		PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
-	elif [ $* = "pathchk" ]; then \
-		PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
-	elif [ $* = "printf" ]; then \
-		PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
-	else \
-		PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
+	if [ -z "$$PROGRAM_OPTIONS" ] ; then \
+		if [ $* = "dd" ]; then \
+			PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
+		elif [ $* = "dircolors" ]; then \
+			PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
+		elif [ $* = "echo" ]; then \
+			PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
+		elif [ $* = "expr" ]; then \
+			PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
+		elif [ $* = "mknod" ]; then \
+			PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
+		elif [ $* = "od" ]; then \
+			PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
+		elif [ $* = "pathchk" ]; then \
+			PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
+		elif [ $* = "printf" ]; then \
+			PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
+		else \
+			PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
+		fi ; \
 	fi ; \
 	if [ -z "${OUTPUT_DIR}" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
@@ -464,7 +484,7 @@ ${COREUTILS_COV_DIR}:
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
 
 clean:
-	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${KLEE_TARGETS3} ${KLEE_TARGETS4} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${TRACERX_TARGETS} ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
+	rm -rf ${KLEE_TARGETS1} ${KLEE_TARGETS2} ${TRACERX_TARGETS1} ${TRACERX_TARGETS2} ${TRACERX_TARGETS3} ${TRACERX_TARGETS4} ${TRACERX_TARGETS5} ${TRACERX_TARGETS6} ${TRACERX_TARGETS7} ${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${TRACERX_TARGETS} ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR}
