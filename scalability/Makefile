@@ -23,7 +23,7 @@ EXPERIMENT_SET=Regexp-6-3 Regexp-6-4 Regexp-6-5 Regexp-7-3 Regexp-7-4 Regexp-7-5
 EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 
 # Scalability benchmark set for November/December 2016 experiment
-EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall insertsort janne_complex lcdnum ludcmp merge ns nsichneu prime recursion Regexp sample statemate tr tritype ud
+EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall insertsort11 janne_complex lcdnum ludcmp merge ns nsichneu prime recursion Regexp sample statemate tr tritype ud
 
 EXPERIMENT_CSV=experiment.csv
 
