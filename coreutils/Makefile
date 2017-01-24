@@ -245,6 +245,36 @@ ${COREUTILS_COV_DIR}:
 %.tx21 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 4 -sym-stdin 8 --sym-stdout" make $*.tx
 
+# pathchk
+%.klee22 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 13 --sym-stdout" make $*.klee
+
+%.klee23 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 14 --sym-stdout" make $*.klee
+
+%.klee24 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 15 --sym-stdout" make $*.klee
+
+%.klee25 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 16 --sym-stdout" make $*.klee
+
+%.klee26 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 17 --sym-stdout" make $*.klee
+
+%.tx22 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 13 --sym-stdout" make $*.tx
+
+%.tx23 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 14 --sym-stdout" make $*.tx
+
+%.tx24 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 15 --sym-stdout" make $*.tx
+
+%.tx25 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 16 --sym-stdout" make $*.tx
+
+%.tx26 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 17 --sym-stdout" make $*.tx
 
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
@@ -685,14 +715,24 @@ cav-core-experiment:
 	make head.tx19
 	make head.tx20
 	make head.tx21
+	make pathchk.klee22
+	make pathchk.klee23
+	make pathchk.klee24
+	make pathchk.klee25
+	make pathchk.klee26
+	make pathchk.tx22
+	make pathchk.tx23
+	make pathchk.tx24
+	make pathchk.tx25
+	make pathchk.tx26
 
 # This target is used for collecting data from experimental results into experiment.csv file.
 cav-${EXPERIMENT_CSV}: cav-core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@; \
-	for ext in .klee7 .klee8 .klee9 .klee10 .klee11 .klee12 .klee13 .klee14 .klee15 .klee16 .klee17 .klee18 .klee19 .klee20 .klee21 .tx7 .tx8 .tx9 .tx10 .tx11 .tx12 .tx13 .tx14 .tx15 .tx16 .tx17 .tx18 .tx19 .tx20 .tx21 ; \
+	for ext in .klee7 .klee8 .klee9 .klee10 .klee11 .klee12 .klee13 .klee14 .klee15 .klee16 .klee17 .klee18 .klee19 .klee20 .klee21 .tx7 .tx8 .tx9 .tx10 .tx11 .tx12 .tx13 .tx14 .tx15 .tx16 .tx17 .tx18 .tx19 .tx20 .tx21 .tx22 .tx23 .tx24 .tx25 .tx26 ; \
 	do \
-		for program in pr cut printf basename head ; \
+		for program in pr cut printf basename head pathchk ; \
 		do \
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> $@; \
