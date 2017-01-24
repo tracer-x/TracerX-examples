@@ -405,7 +405,7 @@ ${EXPERIMENT_CSV}: core-experiment
 	done
 
 cav-core-experiment:
-	for program in bubble3 bubble6 bubble9 Regexp7-3 Regexp7-4 Regexp7-5 insertsort5 insertsort8 insertsort11 statemate nsichneu ; \
+	for program in bubble3 bubble6 bubble9 bubble12 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-7-6 insertsort5 insertsort7 insertsort9 insertsort11 statemate nsichneu ; \
 	do \
 		make $$program.klee1;    \
 		make $$program.tx1; \
@@ -417,7 +417,7 @@ cav-${EXPERIMENT_CSV}: cav-core-experiment
 	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@; \
 	for ext in .klee1 .tx1 ; \
 	do \
-		for program in bubble3 bubble6 bubble9 Regexp7-3 Regexp7-4 Regexp7-5 insertsort5 insertsort8 insertsort11 statemate nsichneu ; \
+		for program in bubble3 bubble6 bubble9 bubble12 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-7-6 insertsort5 insertsort7 insertsort9 insertsort11 statemate nsichneu ; \
 		do \
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> $@; \
