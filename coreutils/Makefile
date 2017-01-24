@@ -272,6 +272,9 @@ ${COREUTILS_COV_DIR}:
 %.klee28 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 17 --sym-stdout" make $*.klee
 
+%.klee29 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 18 --sym-stdout" make $*.klee
+
 %.tx24 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 13 --sym-stdout" make $*.tx
 
@@ -286,6 +289,9 @@ ${COREUTILS_COV_DIR}:
 
 %.tx28 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 17 --sym-stdout" make $*.tx
+
+%.tx28 :
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 18 --sym-stdout" make $*.tx
 
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
@@ -735,17 +741,19 @@ cav-core-experiment:
 	make pathchk.klee26
 	make pathchk.klee27
 	make pathchk.klee28
+	make pathchk.klee29
 	make pathchk.tx24
 	make pathchk.tx25
 	make pathchk.tx26
 	make pathchk.tx27
 	make pathchk.tx28
+	make pathchk.tx29
 
 # This target is used for collecting data from experimental results into experiment.csv file.
 cav-${EXPERIMENT_CSV}: cav-core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@; \
-	for ext in .klee7 .klee8 .klee9 .klee10 .klee11 .klee12 .klee13 .klee14 .klee15 .klee16 .klee17 .klee18 .klee19 .klee20 .klee21 .klee22 .klee23 .klee24 .klee25 .klee26 .klee27 .klee28 .tx7 .tx8 .tx9 .tx10 .tx11 .tx12 .tx13 .tx14 .tx15 .tx16 .tx17 .tx18 .tx19 .tx20 .tx21 .tx22 .tx23 .tx24 .tx25 .tx26 .tx27 .tx28 ; \
+	for ext in .klee7 .klee8 .klee9 .klee10 .klee11 .klee12 .klee13 .klee14 .klee15 .klee16 .klee17 .klee18 .klee19 .klee20 .klee21 .klee22 .klee23 .klee24 .klee25 .klee26 .klee27 .klee28 .klee29 .tx7 .tx8 .tx9 .tx10 .tx11 .tx12 .tx13 .tx14 .tx15 .tx16 .tx17 .tx18 .tx19 .tx20 .tx21 .tx22 .tx23 .tx24 .tx25 .tx26 .tx27 .tx28 .tx29 ; \
 	do \
 		for program in pr cut printf basename head pathchk ; \
 		do \
