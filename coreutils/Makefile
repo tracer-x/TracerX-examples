@@ -290,7 +290,7 @@ ${COREUTILS_COV_DIR}:
 %.tx28 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 17 --sym-stdout" make $*.tx
 
-%.tx28 :
+%.tx29 :
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ PROGRAM_OPTIONS="-sym-arg 18 --sym-stdout" make $*.tx
 
 # The following targets can be used for running experiments. The
