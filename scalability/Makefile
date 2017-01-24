@@ -395,11 +395,11 @@ ${EXPERIMENT_CSV}: core-experiment
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
-			fi ; \
-			if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
-				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXPERIMENT_CSV} ; \
-			else \
-				printf "\n" >> ${EXPERIMENT_CSV}; \
+				if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
+					( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXPERIMENT_CSV} ; \
+				else \
+					printf "\n" >> ${EXPERIMENT_CSV}; \
+				fi ; \
 			fi ; \
 		done ; \
 	done
@@ -469,11 +469,11 @@ cav-${EXPERIMENT_CSV}: cav-core-experiment
 				printf ", " >> ${EXPERIMENT_CSV}; \
 				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> ${EXPERIMENT_CSV}; \
 				printf ", " >> ${EXPERIMENT_CSV}; \
-			fi ; \
-			if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
-				( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXPERIMENT_CSV} ; \
-			else \
-				printf "\n" >> ${EXPERIMENT_CSV}; \
+				if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
+					( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> ${EXPERIMENT_CSV} ; \
+				else \
+					printf "\n" >> ${EXPERIMENT_CSV}; \
+				fi ; \
 			fi ; \
 		done ; \
 	done
