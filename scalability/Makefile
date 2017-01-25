@@ -25,6 +25,8 @@ EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 # Scalability benchmark set for November/December 2016 experiment
 EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall insertsort11 janne_complex lcdnum ludcmp merge ns nsichneu prime recursion Regexp sample statemate tr tritype ud
 
+EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
+
 EXPERIMENT_CSV=experiment.csv
 
 EXPERIMENT_TIMEOUT=3600
@@ -325,99 +327,33 @@ clean: standard-clean
 	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
 
 core-experiment:
-	for program in ${EXPERIMENT_SET} ; \
+	if [ -z "$$EXPERIMENT_SET" ] ; then \
+		EXPERIMENT_SET="${EXPERIMENT_SET}" ;
+	fi ; \
+	if [ -z "$$EXPERIMENT_TYPE_SET" ] ; then \
+		EXPERIMENT_TYPE_SET="${EXPERIMENT_TYPE_SET}" ; \
+	fi ; \
+	for program in $$EXPERIMENT_SET ; \
 	do \
-		make $$program.klee1;    \
-		make $$program.klee2;    \
-		make $$program.tx1; \
-		make $$program.tx2; \
-		make $$program.tx3; \
-		make $$program.tx4; \
-		make $$program.tx5; \
-		make $$program.tx6; \
+		for ext in $$EXPERIMENT_TYPE_SET ; \
+		do \
+			make $$program$$ext ; \
+		done ; \
 	done
 
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@; \
-	for ext in .klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6; \
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@
+	if [ -z "$$EXPERIMENT_SET" ] ; then \
+		EXPERIMENT_SET="${EXPERIMENT_SET}" ;
+	fi ; \
+	if [ -z "$$EXPERIMENT_TYPE_SET" ] ; then \
+		EXPERIMENT_TYPE_SET="${EXPERIMENT_TYPE_SET}" ; \
+	fi ; \
+	for ext in $$EXPERIMENT_TYPE_SET ; \
 	do \
-		for program in ${EXPERIMENT_SET} ; \
-		do \
-			if [ -d $$program$$ext ]; then \
-				printf "$$program$$ext," >> $@; \
-				cat $$program$$ext/ProgramOptions.txt >> $@ ; \
-				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				echo -n `ls $$program$$ext | grep err | wc -l` >> $@ ; \
-				printf ", " >> $@; \
-				grep "KLEE: done: completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d ', among which\n' >> $@; \
-				printf ", " >> $@; \
-				grep "KLEE: done:     error paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "KLEE: done:     subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "KLEE: done:     program exit paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "average branching depth of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "average branching depth of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "average instructions of completed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "average instructions of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep '^[[:space:]]*[[:digit:]]\+' $$program$$ext/$$program.cov |wc -l |tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
-					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> $@; \
-				fi ; \
-				printf ", " >> $@; \
-				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\2/' | tr -d ')\n' >> $@; \
-				printf ", " >> $@; \
-				grep "Average table entries per subsumption checkpoint" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "Average solver calls per subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
-					( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> $@ ; \
-				else \
-					printf "\n" >> $@; \
-				fi ; \
-			fi ; \
-		done ; \
-	done
-
-cav-core-experiment:
-	for program in bubble3 bubble6 bubble9 bubble12 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-7-6 insertsort5 insertsort7 insertsort9 insertsort11 statemate nsichneu ; \
-	do \
-		make $$program.klee1;    \
-		make $$program.tx1; \
-	done
-
-# This target is used for collecting data from the experiment's result into experiment.csv file.
-cav-${EXPERIMENT_CSV}: cav-core-experiment
-	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@; \
-	for ext in .klee1 .tx1 ; \
-	do \
-		for program in bubble3 bubble6 bubble9 bubble12 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-7-6 insertsort5 insertsort7 insertsort9 insertsort11 statemate nsichneu ; \
+		for program in $$EXPERIMENT_SET ; \
 		do \
 			if [ -d $$program$$ext ]; then \
 				printf "$$program$$ext," >> $@; \
