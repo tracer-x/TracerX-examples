@@ -328,7 +328,7 @@ clean: standard-clean
 
 core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
-		EXPERIMENT_SET="${EXPERIMENT_SET}" ;
+		EXPERIMENT_SET="${EXPERIMENT_SET}" ; \
 	fi ; \
 	if [ -z "$$EXPERIMENT_TYPE_SET" ] ; then \
 		EXPERIMENT_TYPE_SET="${EXPERIMENT_TYPE_SET}" ; \
