@@ -188,6 +188,7 @@ clean: standard-clean
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
 	if [ -e $*.gcda ] ; then \
+		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
 	else \
@@ -253,6 +254,7 @@ clean: standard-clean
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
 	if [ -e $*.gcda ] ; then \
+		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
 	else \
@@ -318,6 +320,7 @@ clean: standard-clean
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
 	if [ -e $*.gcda ] ; then \
+		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
 	else \
