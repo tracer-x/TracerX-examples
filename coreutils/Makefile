@@ -29,9 +29,9 @@ PATHCHK_OPTIONS=--sym-args 0 1 2 --sym-args 0 1 300 --sym-files 1 8 -sym-stdin 8
 PRINTF_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
 
 # Coreutils benchmark set for November/December 2016 experiment
-EXPERIMENT_SET=comm cut dirname expand factor join split sum uniq
+DEFAULT_EXPERIMENT_SET=comm cut dirname expand factor join split sum uniq
 
-EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
+DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -500,10 +500,10 @@ realclean: clean
 
 core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ]  ; then \
-		EXPERIMENT_SET="${EXPERIMENT_SET}" ; \
+		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
 	if [ -z "$$EXPERIMENT_TYPE_SET" ] ; then \
-		EXPERIMENT_TYPE_SET="${EXPERIMENT_TYPE_SET}" ; \
+		EXPERIMENT_TYPE_SET="${DEFAULT_EXPERIMENT_TYPE_SET}" ; \
 	fi ; \
 	for program in $$EXPERIMENT_SET ; \
 	do \
@@ -517,10 +517,10 @@ ${EXPERIMENT_CSV}.only:
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@
 	if [ -z "$$EXPERIMENT_SET" ]  ; then \
-		EXPERIMENT_SET="${EXPERIMENT_SET}" ; \
+		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
 	if [ -z "$$EXPERIMENT_TYPE_SET" ] ; then \
-		EXPERIMENT_TYPE_SET="${EXPERIMENT_TYPE_SET}" ; \
+		EXPERIMENT_TYPE_SET="${DEFAULT_EXPERIMENT_TYPE_SET}" ; \
 	fi ; \
 	for ext in $$EXPERIMENT_TYPE_SET ; \
 	do \
