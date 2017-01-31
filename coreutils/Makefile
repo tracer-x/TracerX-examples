@@ -220,6 +220,9 @@ ${COREUTILS_COV_DIR}:
 	else \
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
+	OUTPUT_COV_DIR=$$OUTPUT_DIR/cov ; \
+	rm -rf $$OUTPUT_COV_DIR ; \
+	mkdir $$OUTPUT_COV_DIR ; \
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
 	( cd ${COREUTILS_COV_DIR}/src ; \
 	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
@@ -233,12 +236,19 @@ ${COREUTILS_COV_DIR}:
 			LCOV_NAME=$${LCOV_OBJ%.*} ; \
 			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
 			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
+			OUTPUT_LCOV_DIRNAME=$$OUTPUT_COV_DIR/$$LCOV_DIRNAME ; \
+			OUTPUT_LCOV_FILENAME=$$OUTPUT_LCOV_DIRNAME/$$LCOV_BASENAME.cov ; \
+			echo Saving llvm-cov output in $$OUTPUT_LCOV_FILENAME ; \
+			if [ ! -d $$OUTPUT_LCOV_DIRNAME ] ; then \
+				mkdir $$OUTPUT_LCOV_DIRNAME ; \
+			fi ; \
 			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
-			NEW_SRC_LIST=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
+			llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda > $$OUTPUT_LCOV_FILENAME ; \
+			NEW_SRC_LIST=`cat $$OUTPUT_LCOV_FILENAME | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
 			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
 				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
 			done ; \
-			LINE_COVERAGE=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
 		done ; \
 		LOC_TOTAL=0 ; \
@@ -329,6 +339,9 @@ ${COREUTILS_COV_DIR}:
 	else \
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
+	OUTPUT_COV_DIR=$$OUTPUT_DIR/cov ; \
+	rm -rf $$OUTPUT_COV_DIR ; \
+	mkdir $$OUTPUT_COV_DIR ; \
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
 	( cd ${COREUTILS_COV_DIR}/src ; \
 	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
@@ -342,12 +355,19 @@ ${COREUTILS_COV_DIR}:
 			LCOV_NAME=$${LCOV_OBJ%.*} ; \
 			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
 			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
+			OUTPUT_LCOV_DIRNAME=$$OUTPUT_COV_DIR/$$LCOV_DIRNAME ; \
+			OUTPUT_LCOV_FILENAME=$$OUTPUT_LCOV_DIRNAME/$$LCOV_BASENAME.cov ; \
+			echo Saving llvm-cov output in $$OUTPUT_LCOV_FILENAME ; \
+			if [ ! -d $$OUTPUT_LCOV_DIRNAME ] ; then \
+				mkdir $$OUTPUT_LCOV_DIRNAME ; \
+			fi ; \
 			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
-			NEW_SRC_LIST=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
+			llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda > $$OUTPUT_LCOV_FILENAME ; \
+			NEW_SRC_LIST=`cat $$OUTPUT_LCOV_FILENAME | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
 			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
 				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
 			done ; \
-			LINE_COVERAGE=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
 		done ; \
 		LOC_TOTAL=0 ; \
@@ -415,7 +435,7 @@ ${COREUTILS_COV_DIR}:
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ;
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
@@ -427,6 +447,9 @@ ${COREUTILS_COV_DIR}:
 	else \
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
+	OUTPUT_COV_DIR=$$OUTPUT_DIR/cov ; \
+	rm -rf $$OUTPUT_COV_DIR ; \
+	mkdir $$OUTPUT_COV_DIR ; \
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
 	( cd ${COREUTILS_COV_DIR}/src ; \
 	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
@@ -440,12 +463,19 @@ ${COREUTILS_COV_DIR}:
 			LCOV_NAME=$${LCOV_OBJ%.*} ; \
 			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
 			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
+			OUTPUT_LCOV_DIRNAME=$$OUTPUT_COV_DIR/$$LCOV_DIRNAME ; \
+			OUTPUT_LCOV_FILENAME=$$OUTPUT_LCOV_DIRNAME/$$LCOV_BASENAME.cov ; \
+			echo Saving llvm-cov output in $$OUTPUT_LCOV_FILENAME ; \
+			if [ ! -d $$OUTPUT_LCOV_DIRNAME ] ; then \
+				mkdir $$OUTPUT_LCOV_DIRNAME ; \
+			fi ; \
 			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
-			NEW_SRC_LIST=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
+			llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda > $$OUTPUT_LCOV_FILENAME ; \
+			NEW_SRC_LIST=`cat $$OUTPUT_LCOV_FILENAME | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
 			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
 				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
 			done ; \
-			LINE_COVERAGE=`llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
 		done ; \
 		LOC_TOTAL=0 ; \
