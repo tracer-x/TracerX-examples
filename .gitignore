@@ -9,6 +9,7 @@ Makefile.common
 */*.ll
 */*.klee
 */*.stpklee
+*/*.tx
 coreutils/coreutils-6.10/autom4te.cache/requests
 coreutils/coreutils-6.10/config.h.in
 coreutils/coreutils-6.10/doc/coreutils.info
