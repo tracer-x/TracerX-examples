@@ -1293,6 +1293,7 @@ int main(void)
 {
   /* time = 1; */  /**SYS_get_clock()**/
   klee_make_symbolic(&time, sizeof(time), "time");
+  klee_make_symbolic(Bitlist, sizeof(Bitlist), "Bitlist");
 
   init();
 
@@ -1380,7 +1381,7 @@ int main(void)
   klee_make_symbolic(&FH_DU__MFHA, sizeof(FH_DU__MFHA), "FH_DU__MFHA");
   klee_make_symbolic(&FH_DU__MFHA_copy, sizeof(FH_DU__MFHA_copy), "FH_DU__MFHA_copy");
   klee_make_symbolic(&FH_DU__MFHA_old, sizeof(FH_DU__MFHA_old), "FH_DU__MFHA_old");
-  
+
   interface();
   FH_DU();
 
