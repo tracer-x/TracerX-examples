@@ -173,8 +173,7 @@ clean: standard-clean
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
-	fi ; \
-	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
+	fi
 	# Generate line coverage information
 	rm -rf $* $*.gcno $*.gcda
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
@@ -187,15 +186,18 @@ clean: standard-clean
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
+	LOC_TOTAL=0 ; \
+	LINE_COVERAGE=0 ; \
 	if [ -e $*.gcda ] ; then \
 		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-	else \
-		LINE_COVERAGE=0 ; \
+		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$OUTPUT_DIR/$*.cov |wc -l` ; \
+		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 	fi ; \
 	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
-	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	( echo -n $$LOC_TOTAL >	$$OUTPUT_DIR/SLocCountLog.txt ) ; \
+	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
 
 %.klee:
 	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
@@ -239,8 +241,7 @@ clean: standard-clean
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
-	fi ; \
-	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
+	fi
 	# Generate line coverage information
 	rm -rf $* $*.gcno $*.gcda
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
@@ -253,15 +254,18 @@ clean: standard-clean
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
+	LOC_TOTAL=0 ; \
+	LINE_COVERAGE=0 ; \
 	if [ -e $*.gcda ] ; then \
 		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-	else \
-		LINE_COVERAGE=0 ; \
+		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$OUTPUT_DIR/$*.cov |wc -l` ; \
+		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 	fi ; \
 	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
-	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	( echo -n $$LOC_TOTAL >	$$OUTPUT_DIR/SLocCountLog.txt ) ; \
+	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
 
 %.stpklee:
 	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
@@ -305,8 +309,7 @@ clean: standard-clean
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
-	fi ; \
-	sloccount $*.c > $$OUTPUT_DIR/SLocCountLog.txt 2>&1
+	fi
 	# Generate line coverage information
 	rm -rf $* $*.gcno $*.gcda
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
@@ -319,15 +322,18 @@ clean: standard-clean
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
+	LOC_TOTAL=0 ; \
+	LINE_COVERAGE=0 ; \
 	if [ -e $*.gcda ] ; then \
 		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-	else \
-		LINE_COVERAGE=0 ; \
+		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$OUTPUT_DIR/$*.cov |wc -l` ; \
+		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 	fi ; \
 	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
-	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	( echo -n $$LOC_TOTAL >	$$OUTPUT_DIR/SLocCountLog.txt ) ; \
+	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
 
 core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
@@ -347,7 +353,7 @@ core-experiment:
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ;
 	fi ; \
@@ -393,7 +399,7 @@ ${EXPERIMENT_CSV}: core-experiment
 				grep '^[[:space:]]*[[:digit:]]\+' $$program$$ext/$$program.cov |wc -l |tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
-					grep "Total Physical Source Lines of Code (SLOC)" ${CURDIR}/$$program$$ext/SLocCountLog.txt | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' | tr -d ',' >> $@; \
+					cat ${CURDIR}/$$program$$ext/SLocCountLog.txt | tr -d '\n' >> $@; \
 				fi ; \
 				printf ", " >> $@; \
 				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \

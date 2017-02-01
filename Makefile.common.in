@@ -44,22 +44,24 @@ IR_TARGETS=$(subst .tx,.ll,${TARGETS})
 KLEE_TARGETS=$(subst .tx,.klee,${TARGETS})
 STPKLEE_TARGETS=$(subst .tx,.stpklee,${TARGETS})
 EXECUTABLE_TARGETS=$(subst .tx,,${TARGETS})
-COV_TARGETS=$(subst .tx,.cov,${TARGETS})
+TXCOV_TARGETS=$(subst .tx,.txcov,${TARGETS})
+KLEECOV_TARGETS=$(subst .tx,.kleecov,${TARGETS})
+STPKLEECOV_TARGETS=$(subst .tx,.stpkleecov,${TARGETS})
 
 all: all-ir ${INPUT_TARGETS}
 
 all-ir: ${IR_TARGETS}
 
-all-replay: ${COV_TARGETS}
+all-replay: ${TXCOV_TARGETS}
 
 standard-clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
-	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${EXTRA_REMOVAL} 
+	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${TXCOV_TARGETS} ${KLEECOV_TARGETS} ${STPKLEECOV_TARGETS} ${EXTRA_REMOVAL} 
 
 # To prevent the removal of *.tx subdirectories
 .PRECIOUS: %.tx %.klee %.stpklee
 
-.SUFFIXES: .tx .klee .stpklee .inputs .bc .ll .cov .stpcov
+.SUFFIXES: .tx .klee .stpklee .inputs .bc .ll .txcov .kleecov .stpkleecov
 
 # For running KLEE with Z3 and interpolation
 .bc.tx:
@@ -139,13 +141,15 @@ standard-clean:
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done
 	touch $@
+	LOC_TOTAL=0 ; \
+	LINE_COVERAGE=0 ; \
 	if [ -e $*.gcda ] ; then \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
-	else \
-		LINE_COVERAGE=0 ; \
+		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $@ |wc -l` ; \
+		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 	fi ; \
-	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
 
 .klee.kleecov:
 	####################################################################
@@ -167,13 +171,15 @@ standard-clean:
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done
 	touch $@
+	LOC_TOTAL=0 ; \
+	LINE_COVERAGE=0 ; \
 	if [ -e $*.gcda ] ; then \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
-	else \
-		LINE_COVERAGE=0 ; \
+		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $@ |wc -l` ; \
+		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 	fi ; \
-	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
 
 .stpklee.stpkleecov:
 	####################################################################
@@ -195,13 +201,15 @@ standard-clean:
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done
 	touch $@ 
+	LOC_TOTAL=0 ; \
+	LINE_COVERAGE=0 ; \
 	if [ -e $*.gcda ] ; then \
 		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
 		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
-	else \
-		LINE_COVERAGE=0 ; \
+		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $@ |wc -l` ; \
+		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 	fi ; \
-	echo Line coverage = $$LINE_COVERAGE of `sloccount $*.c |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//`
+	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
 
 .tx.inputs:
 	for KTEST in $</*.ktest ; do \

@@ -232,6 +232,7 @@ ${COREUTILS_COV_DIR}:
 		LINE_COVERAGE_TOTAL=0 ; \
 		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
 		LCOV_SOURCES="" ; \
+		LOC_TOTAL=0 ; \
 		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
 			LCOV_NAME=$${LCOV_OBJ%.*} ; \
 			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
@@ -249,16 +250,9 @@ ${COREUTILS_COV_DIR}:
 				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
 			done ; \
 			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			LINE_NON_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*#####:' | wc -l` ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
-		done ; \
-		LOC_TOTAL=0 ; \
-		for LCOV_SRC in $$LCOV_SOURCES ; do \
-			if [ -e $$LCOV_SRC ] ; then \
-				LOC=`sloccount $$LCOV_SRC |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
-				if [ x$$LOC != x ] ; then \
-					LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
-				fi ; \
-			fi ; \
+			LOC_TOTAL=`expr $$LOC_TOTAL + $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 		done ; \
 		( echo -n $$LINE_COVERAGE_TOTAL > $$OUTPUT_DIR/LcovLog.txt ) ; \
 		( echo -n $$LOC_TOTAL > $$OUTPUT_DIR/SLocCountLog.txt ) \
@@ -351,6 +345,7 @@ ${COREUTILS_COV_DIR}:
 		LINE_COVERAGE_TOTAL=0 ; \
 		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
 		LCOV_SOURCES="" ; \
+		LOC_TOTAL=0 ; \
 		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
 			LCOV_NAME=$${LCOV_OBJ%.*} ; \
 			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
@@ -368,16 +363,9 @@ ${COREUTILS_COV_DIR}:
 				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
 			done ; \
 			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			LINE_NON_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*#####:' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
-		done ; \
-		LOC_TOTAL=0 ; \
-		for LCOV_SRC in $$LCOV_SOURCES ; do \
-			if [ -e $$LCOV_SRC ] ; then \
-				LOC=`sloccount $$LCOV_SRC |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
-				if [ x$$LOC != x ] ; then \
-					LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
-				fi ; \
-			fi ; \
+			LOC_TOTAL=`expr $$LOC_TOTAL + $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 		done ; \
 		( echo -n $$LINE_COVERAGE_TOTAL > $$OUTPUT_DIR/LcovLog.txt ) ; \
 		( echo -n $$LOC_TOTAL > $$OUTPUT_DIR/SLocCountLog.txt ) \
@@ -459,6 +447,7 @@ ${COREUTILS_COV_DIR}:
 		LINE_COVERAGE_TOTAL=0 ; \
 		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
 		LCOV_SOURCES="" ; \
+		LOC_TOTAL=0 ; \
 		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
 			LCOV_NAME=$${LCOV_OBJ%.*} ; \
 			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
@@ -476,16 +465,9 @@ ${COREUTILS_COV_DIR}:
 				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
 			done ; \
 			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
+			LINE_NON_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*#####:' | wc -l`  ; \
 			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
-		done ; \
-		LOC_TOTAL=0 ; \
-		for LCOV_SRC in $$LCOV_SOURCES ; do \
-			if [ -e $$LCOV_SRC ] ; then \
-				LOC=`sloccount $$LCOV_SRC |grep "Total Physical" | sed s/^[[:alpha:],[:space:],\(,\),\=]*//` ; \
-				if [ x$$LOC != x ] ; then \
-					LOC_TOTAL=`expr $$LOC_TOTAL + $$LOC` ; \
-				fi ; \
-			fi ; \
+			LOC_TOTAL=`expr $$LOC_TOTAL + $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 		done ; \
 		( echo -n $$LINE_COVERAGE_TOTAL > $$OUTPUT_DIR/LcovLog.txt ) ; \
 		( echo -n $$LOC_TOTAL > $$OUTPUT_DIR/SLocCountLog.txt ) \
@@ -515,7 +497,7 @@ core-experiment:
 
 ${EXPERIMENT_CSV}.only:
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,SLOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X new paths,KLEE paths before last Tracer-X path" >> $@
 	if [ -z "$$EXPERIMENT_SET" ]  ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
