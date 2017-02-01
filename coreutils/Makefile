@@ -226,7 +226,7 @@ ${COREUTILS_COV_DIR}:
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
 	( cd ${COREUTILS_COV_DIR}/src ; \
 	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 		done ) ; \
 	( cd ${COREUTILS_COV_DIR} ; \
 		LINE_COVERAGE_TOTAL=0 ; \
@@ -339,7 +339,7 @@ ${COREUTILS_COV_DIR}:
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
 	( cd ${COREUTILS_COV_DIR}/src ; \
 	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 		done ) ; \
 	( cd ${COREUTILS_COV_DIR} ; \
 		LINE_COVERAGE_TOTAL=0 ; \
@@ -441,7 +441,7 @@ ${COREUTILS_COV_DIR}:
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
 	( cd ${COREUTILS_COV_DIR}/src ; \
 	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 		done ) ; \
 	( cd ${COREUTILS_COV_DIR} ; \
 		LINE_COVERAGE_TOTAL=0 ; \

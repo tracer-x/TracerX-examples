@@ -31,6 +31,9 @@ KLEE_STATS=${KLEE_HOME}/bin/klee-stats
 KLEE_REPLAY=${KLEE_HOME}/bin/klee-replay
 KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 
+# klee-replay timeout
+DEFAULT_KLEE_REPLAY_TIMEOUT=60
+
 # In the following, please select suitable include and DLL directories
 CFLAGS=-g -I${KLEE_HOME}/include ${EXTRA_CFLAGS}
 LDFLAGS=-L${KLEE_HOME}/lib ${EXTRA_LDFLAGS} -lkleeRuntest
@@ -138,7 +141,7 @@ standard-clean:
 	####################################################################
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
 	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done
 	touch $@
 	LOC_TOTAL=0 ; \
@@ -168,7 +171,7 @@ standard-clean:
 	####################################################################
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
 	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done
 	touch $@
 	LOC_TOTAL=0 ; \
@@ -198,7 +201,7 @@ standard-clean:
 	####################################################################
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
 	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done
 	touch $@ 
 	LOC_TOTAL=0 ; \

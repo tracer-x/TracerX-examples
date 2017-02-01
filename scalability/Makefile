@@ -183,7 +183,7 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
 	LOC_TOTAL=0 ; \
@@ -251,7 +251,7 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
 	LOC_TOTAL=0 ; \
@@ -319,7 +319,7 @@ clean: standard-clean
 		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST ${KLEE_REPLAY} $* $$KTEST ) ; \
+		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done ; \
 	touch $$OUTPUT_DIR/$*.cov ; \
 	LOC_TOTAL=0 ; \
