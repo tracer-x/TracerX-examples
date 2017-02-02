@@ -10,6 +10,8 @@ AC_ARG_WITH(klee,
 
 AC_SUBST(KLEE, ["$with_klee"])
 
+AC_SUBST(KLEE_REPLAY_TIMEOUT, ["60"])
+
 AC_ARG_WITH(wllvm,
 	AS_HELP_STRING([--with-wllvm], [The source directory of whole-program-llvm (defaults to /usr/local/lib/whole-program-llvm)]),
 	[],

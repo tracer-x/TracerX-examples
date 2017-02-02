@@ -32,7 +32,7 @@ KLEE_REPLAY=${KLEE_HOME}/bin/klee-replay
 KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 
 # klee-replay timeout
-DEFAULT_KLEE_REPLAY_TIMEOUT=60
+DEFAULT_KLEE_REPLAY_TIMEOUT=@KLEE_REPLAY_TIMEOUT@
 
 # In the following, please select suitable include and DLL directories
 CFLAGS=-g -I${KLEE_HOME}/include ${EXTRA_CFLAGS}

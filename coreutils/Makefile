@@ -207,49 +207,7 @@ ${COREUTILS_COV_DIR}:
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
-	@echo =================================================================
-	@echo Running generated tests to compute coverage ...
-	@echo =================================================================
-	if [ -z "$$OUTPUT_DIR" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	fi ; \
-	OUTPUT_COV_DIR=$$OUTPUT_DIR/cov ; \
-	rm -rf $$OUTPUT_COV_DIR ; \
-	mkdir $$OUTPUT_COV_DIR ; \
-	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
-	( cd ${COREUTILS_COV_DIR}/src ; \
-	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-		done ) ; \
-	( cd ${COREUTILS_COV_DIR} ; \
-		LINE_COVERAGE_TOTAL=0 ; \
-		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
-		LCOV_SOURCES="" ; \
-		LOC_TOTAL=0 ; \
-		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
-			LCOV_NAME=$${LCOV_OBJ%.*} ; \
-			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
-			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
-			OUTPUT_LCOV_DIRNAME=$$OUTPUT_COV_DIR/$$LCOV_DIRNAME ; \
-			OUTPUT_LCOV_FILENAME=$$OUTPUT_LCOV_DIRNAME/$$LCOV_BASENAME.cov ; \
-			echo Saving llvm-cov output in $$OUTPUT_LCOV_FILENAME ; \
-			if [ ! -d $$OUTPUT_LCOV_DIRNAME ] ; then \
-				mkdir $$OUTPUT_LCOV_DIRNAME ; \
-			fi ; \
-			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
-			llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda > $$OUTPUT_LCOV_FILENAME ; \
-			NEW_SRC_LIST=`cat $$OUTPUT_LCOV_FILENAME | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
-			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
-				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
-			done ; \
-			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
-			LINE_NON_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*#####:' | wc -l`  ; \
-			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
-			LOC_TOTAL=`expr $$LOC_TOTAL + $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-		done ; \
-		( echo -n $$LINE_COVERAGE_TOTAL > $$OUTPUT_DIR/LcovLog.txt ) ; \
-		( echo -n $$LOC_TOTAL > $$OUTPUT_DIR/SLocCountLog.txt ) \
-	)
+	${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR"
 	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
 
 clean:

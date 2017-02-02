@@ -10,3 +10,6 @@ export LLVM_COMPILER=@CC@
 export PATH=@EXTRA_PATH@:$PATH
 export CC=$WHOLE_PROGRAM_LLVM/wllvm
 export CXX=$WHOLE_PROGRAM_LLVM/wllvm++
+export KLEE_HOME=@KLEE@
+export KLEE_REPLAY=@KLEE@/bin/klee-replay
+export KLEE_REPLAY_TIMEOUT=@KLEE_REPLAY_TIMEOUT@

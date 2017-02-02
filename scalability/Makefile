@@ -1,6 +1,6 @@
 # Makefile to build and run the examples using KLEE.
 #
-# Copyright 2016 National University of Singapore
+# Copyright 2016, 2017 National University of Singapore
 
 # This is for extra KLEE options
 EXTRA_OPTIONS=-interpolation-stat
@@ -190,27 +190,7 @@ clean: standard-clean
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
 	fi
 	# Generate line coverage information
-	rm -rf $* $*.gcno $*.gcda
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	if [ -z "$$OUTPUT_DIR" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	fi ; \
-	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done ; \
-	touch $$OUTPUT_DIR/$*.cov ; \
-	LOC_TOTAL=0 ; \
-	LINE_COVERAGE=0 ; \
-	if [ -e $*.gcda ] ; then \
-		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-	fi ; \
-	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
-	( echo -n $$LOC_TOTAL >	$$OUTPUT_DIR/SLocCountLog.txt ) ; \
-	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
+	${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR"
 
 core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
