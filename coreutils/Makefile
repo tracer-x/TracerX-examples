@@ -145,234 +145,16 @@ ${COREUTILS_COV_DIR}:
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
 # Tracer-X which can be seen in %.klee... and %.tx... targets.
-%.tx: build
-	# The testing sandbox reconstructed here is from
-	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
-	@echo =================================================================
-	@echo Creating the sandbox ...
-	@echo =================================================================
-	mkdir sandbox
-	( cd sandbox ; \
-		ln -s /dev/null a ; \
-		ln -s /dev/random b ; \
-		echo "#!/bin/sh" > c ; \
-		echo "echo \"Hello world!\"" >> c ; \
-		chmod +x c ; \
-		touch d ; \
-		mkdir e \
-	)
-	@echo =================================================================
-	@echo Running Tracer-X on $* ...
-	@echo =================================================================
-	if [ -z "$$PROGRAM_OPTIONS" ] ; then \
-		if [ $* = "dd" ]; then \
-			PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
-		elif [ $* = "dircolors" ]; then \
-			PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
-		elif [ $* = "echo" ]; then \
-			PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
-		elif [ $* = "expr" ]; then \
-			PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
-		elif [ $* = "mknod" ]; then \
-			PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
-		elif [ $* = "od" ]; then \
-			PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
-		elif [ $* = "pathchk" ]; then \
-			PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
-		elif [ $* = "printf" ]; then \
-			PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
-		else \
-			PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
-		fi ; \
-	fi ; \
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	rm -rf $$OUTPUT_DIR; \
-	KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_MORE_OPTIONS}"; \
-	if [ -z "${KLEE_COREUTILS_MORE_OPTIONS}" ] ; then \
-		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
-	fi ; \
-	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
-	echo PROGRAM_OPTIONS="$$PROGRAM_OPTIONS" ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS ; \
-	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
-	# Delete the sandbox
-	rm -rf sandbox sandbox.temps
-	@echo =================================================================
-	@echo Create SVGs from tree.dot file if any ...
-	@echo =================================================================
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
-	fi
-	@echo =================================================================
-	@echo Running generated tests to compute coverage ...
-	@echo =================================================================
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	OUTPUT_COV_DIR=$$OUTPUT_DIR/cov ; \
-	rm -rf $$OUTPUT_COV_DIR ; \
-	mkdir $$OUTPUT_COV_DIR ; \
-	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
-	( cd ${COREUTILS_COV_DIR}/src ; \
-	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-		done ) ; \
-	( cd ${COREUTILS_COV_DIR} ; \
-		LINE_COVERAGE_TOTAL=0 ; \
-		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
-		LCOV_SOURCES="" ; \
-		LOC_TOTAL=0 ; \
-		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
-			LCOV_NAME=$${LCOV_OBJ%.*} ; \
-			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
-			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
-			OUTPUT_LCOV_DIRNAME=$$OUTPUT_COV_DIR/$$LCOV_DIRNAME ; \
-			OUTPUT_LCOV_FILENAME=$$OUTPUT_LCOV_DIRNAME/$$LCOV_BASENAME.cov ; \
-			echo Saving llvm-cov output in $$OUTPUT_LCOV_FILENAME ; \
-			if [ ! -d $$OUTPUT_LCOV_DIRNAME ] ; then \
-				mkdir $$OUTPUT_LCOV_DIRNAME ; \
-			fi ; \
-			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
-			llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda > $$OUTPUT_LCOV_FILENAME ; \
-			NEW_SRC_LIST=`cat $$OUTPUT_LCOV_FILENAME | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
-			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
-				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
-			done ; \
-			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
-			LINE_NON_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*#####:' | wc -l` ; \
-			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
-			LOC_TOTAL=`expr $$LOC_TOTAL + $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-		done ; \
-		( echo -n $$LINE_COVERAGE_TOTAL > $$OUTPUT_DIR/LcovLog.txt ) ; \
-		( echo -n $$LOC_TOTAL > $$OUTPUT_DIR/SLocCountLog.txt ) \
-	)
-	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
+%.tx:
+	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
-%.klee: build
-	# The testing sandbox reconstructed here is from
-	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
-	@echo =================================================================
-	@echo Creating the sandbox ...
-	@echo =================================================================
-	mkdir sandbox
-	( cd sandbox ; \
-		ln -s /dev/null a ; \
-		ln -s /dev/random b ; \
-		echo "#!/bin/sh" > c ; \
-		echo "echo \"Hello world!\"" >> c ; \
-		chmod +x c ; \
-		touch d ; \
-		mkdir e \
-	)
-	@echo =================================================================
-	@echo Running KLEE with Z3 on $* ...
-	@echo =================================================================
-	if [ -z "$$PROGRAM_OPTIONS" ] ; then \
-		if [ $* = "dd" ]; then \
-			PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
-		elif [ $* = "dircolors" ]; then \
-			PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
-		elif [ $* = "echo" ]; then \
-			PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
-		elif [ $* = "expr" ]; then \
-			PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
-		elif [ $* = "mknod" ]; then \
-			PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
-		elif [ $* = "od" ]; then \
-			PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
-		elif [ $* = "pathchk" ]; then \
-			PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
-		elif [ $* = "printf" ]; then \
-			PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
-		else \
-			PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
-		fi ; \
-	fi ; \
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	rm -rf $$OUTPUT_DIR; \
-	KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_MORE_OPTIONS}"; \
-	if [ -z "${KLEE_COREUTILS_MORE_OPTIONS}" ] ; then \
-		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
-	fi ; \
-	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} -interpolation-stat ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -no-interpolation -solver-backend=z3 --environ=${CURDIR}/test.env --run-in=${CURDIR}/sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS ; \
-	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
-	# Delete the sandbox
-	rm -rf sandbox sandbox.temps
-	@echo =================================================================
-	@echo Create SVGs from tree.dot file if any ...
-	@echo =================================================================
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/$*.svg ; \
-	fi
-	@echo =================================================================
-	@echo Running generated tests to compute coverage ...
-	@echo =================================================================
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	OUTPUT_COV_DIR=$$OUTPUT_DIR/cov ; \
-	rm -rf $$OUTPUT_COV_DIR ; \
-	mkdir $$OUTPUT_COV_DIR ; \
-	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"` ; \
-	( cd ${COREUTILS_COV_DIR}/src ; \
-	        for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-		done ) ; \
-	( cd ${COREUTILS_COV_DIR} ; \
-		LINE_COVERAGE_TOTAL=0 ; \
-		LCOV_OBJECTS=`find . -name "*.gcda"` ; \
-		LCOV_SOURCES="" ; \
-		LOC_TOTAL=0 ; \
-		for LCOV_OBJ in $$LCOV_OBJECTS ; do \
-			LCOV_NAME=$${LCOV_OBJ%.*} ; \
-			LCOV_BASENAME=$$(basename "$${LCOV_NAME}") ; \
-			LCOV_DIRNAME=$$(dirname "$${LCOV_OBJ}") ; \
-			OUTPUT_LCOV_DIRNAME=$$OUTPUT_COV_DIR/$$LCOV_DIRNAME ; \
-			OUTPUT_LCOV_FILENAME=$$OUTPUT_LCOV_DIRNAME/$$LCOV_BASENAME.cov ; \
-			echo Saving llvm-cov output in $$OUTPUT_LCOV_FILENAME ; \
-			if [ ! -d $$OUTPUT_LCOV_DIRNAME ] ; then \
-				mkdir $$OUTPUT_LCOV_DIRNAME ; \
-			fi ; \
-			cd ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME ; \
-			llvm-cov -gcno=./$$LCOV_BASENAME.gcno -gcda=./$$LCOV_BASENAME.gcda > $$OUTPUT_LCOV_FILENAME ; \
-			NEW_SRC_LIST=`cat $$OUTPUT_LCOV_FILENAME | grep '0:Source:' | sed s/-://g | sed s/0:Source://g` ; \
-			for NEW_SRC_FILE in $$NEW_SRC_LIST ; do \
-				LCOV_SOURCES="$$LCOV_SOURCES ${COREUTILS_COV_DIR}/$$LCOV_DIRNAME/$$NEW_SRC_FILE" ; \
-			done ; \
-			LINE_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*[[:digit:]]\+' | wc -l`  ; \
-			LINE_NON_COVERAGE=`cat $$OUTPUT_LCOV_FILENAME | grep '^[[:space:]]*#####:' | wc -l`  ; \
-			LINE_COVERAGE_TOTAL=`expr $$LINE_COVERAGE_TOTAL + $$LINE_COVERAGE` ; \
-			LOC_TOTAL=`expr $$LOC_TOTAL + $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-		done ; \
-		( echo -n $$LINE_COVERAGE_TOTAL > $$OUTPUT_DIR/LcovLog.txt ) ; \
-		( echo -n $$LOC_TOTAL > $$OUTPUT_DIR/SLocCountLog.txt ) \
-	)
-	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
+%.klee:
+	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
-%.stpklee: build
+%.stpklee:
+	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+
+%.klee-out: build
 	# The testing sandbox reconstructed here is from
 	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
 	@echo =================================================================
@@ -412,10 +194,8 @@ ${COREUTILS_COV_DIR}:
 			PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
 		fi ; \
 	fi ; \
-	if [ -z "${OUTPUT_DIR}" ] ; then \
+	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
 	KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_MORE_OPTIONS}"; \
@@ -423,17 +203,15 @@ ${COREUTILS_COV_DIR}:
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS -solver-backend=stp --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS $$SOLVER_FLAGS --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	@echo =================================================================
 	@echo Running generated tests to compute coverage ...
 	@echo =================================================================
-	if [ -z "${OUTPUT_DIR}" ] ; then \
+	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	OUTPUT_COV_DIR=$$OUTPUT_DIR/cov ; \
 	rm -rf $$OUTPUT_COV_DIR ; \
