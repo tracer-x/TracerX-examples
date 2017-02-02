@@ -64,21 +64,14 @@ standard-clean:
 # To prevent the removal of *.tx subdirectories
 .PRECIOUS: %.tx %.klee %.stpklee
 
-.SUFFIXES: .tx .klee .stpklee .inputs .bc .ll .txcov .kleecov .stpkleecov
+.SUFFIXES: .tx .klee .stpklee .klee-out .inputs .bc .ll .cov .txcov .kleecov .stpkleecov
 
 # For running KLEE with Z3 and interpolation
 .bc.tx:
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $< ${PROGRAM_OPTIONS}
-	opt -analyze -dot-cfg $<
-	mv *.dot $@
-	# Create SVGs from *.dot files
-	for DOTFILE in $@/*.dot ; do \
-		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
-		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
-	done
+	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$@ make $*.klee-out
 	# The following is to catch any difference in subsumption
 	# number for regression testing purposes
-	if [ -e subsumption.dat ]; then \
+	@if [ -e subsumption.dat ]; then \
 		REFERENCE_SUBSUMPTION=`grep $*.c subsumption.dat | sed 's/^[a-z0-9_]*\.c\t\+//' - ` ; \
 		if [ x$$REFERENCE_SUBSUMPTION != x ] ; then \
 			ACTUAL_SUBSUMPTION=`grep subsumed $@/tree.dot | wc -l` ; \
@@ -90,7 +83,7 @@ standard-clean:
 	fi
 	# The following is to catch any difference in error report
 	# number for regression testing purposes
-	if [ -e error.dat ]; then \
+	@if [ -e error.dat ]; then \
 		REFERENCE_ERROR=`grep $*.c error.dat | sed 's/^[a-z0-9_]*\.c\t\+//' - ` ; \
 		if [ x$$REFERENCE_ERROR != x ] ; then \
 			ACTUAL_ERROR=`ls $@ | grep err | wc -l` ; \
@@ -103,58 +96,35 @@ standard-clean:
 
 # For running KLEE with Z3 without interpolation
 .bc.klee:
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -no-interpolation -output-dir=$@ $< ${PROGRAM_OPTIONS}
-	opt -analyze -dot-cfg $<
-	mv *.dot $@
-	# Create SVGs from .dot files
-	for DOTFILE in $@/*.dot ; do \
-		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
-		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
-	done
+	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$@ make $*.klee-out
 
 # For running KLEE with STP without interpolation
 .bc.stpklee:
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=stp -output-dir=$@ $< ${PROGRAM_OPTIONS}
-	opt -analyze -dot-cfg $<
-	mv *.dot $@
+	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$@ make $*.klee-out
+
+.bc.klee-out:
+	@LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} $$SOLVER_FLAGS -output-dir=$$OUTPUT_DIR $< ${PROGRAM_OPTIONS}
+	@opt -analyze -dot-cfg $<
+	@mv *.dot $$OUTPUT_DIR
 	# Create SVGs from .dot files
-	for DOTFILE in $@/*.dot ; do \
+	@for DOTFILE in $$OUTPUT_DIR/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
 	done
 
-# For replaying the tests and getting coverage information for the tests run
-.tx.txcov:
-	####################################################################
-	# KLEE-STATS Statistics                                            #
-	#                                                                  #
-	# KLEE displays a low coverage using klee-stats on small examples, #
-	# due to additional code added.  The additional code is displayed  #
-	# in <klee_output_dir>/assembly.ll.                                #
-	####################################################################
-	${KLEE_STATS} $<
-	####################################################################
-	# llvm-cov Statistics for line coverage                            #
-	#                                                                  #
-	# See the generated .cov file for the detailed execution count of  #
-	# each line.                                                       #
-	####################################################################
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done
-	touch $@
-	LOC_TOTAL=0 ; \
-	LINE_COVERAGE=0 ; \
-	if [ -e $*.gcda ] ; then \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $@ |wc -l` ; \
-		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-	fi ; \
-	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
+# Execute the following targets instead to also get coverage
+# information, e.g., make even.txcov
+.bc.txcov:
+	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$*.tx COV_FILE=$*.txcov make $*.cov
+	
+.bc.kleecov:
+	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$*.klee COV_FILE=$*.kleecov make $*.cov
 
-.klee.kleecov:
+.bc.stpkleecov:
+	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$*.stpklee COV_FILE=$*.stpkleecov make $*.cov
+	
+.bc.cov:
+	@make $*.klee-out
 	####################################################################
 	# KLEE-STATS Statistics                                            #
 	#                                                                  #
@@ -162,37 +132,7 @@ standard-clean:
 	# due to additional code added.  The additional code is displayed  #
 	# in <klee_output_dir>/assembly.ll.                                #
 	####################################################################
-	${KLEE_STATS} $<
-	####################################################################
-	# llvm-cov Statistics for line coverage                            #
-	#                                                                  #
-	# See the generated .cov file for the detailed execution count of  #
-	# each line.                                                       #
-	####################################################################
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	for KTEST in $</*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done
-	touch $@
-	LOC_TOTAL=0 ; \
-	LINE_COVERAGE=0 ; \
-	if [ -e $*.gcda ] ; then \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $@ |wc -l` ; \
-		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-	fi ; \
-	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
-
-.stpklee.stpkleecov:
-	####################################################################
-	# KLEE-STATS Statistics                                            #
-	#                                                                  #
-	# KLEE displays a low coverage using klee-stats on small examples, #
-	# due to additional code added.  The additional code is displayed  #
-	# in <klee_output_dir>/assembly.ll.                                #
-	####################################################################
-	${KLEE_STATS} $<
+	${KLEE_STATS} $$OUTPUT_DIR
 	####################################################################
 	# llvm-cov Statistics for line coverage                            #
 	#                                                                  #
@@ -200,19 +140,20 @@ standard-clean:
 	# of each line.                                                    #
 	####################################################################
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	for KTEST in $</*.ktest ; do \
+	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
 	done
-	touch $@ 
+	touch $$COV_FILE
 	LOC_TOTAL=0 ; \
 	LINE_COVERAGE=0 ; \
 	if [ -e $*.gcda ] ; then \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $@ ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $@ |wc -l` ; \
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $@ |wc -l` ; \
+		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$COV_FILE ; \
+		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$COV_FILE |wc -l` ; \
+		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$COV_FILE |wc -l` ; \
 		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
 	fi ; \
 	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
+
 
 .tx.inputs:
 	for KTEST in $</*.ktest ; do \
