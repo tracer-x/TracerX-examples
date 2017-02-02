@@ -132,142 +132,24 @@ clean: standard-clean
 # conducted experiments involved different option settings of KLEE and
 # Tracer-X which can be seen in %.klee1, %.klee2, and %.tx1 to %.tx6 target.
 %.tx:
-	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
-	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
-		echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
-		exit 1 ; \
-	fi
-	${CC} -emit-llvm ${CFLAGS} -c $*.c
-	if [ -z "$$KLEE_MORE_OPTIONS" ] ; then \
-		if [ $* = "Regexp" ] ; then \
-			KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-		elif [ $* = "tr" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		elif [ $* = "tr_nosyscall" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		elif [ $* = "tr_small" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		fi ; \
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	if [ -z "$$KLEE_PROGRAM_OPTIONS" ] ; then \
-		if [ $* = "tr" ] ; then \
-			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-		elif [ $* = "tr_nosyscall" ] ; then \
-			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-		elif [ $* = "tr_small" ] ; then \
-			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-		fi ; \
-	fi ; \
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	rm -rf $$OUTPUT_DIR; \
-	KLEE_OPTIONS="${KLEE_OPTIONS}" ; \
-	if [ -z "${KLEE_OPTIONS}" ] ; then \
-		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
-	fi ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=z3 -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
-	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
-	rm -f $*.bc; \
-	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
-	fi
-	# Generate line coverage information
-	rm -rf $* $*.gcno $*.gcda
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done ; \
-	touch $$OUTPUT_DIR/$*.cov ; \
-	LOC_TOTAL=0 ; \
-	LINE_COVERAGE=0 ; \
-	if [ -e $*.gcda ] ; then \
-		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-	fi ; \
-	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
-	( echo -n $$LOC_TOTAL >	$$OUTPUT_DIR/SLocCountLog.txt ) ; \
-	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
+	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
 %.klee:
-	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
-	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
-		echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
-		exit 1 ; \
-	fi
-	${CC} -emit-llvm ${CFLAGS} -c $*.c
-	if [ -z "$$KLEE_MORE_OPTIONS" ] ; then \
-		if [ $* = "Regexp" ] ; then \
-			KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-		elif [ $* = "tr" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		elif [ $* = "tr_nosyscall" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		elif [ $* = "tr_small" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
-		fi ; \
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	if [ -z "$$KLEE_PROGRAM_OPTIONS" ] ; then \
-		if [ $* = "tr" ] ; then \
-			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-		elif [ $* = "tr_nosyscall" ] ; then \
-			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-		elif [ $* = "tr_small" ] ; then \
-			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
-		fi ; \
-	fi ; \
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	rm -rf $$OUTPUT_DIR; \
-	KLEE_OPTIONS="${KLEE_OPTIONS}" ; \
-	if [ -z "${KLEE_OPTIONS}" ] ; then \
-		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
-	fi ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=z3 -no-interpolation -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
-	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
-	rm -f $*.bc; \
-	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
-	fi
-	# Generate line coverage information
-	rm -rf $* $*.gcno $*.gcda
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	if [ -z "${OUTPUT_DIR}" ] ; then \
-		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
-	fi ; \
-	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done ; \
-	touch $$OUTPUT_DIR/$*.cov ; \
-	LOC_TOTAL=0 ; \
-	LINE_COVERAGE=0 ; \
-	if [ -e $*.gcda ] ; then \
-		echo Saving llvm-cov output in $$OUTPUT_DIR/$*.cov ; \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$OUTPUT_DIR/$*.cov ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$OUTPUT_DIR/$*.cov |wc -l` ; \
-		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-	fi ; \
-	( echo -n $$LINE_COVERAGE > $$OUTPUT_DIR/LcovLog.txt ) ; \
-	( echo -n $$LOC_TOTAL >	$$OUTPUT_DIR/SLocCountLog.txt ) ; \
-	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
+	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
 %.stpklee:
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
+	fi ; \
+	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+
+%.klee-out:
 	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
 	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
 		echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
@@ -294,17 +176,14 @@ clean: standard-clean
 			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
 		fi ; \
 	fi ; \
-	if [ -z "${OUTPUT_DIR}" ] ; then \
+	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	KLEE_OPTIONS="${KLEE_OPTIONS}" ; \
-	if [ -z "${KLEE_OPTIONS}" ] ; then \
+	if [ -z "$$KLEE_OPTIONS" ] ; then \
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS -solver-backend=stp -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS $$SOLVER_FLAGS -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
 	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
@@ -313,10 +192,8 @@ clean: standard-clean
 	# Generate line coverage information
 	rm -rf $* $*.gcno $*.gcda
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	if [ -z "${OUTPUT_DIR}" ] ; then \
+	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR="${CURDIR}/$@" ; \
-	else \
-		OUTPUT_DIR="${OUTPUT_DIR}" ; \
 	fi ; \
 	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
