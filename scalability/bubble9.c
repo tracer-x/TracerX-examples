@@ -18,6 +18,7 @@
 #ifdef LLBMC
 #include <llbmc.h>
 #else
+#include <assert.h>
 #include <klee/klee.h>
 #endif
 

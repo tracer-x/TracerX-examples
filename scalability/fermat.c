@@ -6,6 +6,7 @@
 #ifdef LLBMC
 #include <llbmc.h>
 #else
+#include <assert.h>
 #include <klee/klee.h>
 #endif
 #include <stdlib.h>
@@ -22,7 +23,7 @@ uint32_t nPow(uint32_t nx, int np) {
 #ifdef LLBMC
 void __llbmc_main(uint32_t na, uint32_t nb, uint32_t nc) {
 #else
-  void main() {
+int main() {
     uint32_t na;
     uint32_t nb;
     uint32_t nc;

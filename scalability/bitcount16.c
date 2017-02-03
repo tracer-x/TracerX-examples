@@ -6,6 +6,7 @@
 #ifdef LLBMC
 #include <llbmc.h>
 #else
+#include <assert.h>
 #include <klee/klee.h>
 #endif
 #include <string.h>
@@ -34,8 +35,7 @@ uint16_t nBC2(uint16_t nX)
 #ifdef LLBMC
 void __llbmc_main(int nX) { __llbmc_assert(nBC1(nX) == nBC2(nX)); }
 #else
-int main(int nX)
-{
+int main() {
   int nX;
   klee_make_symbolic(&nX, sizeof(nX), "nX");
   assert(nBC1(nX) == nBC2(nX));
