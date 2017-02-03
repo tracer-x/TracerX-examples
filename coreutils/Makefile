@@ -1,6 +1,6 @@
 # Makefile to build and run the examples using KLEE.
 #
-# Copyright 2016 National University of Singapore
+# Copyright 2016, 2017 National University of Singapore
 #
 # Symbolic arguments for testing coreutils is following
 # http://klee.github.io/docs/coreutils-experiments/
@@ -8,14 +8,17 @@
 COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_COV_DIR=${COREUTILS_DIR}/obj-cov
+COREUTILS_NOLINK_DIR=${COREUTILS_DIR}/obj-nolink
 CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_DIR}/src -I${COREUTILS_DIR}/lib
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
 BASH=/bin/bash
 
+LESS_TARGETS=base64.tx basename.tx cat.tx chcon.tx chgrp.tx chmod.tx chown.tx chroot.tx cksum.tx comm.tx cp.tx csplit.tx cut.tx date.tx dd.tx df.tx dircolors.tx dirname.tx du.tx echo.tx env.tx expand.tx expr.tx factor.tx false.tx fmt.tx fold.tx head.tx hostid.tx hostname.tx id.tx join.tx kill.tx link.tx ln.tx logname.tx ls.tx mkdir.tx mkfifo.tx mknod.tx mktemp.tx mv.tx nice.tx nl.tx nohup.tx od.tx paste.tx pathchk.tx pinky.tx pr.tx printenv.tx printf.tx ptx.tx pwd.tx readlink.tx rm.tx rmdir.tx runcon.tx seq.tx setuidgid.tx shred.tx shuf.tx sleep.tx sort.tx split.tx stat.tx stty.tx sum.tx sync.tx tac.tx tail.tx tee.tx touch.tx tr.tx tsort.tx tty.tx uname.tx unexpand.tx uniq.tx unlink.tx uptime.tx users.tx wc.tx whoami.tx who.tx yes.tx
+
 # From http://klee.github.io/docs/coreutils-experiments/
-TARGETS=[.tx arch.tx base64.tx basename.tx cat.tx chcon.tx chgrp.tx chmod.tx chown.tx chroot.tx cksum.tx comm.tx cp.tx csplit.tx cut.tx date.tx dd.tx df.tx dircolors.tx dirname.tx du.tx echo.tx env.tx expand.tx expr.tx factor.tx false.tx fmt.tx fold.tx head.tx hostid.tx hostname.tx id.tx ginstall.tx join.tx kill.tx link.tx ln.tx logname.tx ls.tx md5sum.tx mkdir.tx mkfifo.tx mknod.tx mktemp.tx mv.tx nice.tx nl.tx nohup.tx od.tx paste.tx pathchk.tx pinky.tx pr.tx printenv.tx printf.tx ptx.tx pwd.tx readlink.tx rm.tx rmdir.tx runcon.tx seq.tx setuidgid.tx shred.tx shuf.tx sleep.tx sort.tx split.tx stat.tx stty.tx sum.tx sync.tx tac.tx tail.tx tee.tx touch.tx tr.tx tsort.tx tty.tx uname.tx unexpand.tx uniq.tx unlink.tx uptime.tx users.tx wc.tx whoami.tx who.tx yes.tx 
+TARGETS=[.tx arch.tx md5sum.tx ginstall.tx ${LESS_TARGETS}
 
 DEFAULT_OPTIONS=--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
 DD_OPTIONS=--sym-args 0 3 10 --sym-files 1 8 -sym-stdin 8 --sym-stdout
@@ -44,7 +47,7 @@ EXPERIMENT_MEMORY=13000
 # KLEE_COREUTILS_DEFAULT_OPTIONS (see below).
 KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
 	--disable-inlining --optimize --use-forked-solver \
-	--use-cex-cache --libc=uclibc --posix-runtime \
+	--use-cex-cache --posix-runtime \
 	--allow-external-sym-calls --only-output-states-covering-new \
 	--max-sym-array-size=4096 --max-instruction-time=30. \
 	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
@@ -62,7 +65,9 @@ all: ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS}
 
 include ../Makefile.common
 
-build: ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} test.env
+build: ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} test.env build-nolink
+
+build-nolink: ${COREUTILS_NOLINK_DIR}
 
 test.env:
 	env -i ${BASH} -c '( source testing-env.sh ; env > test.env )'
@@ -117,6 +122,20 @@ ${COREUTILS_COV_DIR}:
 		make -C src arch hostname \
 	)
 
+${COREUTILS_NOLINK_DIR}:
+	@echo =================================================================
+	@echo Building Coreutils with only the main files
+	@echo =================================================================
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+	rm -rf ${COREUTILS_NOLINK_DIR}	
+	mkdir ${COREUTILS_NOLINK_DIR}
+	( cd ${COREUTILS_NOLINK_DIR}; \
+		for program in ${LESS_TARGETS} ; do \
+			PROGRAM_NOEXT="$${program%.*}" ; \
+			${CC} -emit-llvm -c ${CFLAGS_LLBMC_COREUTILS} ${COREUTILS_DIR}/src/$$PROGRAM_NOEXT.c -o $$PROGRAM_NOEXT.bc ; \
+		done \
+	)
+
 %.klee1 : 
 	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
@@ -145,13 +164,23 @@ ${COREUTILS_COV_DIR}:
 # conducted experiments involved different option settings of KLEE and
 # Tracer-X which can be seen in %.klee... and %.tx... targets.
 %.tx:
-	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.klee:
-	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.stpklee:
-	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+
+# These are for the no-linking runs, without linking with uclibc
+%.tx-nolink:
+	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=${CURDIR}/$@ BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+
+%.klee-nolink:
+	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=${CURDIR}/$@ BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+
+%.stpklee-nolink:
+	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=${CURDIR}/$@ BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-out: build
 	# The testing sandbox reconstructed here is from
@@ -202,18 +231,21 @@ ${COREUTILS_COV_DIR}:
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS $$SOLVER_FLAGS --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR ${COREUTILS_LLVM_DIR}/src/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS $$SOLVER_FLAGS --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR $$BITCODE_DIR/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR"
-	rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
+	GCDA_FILES=`find /home/dcsandr/software/klee-examples/coreutils/coreutils-6.10/obj-cov -name "*.gcda"` ; \
+	if [ ! -z "$$GCDA_FILES" ] ; then \
+		rm -f $$GCDA_FILES ; \
+	fi
 
 clean:
-	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
+	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
 
 realclean: clean
-	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR}
+	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} ${COREUTILS_NOLINK_DIR}
 
 core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ]  ; then \
@@ -316,7 +348,12 @@ ${EXPERIMENT_CSV}: core-experiment
 # triggered with 2 short options (length 2) and 1 long option (length
 # 10). This arguments example in KLEE run is translated into "xx xx
 # xxxxxxxxxx".
-%.llbmc : build
+#
+# Note that we use the bitcode of the main function without linking
+# with the rest of the libraries, including libc. This is because
+# LLBMC cannot handle e.g., variadic functions, which can be found in
+# libraries.
+%.llbmc : build-nolink
 	( \
 		if [ $* = "dd" ]; then \
 			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
@@ -340,23 +377,31 @@ ${EXPERIMENT_CSV}: core-experiment
 		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
 			mkdir ${LLBMC_OUTPUT_DIR}; \
 		fi ; \
-		PATH=${EXTRA_PATH}:$$PATH llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_LLVM_DIR}/src/$*.bc > ${LLBMC_OUTPUT_DIR}/$* \
+		PATH=${EXTRA_PATH}:$$PATH llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* \
 	)
 
-llbm-core-experiment:
+llbmc-core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ]  ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
 	for program in $$EXPERIMENT_SET ; do \
 		( \
+			make $$program.tx-nolink ; \
+			make $$program.klee-nolink ; \
+			make $$program.stpklee-nolink ; \
 			make $$program.llbmc \
-		) \
+		) ; \
 	done
 
-# This target is used for collecting data from coreutils LLBMC experiment into log-llbmc file.
+# This target is used for collecting data from coreutils LLBMC
+# experiment into ${LLBMC_EXPERIMENT_CSV} file.  It will create both
+# ${LLBMC_EXPERIMENT_CSV} and ${EXPERIMENT_CSV}, the second containing
+# data of Tracer-X and KLEE runs on the main function bitcode only,
+# for comparison to LLBMC.
 ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
-	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-	for program in ${EXECUTABLE_TARGETS} ; \
+	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv
+	EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
+	for program in $$EXPERIMENT_SET ; \
 	do \
 		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
 			printf "$$program," >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
@@ -373,5 +418,7 @@ ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
 			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
 			printf "\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
 		fi ; \
-	done
+	done ; \
+	EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only
+
 

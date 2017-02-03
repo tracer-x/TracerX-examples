@@ -17,6 +17,7 @@ coreutils/coreutils-6.10/doc/stamp-vti
 coreutils/coreutils-6.10/doc/version.texi
 coreutils/coreutils-6.10/obj-llvm
 coreutils/coreutils-6.10/obj-cov
+coreutils/coreutils-6.10/obj-nolink
 coreutils/sandbox
 coreutils/test.env
 utils/treecmp

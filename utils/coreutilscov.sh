@@ -20,16 +20,14 @@ if [ -z "$OUTPUT_DIR" ] ; then
 fi
 if [ ! -e "$OUTPUT_DIR/test000001.ktest" ] ; then
     echo "Specified output directory does not contain tests"
-    exit 1
+    ( echo -n 0 > $OUTPUT_DIR/LcovLog.txt )
+    ( echo -n 0 > $OUTPUT_DIR/SLocCountLog.txt )
+    exit 0
 fi
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source $SCRIPT_DIR/../environ.sh
-
-CFLAGS=-g -I$KLEE_HOME/include $EXTRA_CFLAGS
-
-LDFLAGS=-L$KLEE_HOME/lib $EXTRA_LDFLAGS -lkleeRuntest
 
 START_TIME=`stat --format="%Z" $OUTPUT_DIR/test000001.ktest | tr -d '\n'`
 if [ -z "$TIME_SINCE" ] ; then
@@ -51,7 +49,8 @@ mkdir $OUTPUT_COV_DIR
 rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
 (
     cd $COREUTILS_COV_DIR/src
-    for KTEST in $OUTPUT_DIR/*.ktest ; do
+    TEST_FILES=$OUTPUT_DIR/*.ktest
+    for KTEST in $TEST_FILES ; do
 	( LD_LIBRARY_PATH=$KLEE_HOME/lib KTEST_FILE=$KTEST KLEE_REPLAY_TIMEOUT=$KLEE_REPLAY_TIMEOUT $KLEE_REPLAY $PROGRAM $KTEST )
     done
 )

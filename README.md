@@ -143,7 +143,7 @@ Running *coreutils* examples
 Running experiments
 -------------------
 
-`experiment.csv` and `llbmc-experiment.csv` makefile targets are for **coreutils** and **scalability** examples. They are for running the examples with KLEE, and Tracer-X KLEE, and LLBMC, and collect data for presentation. The will produce `experiment.csv` and `llbmc-experiment.csv` comma-separated files, respectively, depending on which one was invoked.
+`experiment.csv` and `llbmc-experiment.csv` makefile targets are for **coreutils** and **scalability** examples. They are for executing on the benchmark with KLEE, Tracer-X KLEE, and LLBMC, and collecting data for presentation. The targets will produce `experiment.csv` and `llbmc-experiment.csv` comma-separated files, respectively, depending on which one was invoked. For **coreutils** benchmark, `llbmc-experiment.csv` target will also produce `experiement.csv` for the data of Tracer-X and KLEE (Z3 and STP) runs. This is because LLBMC can only be run on a smaller subset of Coreutils 6.10 programs, and on bitcode generated from the source of the `main` function only without linking with external files and libraries (libc). As such, for more fair comparison, Tracer-X and KLEE must also be executed on the bitcode.
 
 - Needless to say, one needs to first run the `configure` script as instructed above.
 
