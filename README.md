@@ -13,8 +13,6 @@ Each directory except **utils** contains a suite of simple examples.
 
 - **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials.
 
-- **llbmc-bench** - Examples of C/C++ programs, with the fix suggested by Jonas Wagner. There are several modifications from the original version at http://llbmc.org/files/downloads/llbmc-bench-1.1.tgz for running with KLEE, e.g., replaced LLBMC API calls with the corresponding KLEE API calls.
-
 - **join** - Examples for testing `klee_join` API. This directory also contains
 academic programs focusing on program equivalence analysis, with an
 example taken from [KLEE OSDI paper 2008]
