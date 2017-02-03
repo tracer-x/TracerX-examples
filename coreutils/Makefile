@@ -8,8 +8,7 @@
 COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_COV_DIR=${COREUTILS_DIR}/obj-cov
-COREUTILS_SRC=${COREUTILS_DIR}/src
-CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_SRC} -I/${COREUTILS_DIR}/lib
+CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_DIR}/src -I${COREUTILS_DIR}/lib
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
@@ -317,36 +316,45 @@ ${EXPERIMENT_CSV}: core-experiment
 # triggered with 2 short options (length 2) and 1 long option (length
 # 10). This arguments example in KLEE run is translated into "xx xx
 # xxxxxxxxxx".
-%.llbmc :
-	if [ $* = "dd" ]; then \
-		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-	elif [ $* = "dircolors" ]; then \
-		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-	elif [ $* = "echo" ]; then \
-		PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
-	elif [ $* = "expr" ]; then \
-		PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
-	elif [ $* = "mknod" ]; then \
-		PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
-	elif [ $* = "od" ]; then \
-		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-	elif [ $* = "pathchk" ]; then \
-		PROGRAM_OPTIONS="x x" ; \
-	elif [ $* = "printf" ]; then \
-		PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-	else \
-		PROGRAM_OPTIONS="xx xx xxxxxxxxxx" ; \
+%.llbmc : build
+	( \
+		if [ $* = "dd" ]; then \
+			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		elif [ $* = "dircolors" ]; then \
+			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		elif [ $* = "echo" ]; then \
+			PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
+		elif [ $* = "expr" ]; then \
+			PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
+		elif [ $* = "mknod" ]; then \
+			PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
+		elif [ $* = "od" ]; then \
+			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		elif [ $* = "pathchk" ]; then \
+			PROGRAM_OPTIONS="x x" ; \
+		elif [ $* = "printf" ]; then \
+			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+		else \
+			PROGRAM_OPTIONS="xx xx xxxxxxxxxx" ; \
+		fi ; \
+		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
+			mkdir ${LLBMC_OUTPUT_DIR}; \
+		fi ; \
+		PATH=${EXTRA_PATH}:$$PATH llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_LLVM_DIR}/src/$*.bc > ${LLBMC_OUTPUT_DIR}/$* \
+	)
+
+llbm-core-experiment:
+	if [ -z "$$EXPERIMENT_SET" ]  ; then \
+		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
-	if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
-		mkdir ${LLBMC_OUTPUT_DIR}; \
-	fi ; \
-	${CC} -emit-llvm -c ${CFLAGS_LLBMC_COREUTILS} ${COREUTILS_SRC}/$*.c -o ${COREUTILS_SRC}/$*.bc ; \
-	export PATH=${EXTRA_PATH}:$$PATH ; \
-	llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_SRC}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
-	rm -rf ${COREUTILS_SRC}/$*.bc ; \
+	for program in $$EXPERIMENT_SET ; do \
+		( \
+			make $$program.llbmc \
+		) \
+	done
 
 # This target is used for collecting data from coreutils LLBMC experiment into log-llbmc file.
-${LLBMC_EXPERIMENT_CSV}:
+${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
 	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
 	for program in ${EXECUTABLE_TARGETS} ; \
 	do \
@@ -365,4 +373,5 @@ ${LLBMC_EXPERIMENT_CSV}:
 			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
 			printf "\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
 		fi ; \
-	done ; \
+	done
+
