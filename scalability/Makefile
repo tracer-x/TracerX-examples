@@ -278,12 +278,14 @@ ${EXPERIMENT_CSV}: core-experiment
 
 # This target is used for running experiment with LLBMC.
 %.llbmc :
-	if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
-		mkdir ${LLBMC_OUTPUT_DIR}; \
-	fi
-	${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc
-	PATH="${EXTRA_PATH}:$$PATH" llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$*
-	rm -f $*.bc
+	( \
+		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
+			mkdir ${LLBMC_OUTPUT_DIR}; \
+		fi ; \
+		${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc ; \
+		PATH="${EXTRA_PATH}:$$PATH" llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+		rm -f $*.bc \
+	)
 
 # This target is used for collecting data from LLBMC experiment into CSV file.
 ${LLBMC_EXPERIMENT_CSV}: ${LLBMC_TARGETS}
