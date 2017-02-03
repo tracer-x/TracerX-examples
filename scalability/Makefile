@@ -42,7 +42,6 @@ LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-ite
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
-BUBBLE_TARGETS=bubble6.bubble0 bubble9.bubble0 bubble12.bubble0 bubble9_unsafe.bubble0 bubble12_unsafe.bubble0
 
 EXTRA_REMOVAL=${TR_TARGETS} ${BUBBLE_TARGETS}
 
@@ -77,7 +76,7 @@ clean: standard-clean
 	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} \
 		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
 
-.SUFFIXES: .tr0 .bubble0
+.SUFFIXES: .tr0
 
 .bc.tr0:
 	rm -rf $@ klee-*
@@ -86,18 +85,6 @@ clean: standard-clean
 	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1
 	rm -rf klee-*
 	time ${KLEE} -solver-backend=z3 --max-time=120 -interpolation-stat -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls $< --sym-arg 3 --sym-arg 3 --sym-stdin 2000 --max-fail 1
-	touch $@
-
-.bc.bubble0:
-	rm -rf $@ klee-*
-	time ${KLEE} -solver-backend=z3 -max-time=120 -interpolation-stat --only-output-states-covering-new -output-tree -output-dir=$@ $<
-	opt -analyze -dot-cfg $<
-	mv *.dot $@
-	# Create SVGs from *.dot files
-	for DOTFILE in $@/*.dot ; do \
-		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
-		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
-	done
 	touch $@
 
 %.klee1 : 
