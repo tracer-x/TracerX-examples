@@ -27,7 +27,11 @@
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #define bool unsigned short
 #define true 1
@@ -54,7 +58,11 @@ static bool
 is_range_start_index (size_t i)
 {
   int flag;
+#ifdef LLBMC
+  flag = __llbmc_nondef_int();
+#else
   klee_make_symbolic(&flag, sizeof(int), "flag");
+#endif
 
   if (flag)
     return true;
@@ -128,10 +136,19 @@ main (int argc, char **argv)
 {
   char input[INPUT_SIZE];
 
+#ifdef LLBMC
+  for (int i = 0; i < INPUT_SIZE; ++i) {
+    input[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(input, INPUT_SIZE * sizeof(char), "input");
+#endif
   input[INPUT_SIZE - 1] = '\0';
 
+#ifdef LLBMC
+  output_delimiter_specified = __llbmc_nondef_unsigned_short();
+#else
   klee_make_symbolic(&output_delimiter_specified, sizeof(output_delimiter_specified), "output_delimiter_specified");
-  
+#endif
   cut_bytes(input);
 }

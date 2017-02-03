@@ -24,13 +24,17 @@
 
    Rewrite cut_fields and cut_bytes -- Jim Meyering.  */
 
-#include <assert.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <bits/posix1_lim.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
+#include <assert.h>
 #include <klee/klee.h>
+#endif
 
 #define MIN_CHUNK 64
 #define GETNDELIM2_MAXIMUM SSIZE_MAX
@@ -77,7 +81,11 @@ static bool
 is_range_start_index (size_t i)
 {
   int flag;
+#ifdef LLBMC
+  flag = __llbmc_nondef_int();
+#else
   klee_make_symbolic(&flag, sizeof(int), "flag");
+#endif
 
   if (flag)
     return true;
@@ -235,25 +243,27 @@ cut_fields (char *input)
 	      //	      free (field_1_buffer);
 	      field_1_buffer = NULL;
 
-	      klee_make_symbolic(&is_error, sizeof(int), "is_error");
-	      
-	      if (is_error)
-		break;
-	      
-	      exit(1);
-	    }
+#ifdef LLBMC
+        is_error = __llbmc_nondef_int();
+#else
+        klee_make_symbolic(&is_error, sizeof(int), "is_error");
+#endif
 
-	  n_bytes = len;
-	  assert (n_bytes != 0);
+        if (is_error)
+          break;
 
-	  /* If the first field extends to the end of line (it is not
-	     delimited) and we are printing all non-delimited lines,
-	     print this one.  */
-	  if (field_1_buffer[n_bytes - 1] != delim)
-	    {
-	      if (suppress_non_delimited)
-		{
-		  /* Empty.  */
+        exit(1);
+      }
+
+      n_bytes = len;
+      assert(n_bytes != 0);
+
+      /* If the first field extends to the end of line (it is not
+         delimited) and we are printing all non-delimited lines,
+         print this one.  */
+      if (field_1_buffer[n_bytes - 1] != delim) {
+        if (suppress_non_delimited) {
+                  /* Empty.  */
 		}
 	      else
 		{
@@ -328,10 +338,20 @@ main (int argc, char **argv)
 {
   char input[INPUT_SIZE];
 
+#ifdef LLBMC
+  for (int i = 0; i < INPUT_SIZE; ++i) {
+    input[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(input, INPUT_SIZE * sizeof(char), "input");
+#endif
   input[INPUT_SIZE - 1] = '\0';
 
+#ifdef LLBMC
+  delim = __llbmc_nondef_unsigned_char();
+#else
   klee_make_symbolic(&delim, sizeof(delim), "delim");
-  
+#endif
+
   cut_fields(input);
 }

@@ -5,8 +5,12 @@
  */
 
 #include <stdint.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <assert.h>
 #include <klee/klee.h>
+#endif
 
 uint32_t optimized_popcount(uint32_t x)
 {
@@ -42,6 +46,7 @@ void __llbmc_main(uint32_t x)
     assert(opt == ref);
 }
 
+#ifndef LLBMC
 int main() {
   uint32_t x;
 
@@ -51,3 +56,4 @@ int main() {
 
   return 0;
 }
+#endif

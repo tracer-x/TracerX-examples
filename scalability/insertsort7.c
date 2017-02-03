@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC KLEE harnessing added */
 
 /* $Id: insertsort.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
@@ -45,14 +45,19 @@
 /*                                                                       */
 /*                                                                       */
 /*************************************************************************/
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #ifdef DEBUG
 int cnt1, cnt2;
 #endif
 
-unsigned int a[7];
+#define ARRAY_SIZE 7
+
+unsigned int a[ARRAY_SIZE];
 
 int main()
 {
@@ -63,10 +68,16 @@ int main()
   // a[1] = 11; a[2]=10;a[3]=9; a[4]=8; a[5]=7; a[6]=6; a[7]=5;
   // a[8] =4; a[9]=3; a[10]=2;
 
-  klee_make_symbolic(a, 7 * sizeof(unsigned int), "a");
-  
+#ifdef LLBMC
+  for (int i = 0; i < ARRAY_SIZE; ++i) {
+    a[i] = __llbmc_nondef_unsigned_int();
+  }
+#else
+  klee_make_symbolic(a, ARRAY_SIZE * sizeof(unsigned int), "a");
+#endif
+
   i = 2;
-  while(i <= 6){
+  while (i <= ARRAY_SIZE - 1) {
 #ifdef DEBUG
       cnt1++;
 #endif

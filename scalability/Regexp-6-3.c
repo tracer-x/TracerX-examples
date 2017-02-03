@@ -1,4 +1,4 @@
-/* 
+/*
  * Simple regular expression matching.
  *
  * From:
@@ -8,9 +8,12 @@
  * This code with KLEE harness is obtained from the following
  * page of the KLEE tutorial on December 2015:
  *   http://klee.github.io/resources/Regexp.c.html
- */ 
-
+ */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 static int matchhere(char*,char*);
 
@@ -56,10 +59,19 @@ int main() {
   // The input regular expression.
   char re[SIZE];
   char str[STRSIZE];
-  
-  // Make the input symbolic. 
+
+// Make the input symbolic.
+#ifdef LLBMC
+  for (int i = 0; i < SIZE; ++i) {
+    re[i] = __llbmc_nondef_char();
+  }
+  for (int i = 0; i < STRSIZE; ++i) {
+    str[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(re, sizeof re, "re");
   klee_make_symbolic(str, sizeof str, "str");
+#endif
 
   // Try to match against a constant string "hello".
   match(re, str);

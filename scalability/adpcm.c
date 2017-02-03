@@ -50,8 +50,11 @@
 /*                                                                       */
 /*                                                                       */
 /*************************************************************************/
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 /* To be able to run with printouts 
 #include <stdio.h> */
@@ -848,11 +851,22 @@ int main()
     test_data[i] = (int)j*my_cos(f*PI*i); 
     }
   */
-
+#ifdef LLBMC
+  for (int i = 0; i < SIZE; ++i) {
+    test_data[i] = __llbmc_nondef_int();
+    compressed[i] = __llbmc_nondef_int();
+    result[i] = __llbmc_nondef_int();
+  }
+  for (int i = SIZE; i < SIZE + SIZE; ++i) {
+    test_data[i] = __llbmc_nondef_int();
+    result[i] = __llbmc_nondef_int();
+  }
+#else
   klee_make_symbolic(test_data, SIZE * 2 * sizeof(int), "test_data");
   klee_make_symbolic(compressed, SIZE * sizeof(int), "compressed");
   klee_make_symbolic(result, SIZE * 2 * sizeof(int), "result");
-  
+#endif
+
   /* MAX: 2 */
 
   /*******Antar att test_data[0] = 10 och test_data[1]=-6 från ovan,          *******

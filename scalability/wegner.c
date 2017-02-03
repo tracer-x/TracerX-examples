@@ -8,13 +8,21 @@
  */
 
 #include <stdint.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 uint64_t popCount (uint64_t y);
 
 int main() {
   uint64_t y;
+#ifdef LLBMC
+  y = __llbmc_nondef_uint64_t();
+#else
   klee_make_symbolic(&y, sizeof(y), "y");
+#endif
   return popCount(y);
 }
 

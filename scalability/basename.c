@@ -16,8 +16,12 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
-
+#include <stddef.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #define INPUT_SIZE 2
 
@@ -174,8 +178,14 @@ int
 main (int argc, char **argv)
 {
   char input[INPUT_SIZE];
-  
+
+#ifdef LLBMC
+  for (int i = 0; i < INPUT_SIZE; ++i) {
+    input[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(input, INPUT_SIZE * sizeof(char), "input");
+#endif
   input[1] = 0;
   
   base_name(input);

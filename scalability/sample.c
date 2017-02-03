@@ -4,7 +4,11 @@
  * harness.
  */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 int sample(int a[4], int b[4], int target)
 {
@@ -31,9 +35,17 @@ int sample(int a[4], int b[4], int target)
 int main(int argc, char **argv) {
   int a[4], b[4], target;
 
+#ifdef LLBMC
+  for (int i = 0; i < 4; ++i) {
+    a[i] = __llbmc_nondef_int();
+    b[i] = __llbmc_nondef_int();
+  }
+  target = __llbmc_nondef_int();
+#else
   klee_make_symbolic(a, 4 * sizeof(int), "a");
   klee_make_symbolic(b, 4 * sizeof(int), "b");
   klee_make_symbolic(&target, sizeof(int), "target");
+#endif
 
   sample(a, b, target);
   return 0;

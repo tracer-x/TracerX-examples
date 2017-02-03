@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* MDH WCET BENCHMARK SUITE. */
 
@@ -18,7 +18,11 @@
  *
  ***********************************************************************/
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 unsigned char num_to_lcd(unsigned char a)
 {
@@ -65,8 +69,11 @@ int main(void)
     {
       /* a = IN; */                  /* scan port */
       /* We assume the input is symbolic */
+#ifdef LLBMC
+    a = __llbmc_nondef_unsigned_char();
+#else
       klee_make_symbolic(&a, sizeof(unsigned char), "a");
-      
+#endif
       if(i<5)
         {
           a = a &0x0F;

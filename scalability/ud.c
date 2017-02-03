@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* MDH WCET BENCHMARK SUITE. File version $Id: ud.c,v 1.4 2005/11/11 10:32:53 ael01 Exp $ */
 
@@ -75,7 +75,11 @@
 **                 (from the book C Programming for EEs by Hyun Soon Ahn)
 */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 long int a[50][50], b[50], x[50];
 
@@ -112,9 +116,19 @@ int main()
   /*     b[i] = w; */
   /*   } */
 
+#ifdef LLBMC
+  for (int i = 0; i < 50; ++i) {
+    b[i] = __llbmc_nondef_long_int();
+    x[i] = __llbmc_nondef_long_int();
+    for (int j = 0; j < 50; ++j) {
+      a[i][j] = __llbmc_nondef_long_int();
+    }
+  }
+#else
   klee_make_symbolic(a, 50 * 50 * sizeof(long int), "a");
   klee_make_symbolic(b, 50 * sizeof(long int), "b");
   klee_make_symbolic(x, 50 * sizeof(long int), "x");
+#endif
 
   /*  chkerr = ludcmp(nmax, n, eps); */
   chkerr = ludcmp(nmax,n);

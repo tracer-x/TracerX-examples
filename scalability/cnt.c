@@ -1,11 +1,14 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* $Id: cnt.c,v 1.3 2005/04/04 11:34:58 csg Exp $ */
 
 /* sumcntmatrix.c */
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 //#include <sys/types.h>
 //#include <sys/times.h>
@@ -48,8 +51,15 @@ int Test(matrix Array)
 
   // Initialize(Array);
   // StartTime = 1000.0; //ttime();
-
+#ifdef LLBMC
+  for (int i = 0; i < MAXSIZE; ++i) {
+    for (int j = 0; j < MAXSIZE; ++j) {
+      Array[i][j] = __llbmc_nondef_int();
+    }
+  }
+#else
   klee_make_symbolic(Array, MAXSIZE * MAXSIZE * sizeof(int), "Array");
+#endif
   Sum(Array);
   // StopTime = 1500.0; //ttime();
 

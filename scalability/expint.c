@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* $Id: expint.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
@@ -12,8 +12,11 @@
  *   if it run or not.
  *
  ***********************************************************************/
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 long int expint(int n, long int x);
 
@@ -26,10 +29,16 @@ int main(void)
   // expint(50,1);
 
   long int x;
+#ifdef LLBMC
+  x = __llbmc_nondef_signed_long_int();
+  __llbmc_assume(x >= 1);
+  __llbmc_assume(x <= 21);
+#else
   klee_make_symbolic(&x, sizeof(x), "x");
   klee_assume(x >= 1);
   klee_assume(x <= 21);
-  
+#endif
+
   expint(50,x);
   return 0;
 }

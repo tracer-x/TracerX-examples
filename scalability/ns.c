@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* $Id: ns.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
@@ -38,7 +38,11 @@
  *
  *-------------------------------------------------- */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 /* -------------------------------------------------- *
  *  Define TEST to check the # iterations in inner loop,
@@ -527,8 +531,20 @@ int foo(int x)
 
 int main(void)
 {
+#ifdef LLBMC
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      for (int k = 0; k < 5; ++k) {
+        for (int l = 0; l < 5; ++l) {
+          keys[i][j][k][l] = __llbmc_nondef_int();
+        }
+      }
+    }
+  }
+#else
   klee_make_symbolic(keys, 5 * 5 * 5 * 5 * sizeof(int), "keys");
-  
+#endif
+
 #ifdef TEST
   printf("result=%d\n",foo(400));
 #else

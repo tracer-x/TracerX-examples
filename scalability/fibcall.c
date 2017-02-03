@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* $Id: fibcall.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
@@ -44,8 +44,11 @@
 /*                                                                       */
 /*                                                                       */
 /*************************************************************************/
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 int fib(int n)
 {
@@ -70,11 +73,16 @@ int main()
 
   /* We make a symbolic */
   /* a = 30; */
-
+#ifdef LLBMC
+  a = __llbmc_nondef_int();
+  __llbmc_assume(a >= 0);
+  __llbmc_assume(a <= 30);
+#else
   klee_make_symbolic(&a, sizeof(int), "a");
   klee_assume(a >= 0);
   klee_assume(a <= 30);
-	      
+#endif
+
   fib(a);
   return a;
 }

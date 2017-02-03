@@ -1,7 +1,7 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added. Each comparison with floating-point
- * constant has beend replaced with equivalent comparison with int
- * constant. */
+ * with LLBMC and KLEE harnessing added. Each comparison with
+ * floating-point constant has beend replaced with equivalent
+ * comparison with int constant. */
 
 /* MDH WCET BENCHMARK SUITE. File version $Id: statemate.c,v 1.3 2005/11/11 10:32:32 ael01 Exp $ */
 
@@ -33,7 +33,11 @@
  *----------------------------------------------------------
  */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 /*
 ** actually, we don't really need floating point here
@@ -240,6 +244,29 @@ void init(void)
    BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = 0;
    BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = 0;
 
+#ifdef LLBMC
+  tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy =
+      __llbmc_nondef_unsigned_long();
+  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL =
+      __llbmc_nondef_unsigned_long();
+  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL = __llbmc_nondef_unsigned_long();
+  NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state = __llbmc_nondef_char();
+  ZENTRAL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
+  MEC_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
+  KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
+  B_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  A_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  INITIALISIERT_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  OEFFNEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state = __llbmc_nondef_char();
+  EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state = __llbmc_nondef_char();
+  BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
+  BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
+#else
    klee_make_symbolic(&tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy, sizeof(tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy), "tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy"); 
    klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL), "m_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL");
    klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL), "tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL");
@@ -259,7 +286,8 @@ void init(void)
    klee_make_symbolic(&EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state, sizeof(EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state), "EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state");
    klee_make_symbolic(&BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state), "BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state");
    klee_make_symbolic(&BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state), "BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state");
-   
+#endif
+
 }/** init **/
 
 
@@ -1292,11 +1320,104 @@ void FH_DU(void)
 int main(void)
 {
   /* time = 1; */  /**SYS_get_clock()**/
+#ifdef LLBMC
+  time = __llbmc_nondef_unsigned_long();
+  for (int i = 0; i < 64; ++i) {
+    Bitlist[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(&time, sizeof(time), "time");
   klee_make_symbolic(Bitlist, sizeof(Bitlist), "Bitlist");
+#endif
 
   init();
 
+#ifdef LLBMC
+  sc_FH_TUERMODUL_CTRL_2375_2 = __llbmc_nondef_unsigned_long();
+  sc_FH_TUERMODUL_CTRL_2352_1 = __llbmc_nondef_unsigned_long();
+  sc_FH_TUERMODUL_CTRL_2329_1 = __llbmc_nondef_unsigned_long();
+  FH_TUERMODUL_CTRL__N = __llbmc_nondef_int();
+  FH_TUERMODUL_CTRL__N_copy = __llbmc_nondef_int();
+  FH_TUERMODUL_CTRL__N_old = __llbmc_nondef_int();
+  sc_FH_TUERMODUL_CTRL_1781_10 = __llbmc_nondef_unsigned_long();
+  sc_FH_TUERMODUL_CTRL_1739_10 = __llbmc_nondef_unsigned_long();
+  FH_TUERMODUL__POSITION = __llbmc_nondef_int();
+  FH_TUERMODUL__I_EIN = __llbmc_nondef_int();
+  FH_TUERMODUL__I_EIN_old = __llbmc_nondef_int();
+  FH_DU__MFH = __llbmc_nondef_int();
+  FH_DU__MFH_copy = __llbmc_nondef_int();
+  FH_DU__POSITION = __llbmc_nondef_int();
+  FH_DU__I_EIN = __llbmc_nondef_int();
+  FH_DU__I_EIN_old = __llbmc_nondef_int();
+  BLOCK_ERKENNUNG_CTRL__I_EIN_MAX = __llbmc_nondef_int();
+  BLOCK_ERKENNUNG_CTRL__I_EIN_MAX_copy = __llbmc_nondef_int();
+  BLOCK_ERKENNUNG_CTRL__N = __llbmc_nondef_int();
+  BLOCK_ERKENNUNG_CTRL__N_copy = __llbmc_nondef_int();
+  BLOCK_ERKENNUNG_CTRL__N_old = __llbmc_nondef_int();
+  FH_TUERMODUL_CTRL__INREVERS2 = __llbmc_nondef_char();
+  FH_TUERMODUL_CTRL__INREVERS2_copy = __llbmc_nondef_char();
+  FH_TUERMODUL_CTRL__INREVERS1 = __llbmc_nondef_char();
+  FH_TUERMODUL_CTRL__INREVERS1_copy = __llbmc_nondef_char();
+  FH_TUERMODUL_CTRL__FT = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHZ_ZENTRAL = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHZ_ZENTRAL_old = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHZ_MEC = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHZ_MEC_old = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHA_ZENTRAL = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHA_ZENTRAL_old = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHA_MEC = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHA_MEC_old = __llbmc_nondef_char();
+  FH_TUERMODUL__KL_50 = __llbmc_nondef_char();
+  FH_TUERMODUL__BLOCK = __llbmc_nondef_char();
+  FH_TUERMODUL__BLOCK_copy = __llbmc_nondef_char();
+  FH_TUERMODUL__BLOCK_old = __llbmc_nondef_char();
+  FH_TUERMODUL__FT = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHZ = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHZ_copy = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHZ_old = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHA = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHA_copy = __llbmc_nondef_char();
+  FH_TUERMODUL__SFHA_old = __llbmc_nondef_char();
+  FH_TUERMODUL__MFHZ = __llbmc_nondef_char();
+  FH_TUERMODUL__MFHZ_copy = __llbmc_nondef_char();
+  FH_TUERMODUL__MFHZ_old = __llbmc_nondef_char();
+  FH_TUERMODUL__MFHA = __llbmc_nondef_char();
+  FH_TUERMODUL__MFHA_copy = __llbmc_nondef_char();
+  FH_TUERMODUL__MFHA_old = __llbmc_nondef_char();
+
+  FH_TUERMODUL__EKS_LEISTE_AKTIV = __llbmc_nondef_char();
+  FH_TUERMODUL__EKS_LEISTE_AKTIV_old = __llbmc_nondef_char();
+  FH_TUERMODUL__COM_OPEN = __llbmc_nondef_char();
+  FH_TUERMODUL__COM_CLOSE = __llbmc_nondef_char();
+  FH_DU__KL_50 = __llbmc_nondef_char();
+  FH_DU__S_FH_FTZU = __llbmc_nondef_char();
+  FH_DU__S_FH_FTAUF = __llbmc_nondef_char();
+  FH_DU__FT = __llbmc_nondef_char();
+  FH_DU__EKS_LEISTE_AKTIV = __llbmc_nondef_char();
+  FH_DU__EKS_LEISTE_AKTIV_old = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFAUFCAN = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFAUFCAN_copy = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFAUFCAN_old = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFZUCAN = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFZUCAN_copy = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFZUCAN_old = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFZUDISC = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFZUDISC_old = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFAUFDISC = __llbmc_nondef_char();
+  FH_DU__S_FH_TMBFAUFDISC_old = __llbmc_nondef_char();
+  FH_DU__S_FH_ZUDISC = __llbmc_nondef_char();
+  FH_DU__S_FH_AUFDISC = __llbmc_nondef_char();
+  FH_DU__DOOR_ID = __llbmc_nondef_char();
+  FH_DU__BLOCK = __llbmc_nondef_char();
+  FH_DU__BLOCK_copy = __llbmc_nondef_char();
+  FH_DU__BLOCK_old = __llbmc_nondef_char();
+  FH_DU__MFHZ = __llbmc_nondef_char();
+  FH_DU__MFHZ_copy = __llbmc_nondef_char();
+  FH_DU__MFHZ_old = __llbmc_nondef_char();
+  FH_DU__MFHA = __llbmc_nondef_char();
+  FH_DU__MFHA_copy = __llbmc_nondef_char();
+  FH_DU__MFHA_old = __llbmc_nondef_char();
+#else
   klee_make_symbolic(&sc_FH_TUERMODUL_CTRL_2375_2, sizeof(sc_FH_TUERMODUL_CTRL_2375_2), "sc_FH_TUERMODUL_CTRL_2375_2");
   klee_make_symbolic(&sc_FH_TUERMODUL_CTRL_2352_1, sizeof(sc_FH_TUERMODUL_CTRL_2352_1), "sc_FH_TUERMODUL_CTRL_2352_1");
   klee_make_symbolic(&sc_FH_TUERMODUL_CTRL_2329_1, sizeof(sc_FH_TUERMODUL_CTRL_2329_1), "sc_FH_TUERMODUL_CTRL_2329_1");
@@ -1381,6 +1502,7 @@ int main(void)
   klee_make_symbolic(&FH_DU__MFHA, sizeof(FH_DU__MFHA), "FH_DU__MFHA");
   klee_make_symbolic(&FH_DU__MFHA_copy, sizeof(FH_DU__MFHA_copy), "FH_DU__MFHA_copy");
   klee_make_symbolic(&FH_DU__MFHA_old, sizeof(FH_DU__MFHA_old), "FH_DU__MFHA_old");
+#endif
 
   interface();
   FH_DU();

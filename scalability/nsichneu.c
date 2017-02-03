@@ -25,8 +25,11 @@
 
 ***************************************************************************/
 // #define DO_TRACING
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #ifdef DO_TRACING   // ON PC
 
@@ -63,13 +66,35 @@ int main()
 /*   dummy_i = 17; Takes too much time */
    dummy_i = 2;
 
+#ifdef LLBMC
+  P1_marking_member_0[0] = __llbmc_nondef_long();
+  P1_marking_member_0[1] = __llbmc_nondef_long();
+  P1_marking_member_0[2] = __llbmc_nondef_long();
+  P1_is_marked = __llbmc_nondef_int();
+
+  P2_marking_member_0[0] = __llbmc_nondef_long();
+  P2_marking_member_0[1] = __llbmc_nondef_long();
+  P2_marking_member_0[2] = __llbmc_nondef_long();
+  P2_marking_member_0[3] = __llbmc_nondef_long();
+  P2_marking_member_0[4] = __llbmc_nondef_long();
+  P2_is_marked = __llbmc_nondef_int();
+
+  P3_marking_member_0[0] = __llbmc_nondef_long();
+  P3_marking_member_0[1] = __llbmc_nondef_long();
+  P3_marking_member_0[2] = __llbmc_nondef_long();
+  P3_marking_member_0[3] = __llbmc_nondef_long();
+  P3_marking_member_0[4] = __llbmc_nondef_long();
+  P3_marking_member_0[5] = __llbmc_nondef_long();
+  P3_is_marked = __llbmc_nondef_int();
+#else
    klee_make_symbolic(P1_marking_member_0, 3 * sizeof(long), "P1_marking_member_0");
    klee_make_symbolic(&P1_is_marked, sizeof(int), "P1_is_marked");
    klee_make_symbolic(P2_marking_member_0, 5 * sizeof(long), "P2_marking_member_0");
    klee_make_symbolic(&P2_is_marked, sizeof(int), "P2_is_marked");
    klee_make_symbolic(P3_marking_member_0, 6 * sizeof(long), "P3_marking_member_0");
    klee_make_symbolic(&P3_is_marked, sizeof(int), "P3_is_marked");
-   
+#endif
+
    while (dummy_i > 0) {
 
       dummy_i--;

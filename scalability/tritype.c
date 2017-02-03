@@ -3,8 +3,11 @@
  * Tests by Combining Static and Dynamic Analysis," with added KLEE
  * harness.
  */
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 int tritype(int i, int j, int k){
   int trityp;
@@ -30,9 +33,15 @@ int tritype(int i, int j, int k){
 int main(int argc, char **argv) {
   int i, j, k;
 
+#ifdef LLBMC
+  i = __llbmc_nondef_int();
+  j = __llbmc_nondef_int();
+  k = __llbmc_nondef_int();
+#else
   klee_make_symbolic(&i, sizeof(i), "i");
   klee_make_symbolic(&j, sizeof(j), "j");
   klee_make_symbolic(&k, sizeof(k), "k");
+#endif
 
   tritype(i, j, k);
   return 0;

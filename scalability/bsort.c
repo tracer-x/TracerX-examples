@@ -1,12 +1,15 @@
-/* 
+/*
  * Another version of bubble sort
  *
  * From Williams et al.: "PathCrawler: Automatic Generation of Path
- * Tests by Combining Static and Dynamic Analysis," with added KLEE
- * harness.
+ * Tests by Combining Static and Dynamic Analysis," with added LLBMC
+ * and KLEE harness.
  */
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #define INPUT_SIZE 9
 
@@ -31,9 +34,13 @@ void bsort (int * tableau, int l)
 
 int main(int argc, char **argv) {
   int tableau[INPUT_SIZE];
-
+#ifdef LLBMC
+  for (int i = 0; i < INPUT_SIZE; ++i) {
+    tableau[i] = __llbmc_nondef_int();
+  }
+#else
   klee_make_symbolic(tableau, INPUT_SIZE * sizeof(int), "tableau");
-
+#endif
   bsort(tableau, INPUT_SIZE);
   return 0;
 }

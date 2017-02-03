@@ -1,9 +1,13 @@
 /* bsort100.c */
 
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 /* All output disabled for wcsim */
 #define WCSIM 1
@@ -45,11 +49,17 @@ int main()
    printf("\n *** BUBBLE SORT BENCHMARK TEST ***\n\n");
    printf("RESULTS OF TEST:\n\n");
 #endif
-   /* The following is replaced with KLEE symbolic array after it. */
+/* The following is replaced with LLBMC/KLEE symbolic array after
+   it. */
    /* Initialize(Array); */
-
+#ifdef LLBMC
+  for (int i = 0; i < MAXDIM; ++i) {
+    Array[i] = __llbmc_nondef_int();
+  }
+#else
    klee_make_symbolic(Array, MAXDIM * sizeof(int), "Array");
-   
+#endif
+
    /*   StartTime = ttime (); */
    BubbleSort(Array);
    /*   StopTime = ttime(); */

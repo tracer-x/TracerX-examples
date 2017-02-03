@@ -52,8 +52,13 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #define EXIT_FAILURE 1
 
@@ -520,9 +525,21 @@ main (int argc, char **argv)
   int my_argc = 5;
   char my_argv[3][5];
   int args_used;
-  
+
+#ifdef LLBMC
+  for (int i = 0; i < 8; ++i) {
+    format[i] = __llbmc_nondef_char();
+  }
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      my_argv[i][j] = __llbmc_nondef_char();
+    }
+  }
+#else
   klee_make_symbolic(format, 8 * sizeof(char), "format");
   klee_make_symbolic(my_argv, 3 * 5 * sizeof(char), "my_argv");
+#endif
+
   argc = my_argc;
   argv = (char **)my_argv;
 

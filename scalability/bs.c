@@ -43,8 +43,11 @@
 /*                                                                       */
 /*************************************************************************/
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
-
+#endif
 
 struct DATA {
   int  key;
@@ -75,7 +78,14 @@ int binary_search(int);
 
 int main()
 {
+#ifdef LLBMC
+  for (int i = 0; i < 15; ++i) {
+    data[i].key = __llbmc_nondef_int();
+    data[i].value = __llbmc_nondef_int();
+  }
+#else
   klee_make_symbolic(data, 15 * sizeof(struct DATA), "data");
+#endif
   binary_search(8);
 }
 

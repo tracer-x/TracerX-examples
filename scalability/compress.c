@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* MDH WCET BENCHMARK SUITE. File version $Id: compress.c,v 1.7 2005/12/21 09:37:18 jgn Exp $ */
 
@@ -24,7 +24,11 @@
 
 /* #define DO_TRACING */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #ifdef DO_TRACING   /* ON PC */
 
@@ -206,12 +210,17 @@ int main(void)
 {
    int count = IN_COUNT;
 
-   /* The following is replaced with KLEE symbolic array following
-      it. */
+   /* The following is replaced with LLBMC and KLEE symbolic array
+      following it. */
    initbuffer();
 
+#ifdef LLBMC
+  for (int i = 0; i < BUFFERSIZE; ++i) {
+    orig_text_buffer[i] = __llbmc_nondef_char();
+  }
+#else
    klee_make_symbolic(orig_text_buffer, BUFFERSIZE * sizeof(char), "orig_text_buffer");
-   
+#endif
    /*if(maxbits < INIT_BITS) maxbits = INIT_BITS;*/
    /* With our setting, maxbits = 16,
                         INIT_BITS = 9 */

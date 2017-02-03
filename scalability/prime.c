@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added */
+ * with LLBMC and KLEE harnessing added */
 
 /* MDH WCET BENCHMARK SUITE. */
 
@@ -7,7 +7,11 @@
  * JG 2005/12/08: Prototypes added, and changed exit to return in main.
  */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 typedef  unsigned char  bool;
 typedef  unsigned int   uint;
@@ -46,9 +50,14 @@ int main () {
   uint x =  21649;
   uint y = 513239;
 
+#ifdef LLBMC
+  x = __llbmc_nondef_unsigned_int();
+  y = __llbmc_nondef_unsigned_int();
+#else
   klee_make_symbolic(&x, sizeof(uint), "x");
   klee_make_symbolic(&y, sizeof(uint), "y");
-  
+#endif
+
   swap (&x, &y);
   return (!(prime(x) && prime(y)));
 }

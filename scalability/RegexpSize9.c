@@ -1,4 +1,4 @@
-/* 
+/*
  * Simple regular expression matching.
  *
  * From:
@@ -11,9 +11,12 @@
  *
  * The size of re array has been modified to 9.
  * Used in experiments ran on 22/3/2016.
- */ 
-
+ */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 static int matchhere(char*,char*);
 
@@ -57,9 +60,15 @@ int match(char *re, char *text) {
 int main() {
   // The input regular expression.
   char re[SIZE];
-  
-  // Make the input symbolic. 
+
+// Make the input symbolic.
+#ifdef LLBMC
+  for (int i = 0; i < SIZE; ++i) {
+    re[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(re, sizeof re, "re");
+#endif
 
   // Try to match against a constant string "hello".
   match(re, "hello");

@@ -1,12 +1,15 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with KLEE harnessing added. */
+ * with LLBMC and KLEE harnessing added. */
 
 /* MDH WCET BENCHMARK SUITE */
 /*
  * Changes: CS 2006/05/19: Changed loop bound from constant to variable.
  */
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 int fac (int n)
 {
@@ -25,10 +28,16 @@ int main (void)
   /* We replace the following with symbolic value. */
   n = 5;
 
+#ifdef LLBMC
+  n = __llbmc_nondef_int();
+  __llbmc_assume(n >= 0);
+  __llbmc_assume(n <= 30);
+#else
   klee_make_symbolic(&n, sizeof(int), "n");
   klee_assume(n >= 0);
   klee_assume(n <= 30);
-  
+#endif
+
   for (i = 0;  i <= n; i++)
       s += fac (i);
 

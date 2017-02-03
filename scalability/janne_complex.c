@@ -27,8 +27,11 @@
  *   inner loop max:   5   9   8   7   4   2   1   1   1   1    1 
  *
  *----------------------------------------------------------------------*/
-
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 int complex(int a, int b)
 {
@@ -60,6 +63,16 @@ int main()
      else
      {a = 30; b = 30;} */
 
+#ifdef LLBMC
+  a = __llbmc_nondef_int();
+  b = __llbmc_nondef_int();
+  answer = __llbmc_nondef_int();
+
+  __llbmc_assume(a >= 1);
+  __llbmc_assume(a <= 30);
+  __llbmc_assume(b >= 1);
+  __llbmc_assume(b <= 30);
+#else
   klee_make_symbolic(&a, sizeof(a), "a");
   klee_make_symbolic(&b, sizeof(b), "b");
   klee_make_symbolic(&answer, sizeof(answer), "answer");
@@ -68,7 +81,8 @@ int main()
   klee_assume(a <= 30);
   klee_assume(b >= 1);
   klee_assume(b <= 30);
-  
+#endif
+
   answer = complex(a, b);
   return answer;
 }
