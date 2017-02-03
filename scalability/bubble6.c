@@ -11,16 +11,25 @@
  * sorting algorithm there can possibly be plenty of superfluous
  * comparisons.
  */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
-#include <assert.h>
+#endif
 
 #define ARRAY_SIZE 6
 
 int main() {
   int a[ARRAY_SIZE];
   int n, c, d, swap;
- 
+
+#ifdef LLBMC
+  for (int i = 0; i < ARRAY_SIZE ; ++i) {
+    a[i] = __llbmc_nondef_int();
+  }
+#else
   klee_make_symbolic(a, ARRAY_SIZE * sizeof(int), "a");
+#endif
 
   for (c = 0 ; c < ( ARRAY_SIZE - 1 ); c++)
   {
@@ -35,9 +44,17 @@ int main() {
     }
   }
 
-  assert (a[0] <= a[1] &&
-	  a[1] <= a[2] &&
-	  a[2] <= a[3] &&
-	  a[3] <= a[4] &&
-	  a[4] <= a[5]);
+#ifdef LLBMC
+  __llbmc_assert(a[0] <= a[1] && \
+		 a[1] <= a[2] && \
+		 a[2] <= a[3] && \
+		 a[3] <= a[4] && \
+		 a[4] <= a[5]);
+#else
+  klee_assert(a[0] <= a[1] && \
+	      a[1] <= a[2] && \
+	      a[2] <= a[3] && \
+	      a[3] <= a[4] && \
+	      a[4] <= a[5]);
+#endif
 }

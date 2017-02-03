@@ -11,7 +11,7 @@ PROGRAM_OPTIONS=
 
 # We remove bubble_llbmc.tx from KLEE targets, as it
 # is to be run with LLBMC
-TARGETS=$(subst bubble_llbmc.tx,,$(patsubst %.c,%.tx,$(wildcard *.c)))
+TARGETS=$(patsubst %.c,%.tx,$(wildcard *.c))
 
 # Regexp-only experiment set, with fixed "hello" string input
 DEFAULT_EXPERIMENT_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10

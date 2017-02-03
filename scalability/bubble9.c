@@ -1,6 +1,6 @@
 /*
  * Bubble sort
- * 
+ *
  * From
  * http://www.programmingsimplified.com/c/source-code/c-program-bubble-sort
  *
@@ -10,17 +10,30 @@
  * al. http://arxiv.org/abs/1405.5754 suggests that in standard
  * sorting algorithm there can possibly be plenty of superfluous
  * comparisons.
+ *
+ * When running times are compared, LLBMC finished way faster than
+ * KLEE (loop iteration bound 10 for LLBMC which should imply complete
+ * search).
  */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
-#include <assert.h>
+#endif
 
 #define ARRAY_SIZE 9
 
 int main() {
   int a[ARRAY_SIZE];
   int n, c, d, swap;
- 
+
+#ifdef LLBMC
+  for (int i = 0; i < ARRAY_SIZE ; ++i) {
+    a[i] = __llbmc_nondef_int();
+  }
+#else
   klee_make_symbolic(a, ARRAY_SIZE * sizeof(int), "a");
+#endif
 
   for (c = 0 ; c < ( ARRAY_SIZE - 1 ); c++)
   {
@@ -35,11 +48,21 @@ int main() {
     }
   }
 
-  assert (a[0] <= a[1] &&
-	  a[1] <= a[2] &&
-	  a[2] <= a[3] &&
-	  a[3] <= a[4] &&
-	  a[4] <= a[5] &&
-	  a[6] <= a[7] &&
-	  a[7] <= a[8]);
+#ifdef LLBMC
+  __llbmc_assert(a[0] <= a[1] && \
+		 a[1] <= a[2] && \
+		 a[2] <= a[3] && \
+		 a[3] <= a[4] && \
+		 a[4] <= a[5] && \
+		 a[6] <= a[7] && \
+		 a[7] <= a[8]);
+#else
+  klee_assert(a[0] <= a[1] && \
+	      a[1] <= a[2] && \
+	      a[2] <= a[3] && \
+	      a[3] <= a[4] && \
+	      a[4] <= a[5] && \
+	      a[6] <= a[7] && \
+	      a[7] <= a[8]);
+#endif
 }
