@@ -35,7 +35,7 @@ EXPERIMENT_MEMORY=13000
 
 KLEE_DEFAULT_OPTIONS=--search=dfs
 
-LLBMC=${HOME}/software/llbmc-2013.1-Linux_64
+LLBMC_TARGETS=$(patsubst %.c,%.llbmc,$(wildcard *.c))
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
@@ -62,10 +62,6 @@ include ../Makefile.common
 #       Make tr_nosyscall.tr0 (only run tr_nosyscall)                           #
 #       Make bubble9.bubble0 (only run bubble9)                                 #
 #################################################################################
-
-bubble_llbmc: bubble_llbmc.c
-	${CC} -c -g -emit-llvm -I${LLBMC}/examples bubble_llbmc.c -o bubble_llbmc.o
-	llbmc -max-loop-iterations=10 bubble_llbmc.o
 
 # For running Minix tr versions
 tr: ${TR_TARGETS}
@@ -286,11 +282,11 @@ ${EXPERIMENT_CSV}: core-experiment
 		mkdir ${LLBMC_OUTPUT_DIR}; \
 	fi
 	${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc
-	llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$*
+	PATH="${EXTRA_PATH}:$$PATH" llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$*
 	rm -f $*.bc
 
 # This target is used for collecting data from LLBMC experiment into CSV file.
-${LLBMC_EXPERIMENT_CSV}:
+${LLBMC_EXPERIMENT_CSV}: ${LLBMC_TARGETS}
 	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV} ; \
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
