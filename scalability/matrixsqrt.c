@@ -36,10 +36,10 @@ int main()
     }
 
 #ifdef LLBMC
-  __llbmc_assert(!(nM[nDim * 0 + 0] == 19 && nM[nDim * 0 + 1] == 22 &&
+  __llbmc_assert(!(nM[nDim * 0 + 0] == 19 && nM[nDim * 0 + 1] == 22 && \
                    nM[nDim * 1 + 0] == 43 && nM[nDim * 1 + 1] == 50));
 #else
-  klee_assert(!(nM[nDim * 0 + 0] == 19 && nM[nDim * 0 + 1] == 22 &&
+  klee_assert(!(nM[nDim * 0 + 0] == 19 && nM[nDim * 0 + 1] == 22 && \
                 nM[nDim * 1 + 0] == 43 && nM[nDim * 1 + 1] == 50));
 #endif
   free(nM);
