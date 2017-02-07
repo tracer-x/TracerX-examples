@@ -35,9 +35,8 @@ EXPERIMENT_MEMORY=13000
 
 KLEE_DEFAULT_OPTIONS=--search=dfs
 
-LLBMC_TARGETS=$(patsubst %.c,%.llbmc,$(wildcard *.c))
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
-LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
+LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=20 -max-function-call-depth=10
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
@@ -270,20 +269,30 @@ ${EXPERIMENT_CSV}: core-experiment
 			mkdir ${LLBMC_OUTPUT_DIR}; \
 		fi ; \
 		${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc ; \
-		PATH="${EXTRA_PATH}:$$PATH" llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+		PATH="${EXTRA_PATH}:$$PATH" timeout ${EXPERIMENT_TIMEOUT} llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+		if [ $$? = "124" ] ; then \
+			touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \
+		fi ; \
 		rm -f $*.bc \
 	)
 
 # This target is used for collecting data from LLBMC experiment into CSV file.
-${LLBMC_EXPERIMENT_CSV}: ${LLBMC_TARGETS}
-	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV} ; \
+${LLBMC_EXPERIMENT_CSV}:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
-	for program in $$EXPERIMENT_SET ; \
-	do \
+	for program in $$EXPERIMENT_SET ; do \
+		make $$program.llbmc ; \
+	done ; \
+	echo "Program,Timed out,Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV} ; \
+	for program in $$EXPERIMENT_SET ; do \
 		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
 			printf "$$program," >> ${LLBMC_EXPERIMENT_CSV} ; \
+			if [ -e ${LLBMC_OUTPUT_DIR}/$$program.timeout ] ; then \
+				echo -n "Yes," >> ${LLBMC_EXPERIMENT_CSV} ; \
+			else \
+				echo -n "No," >> ${LLBMC_EXPERIMENT_CSV} ; \
+			fi ; \
 			grep "Performing transformations on LLVM IR" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV} ; \
 			grep "Performing logical encoding" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
@@ -297,4 +306,4 @@ ${LLBMC_EXPERIMENT_CSV}: ${LLBMC_TARGETS}
 			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf "\n" >> ${LLBMC_EXPERIMENT_CSV} ; \
 		fi ; \
-	done ; \
+	done

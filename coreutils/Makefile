@@ -37,7 +37,7 @@ DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
 
 EXPERIMENT_CSV=experiment.csv
 
-EXPERIMENT_TIMEOUT=3600.
+EXPERIMENT_TIMEOUT=3600
 
 EXPERIMENT_MEMORY=13000
 
@@ -377,7 +377,10 @@ ${EXPERIMENT_CSV}: core-experiment
 		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
 			mkdir ${LLBMC_OUTPUT_DIR}; \
 		fi ; \
-		PATH=${EXTRA_PATH}:$$PATH llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* \
+		PATH=${EXTRA_PATH}:$$PATH timeout ${EXPERIMENT_TIMEOUT} llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+                if [ $$? = "124" ] ; then \
+                        touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \
+                fi \
 	)
 
 llbmc-core-experiment:
@@ -399,24 +402,29 @@ llbmc-core-experiment:
 # data of Tracer-X and KLEE runs on the main function bitcode only,
 # for comparison to LLBMC.
 ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
-	echo "Program, Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv
+	echo "Program,Timed out,Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV}
 	EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
 	for program in $$EXPERIMENT_SET ; \
 	do \
 		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
-			printf "$$program," >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			grep "Performing transformations on LLVM IR" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			grep "Performing logical encoding" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			grep "Performing formula transformations" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			grep "Running SMT solver (STP with MiniSat)" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			awk '/[DONE]/{i++}i==5' ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			printf ", " >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
-			printf "\n" >> ${LLBMC_OUTPUT_DIR}/log-llbmc.csv; \
+			printf "$$program," >> ${LLBMC_EXPERIMENT_CSV}; \
+                        if [ -e ${LLBMC_OUTPUT_DIR}/$$program.timeout ] ; then \
+                                echo -n "Yes," >> ${LLBMC_EXPERIMENT_CSV} ; \
+                        else \
+                                echo -n "No," >> ${LLBMC_EXPERIMENT_CSV} ; \
+                        fi ; \
+			grep "Performing transformations on LLVM IR" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Performing logical encoding" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Performing formula transformations" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Running SMT solver (STP with MiniSat)" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
+			awk '/[DONE]/{i++}i==5' ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_EXPERIMENT_CSV}; \
+			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV}; \
+			printf "\n" >> ${LLBMC_EXPERIMENT_CSV}; \
 		fi ; \
 	done ; \
 	EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only
