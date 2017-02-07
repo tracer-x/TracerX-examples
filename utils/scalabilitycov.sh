@@ -44,27 +44,26 @@ else
     MIN_TIME=`expr $START_TIME + $TIME_SINCE`
 fi
 
-for TEST in $OUTPUT_DIR/*.ktest ; do
-    TIME=`stat --format="%Z" $TEST | tr -d '\n'`
-    if [ $MIN_TIME -ge $TIME ] ; then
-	rm -rf $PROGRAM $PROGRAM.gcno $PROGRAM.gcda
-	$CLANG $CFLAGS -fprofile-arcs -ftest-coverage $LDFLAGS $PROGRAM.c -o $PROGRAM
-	for KTEST in $OUTPUT_DIR/*.ktest ; do
-		( LD_LIBRARY_PATH=$KLEE_HOME/lib KTEST_FILE=$KTEST KLEE_REPLAY_TIMEOUT=$KLEE_REPLAY_TIMEOUT $KLEE_REPLAY $PROGRAM $KTEST )
-	done
-	touch $OUTPUT_DIR/$PROGRAM.cov
-	LOC_TOTAL=0
-	LINE_COVERAGE=0
-	if [ -e $PROGRAM.gcda ] ; then
-		echo Saving llvm-cov output in $OUTPUT_DIR/$PROGRAM.cov
-		llvm-cov -gcno=$PROGRAM.gcno -gcda=$PROGRAM.gcda >> $OUTPUT_DIR/$PROGRAM.cov
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $OUTPUT_DIR/$PROGRAM.cov |wc -l`
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $OUTPUT_DIR/$PROGRAM.cov |wc -l`
-		LOC_TOTAL=`expr $LINE_COVERAGE + $LINE_NON_COVERAGE`
-	fi
-	( echo -n $LINE_COVERAGE > $OUTPUT_DIR/LcovLog.txt )
-	( echo -n $LOC_TOTAL >	$OUTPUT_DIR/SLocCountLog.txt )
-	echo Line coverage = $LINE_COVERAGE of $LOC_TOTAL	
+rm -rf $PROGRAM $PROGRAM.gcno $PROGRAM.gcda
+$CLANG $CFLAGS -fprofile-arcs -ftest-coverage $LDFLAGS $PROGRAM.c -o $PROGRAM
+
+for KTEST in $OUTPUT_DIR/*.ktest ; do
+    TIME=`stat --format="%Z" $KTEST | tr -d '\n'`
+    if [ ! $MIN_TIME -gt $TIME ] ; then
+	( LD_LIBRARY_PATH=$KLEE_HOME/lib KTEST_FILE=$KTEST KLEE_REPLAY_TIMEOUT=$KLEE_REPLAY_TIMEOUT $KLEE_REPLAY $PROGRAM $KTEST )
     fi
 done
+
+LOC_TOTAL=0
+LINE_COVERAGE=0
+if [ -e $PROGRAM.gcda ] ; then
+	echo Saving llvm-cov output in $OUTPUT_DIR/$PROGRAM.cov
+	llvm-cov -gcno=$PROGRAM.gcno -gcda=$PROGRAM.gcda >> $OUTPUT_DIR/$PROGRAM.cov
+	LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $OUTPUT_DIR/$PROGRAM.cov |wc -l`
+	LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $OUTPUT_DIR/$PROGRAM.cov |wc -l`
+	LOC_TOTAL=`expr $LINE_COVERAGE + $LINE_NON_COVERAGE`
+fi
+( echo -n $LINE_COVERAGE > $OUTPUT_DIR/LcovLog.txt )
+( echo -n $LOC_TOTAL >	$OUTPUT_DIR/SLocCountLog.txt )
+echo Line coverage = $LINE_COVERAGE of $LOC_TOTAL	
 
