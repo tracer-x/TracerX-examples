@@ -10,6 +10,9 @@
  * al. http://arxiv.org/abs/1405.5754 suggests that in standard
  * sorting algorithm there can possibly be plenty of superfluous
  * comparisons.
+ *
+ * This is a version with 12 elements and with a bug introduced to
+ * re-swap the last two elements.
  */
 #ifdef LLBMC
 #include <llbmc.h>
@@ -44,6 +47,10 @@ int main() {
       }
     }
   }
+
+  int tmp = a[10];
+  a[10] = a[11];
+  a[11] = tmp;
 
 #ifdef LLBMC
   __llbmc_assert(a[0] <= a[1] && a[1] <= a[2] && a[2] <= a[3] && a[3] <= a[4] &&
