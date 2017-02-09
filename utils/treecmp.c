@@ -1,9 +1,12 @@
 /* 
- * Comparing KLEE path files in two separate directories. The first
- * directory contains path files for KLEE runs without lazy
- * annotation. The second directory contains path files for KLEE runs
- * with lazy annotation. This utility prints consecutively three
- * numbers in one line:
+ * treecmp - Comparing KLEE path files in two separate directories. 
+ *
+ * Copyright 2016, 2017 National University of Singapore
+ *
+ * The first directory contains path files for KLEE runs without
+ * abstraction learning. The second directory contains path files for
+ * KLEE runs with abstraction learning. This utility prints
+ * consecutively three numbers in one line:
  * 
  * 1) The number of proper extensions in the first directory, of a
  *    path in the second directory minus the number of those paths in
@@ -55,8 +58,8 @@ void remove_tree( struct tnode *root) {
 
 void print_usage(char *name) {
   fprintf(stderr, "Usage: %s dir1 dir2\n", name);
-  fprintf(stderr, "dir1 - dir1/*.path are KLEE path files for run without lazy annotation\n");
-  fprintf(stderr, "dir2 - dir2/*.path are KLEE path files for run with lazy annotation\n");  
+  fprintf(stderr, "dir1 - dir1/*.path are KLEE path files for run without abstraction learning\n");
+  fprintf(stderr, "dir2 - dir2/*.path are KLEE path files for run with abstraction learning\n");  
 }
 
 void print_tree(int depth, struct tnode *n) {
