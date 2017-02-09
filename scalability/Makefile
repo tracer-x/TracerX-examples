@@ -30,8 +30,9 @@ DEFAULT_EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 
 # Scalability benchmark set for November/December 2016 experiment
 DEFAULT_EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall insertsort11 janne_complex lcdnum merge ns nsichneu prime recursion Regexp sample statemate tr tritype ud
+DEFAULT_EXPERIMENT_SET=bubble3
 
-DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
+DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .tx1
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -78,7 +79,7 @@ bubble: ${BUBBLE_TARGETS}
 
 
 clean: standard-clean
-	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} \
+	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} \
 		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
 
 .SUFFIXES: .tr0
@@ -200,7 +201,7 @@ ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
-		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ;
+		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
 	if [ -z "$$EXPERIMENT_TYPE_SET" ] ; then \
 		EXPERIMENT_TYPE_SET="${DEFAULT_EXPERIMENT_TYPE_SET}" ; \
@@ -267,6 +268,8 @@ ${EXPERIMENT_CSV}: core-experiment
 			fi ; \
 		done ; \
 	done
+	rm -f small-$@
+	cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@
 
 # This target is used for running experiment with LLBMC.
 %.llbmc :

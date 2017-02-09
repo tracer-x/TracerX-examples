@@ -267,7 +267,7 @@ ${COREUTILS_NOLINK_DIR}:
 	fi
 
 clean:
-	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
+	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} ${COREUTILS_NOLINK_DIR}
@@ -360,11 +360,19 @@ ${EXPERIMENT_CSV}.only:
 			fi ; \
 		done ; \
 	done
+	rm -f small-$@
+	cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@
 
-# This target is used for collecting data from experimental results into experiment.csv file.
+# This target is used for collecting data from experimental results
+# into experiment.csv and smaller small-experiment.csv with less
+# columns.
 ${EXPERIMENT_CSV}: core-experiment
 	make ${EXPERIMENT_CSV}.only
 	mv ${EXPERIMENT_CSV}.only ${EXPERIMENT_CSV}
+	if [ -e small-${EXPERIMENT_CSV}.only ] ; then \
+		rm -f small-${EXPERIMENT_CSV} ; \
+		mv small-${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV} ; \
+	fi
 
 # This target is used for running coreutils experiment with
 # LLBMC. Arguments in PROGRAM_OPTIONS have lengths matching that of
