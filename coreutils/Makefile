@@ -9,6 +9,8 @@ COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_COV_DIR=${COREUTILS_DIR}/obj-cov
 COREUTILS_NOLINK_DIR=${COREUTILS_DIR}/obj-nolink
+COREUTILS_COV_MIN_TIME=0
+
 CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_DIR}/src -I${COREUTILS_DIR}/lib
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
@@ -56,7 +58,7 @@ KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --o
 	--use-batching-search --batch-instructions=10000
 
 # The defaults from http://klee.github.io/docs/coreutils-experiments/
-KLEE_COREUTILS_DEFAULT_OPTIONS=--search=random-path --max-memory=1000 --search=nurs:covnew -max-time=3600.
+KLEE_COREUTILS_DEFAULT_OPTIONS=--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY}
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
@@ -137,50 +139,68 @@ ${COREUTILS_NOLINK_DIR}:
 	)
 
 %.klee1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tx1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx5 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -exact-address-interpolant -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -exact-address-interpolant" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx6 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -exact-address-interpolant -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -exact-address-interpolant" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
 # Tracer-X which can be seen in %.klee... and %.tx... targets.
 %.tx:
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
+	fi ; \
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.klee:
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
+	fi ; \
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.stpklee:
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
+	fi ; \
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 # These are for the no-linking runs, without linking with uclibc
 %.tx-nolink:
-	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=${CURDIR}/$@ BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
+	fi ; \
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-nolink:
-	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=${CURDIR}/$@ BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
+	fi ; \
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.stpklee-nolink:
-	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=${CURDIR}/$@ BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	if [ -z "$$OUTPUT_DIR" ] ; then \
+		OUTPUT_DIR=${CURDIR}/$@ ; \
+	fi ; \
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-out: build
 	# The testing sandbox reconstructed here is from
@@ -235,7 +255,7 @@ ${COREUTILS_NOLINK_DIR}:
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
-	${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR"
+	${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR" ${COREUTILS_COV_MIN_TIME}
 	GCDA_FILES=`find /home/dcsandr/software/klee-examples/coreutils/coreutils-6.10/obj-cov -name "*.gcda"` ; \
 	if [ ! -z "$$GCDA_FILES" ] ; then \
 		rm -f $$GCDA_FILES ; \
