@@ -13,7 +13,11 @@
  *    the second directory that are being extended.
  * 2) The number of paths in the second directory, that are never
  *    traversed in the first directory.
- * 3) The earliest time the last path in the second directory is
+ * 3) The number of paths in the first directory that is never visited
+ *    by the tree of the second directory. (Specifically, this is a
+ *    count of the tree leaves of the first directory that is never
+ *    visited by the tree of the second directory.
+ * 4) The earliest time the last path in the second directory is
  *    visited by the paths in the first directory. Time here is the
  *    number of the path files in the first directory, which can be
  *    read from the file name. -1 if the last path in the second
@@ -35,6 +39,8 @@ struct tnode {
 			   file name) */
   struct tnode *left;
   struct tnode *right;
+  int visited;          /* Non-zero if visited by some prefix of a
+		           path of the second directory */
 };
 
 struct tnode *global_root = NULL;
@@ -45,6 +51,7 @@ struct tnode *new_tnode(int time) {
   new_node->min_time_reached = time;
   new_node->left = NULL;
   new_node->right = NULL;
+  new_node->visited = 0;
   return new_node;
 }
 
@@ -92,6 +99,47 @@ void count_leaves(struct tnode *n) {
     count_leaves(n->right);
     n->leaves_count += n->right->leaves_count;
   }  
+}
+
+/* Linked list of leaves for counting of the number of leaves not
+   covered. */
+struct leaf {
+  struct tnode *node;
+  struct leaf *next;
+};
+
+struct leaf *leaf_list_head = NULL;
+
+void add_leaf(struct tnode *node) {
+  struct leaf *new_leaf = (struct leaf *)malloc(sizeof(struct leaf));
+  new_leaf->node = node;
+  new_leaf->next = leaf_list_head;
+  leaf_list_head = new_leaf;
+}
+
+void clear_leaves() {
+  struct leaf *p = leaf_list_head;
+
+  while (p) {
+    struct leaf *current = p;
+    p = p->next;
+    free(p);
+  }
+}
+
+int uncovered_leaves() {
+  struct leaf *current = leaf_list_head;
+  int res = 0;
+  
+  while (current != NULL) {
+    struct tnode *n = current->node;
+    if (n->visited == 0) {
+      res++;
+    }
+    current = current->next;
+  }
+  
+  return res;
 }
 
 int main(int argc, char **argv) {
@@ -165,7 +213,9 @@ int main(int argc, char **argv) {
 	  break;
 	}
       }
-      
+
+      /* Add the last node to leaves linked list */
+      add_leaf(current);
       fclose(fp);
 
     } else {
@@ -223,7 +273,8 @@ int main(int argc, char **argv) {
       }
 
       current = global_root;
-
+      current->visited = 1;
+      
       while (fgets(line_buf, BUFFER_SIZE, fp) != NULL) {
 	switch (*line_buf) {
 	case '0': {
@@ -233,6 +284,7 @@ int main(int argc, char **argv) {
 	    break;
 	  }
 	  current = current->left;
+	  current->visited = 1;
 	  break;
 	}
 	case '1': {
@@ -242,6 +294,7 @@ int main(int argc, char **argv) {
 	    break;
 	  }
 	  current = current->right;
+	  current->visited = 1;
 	  break;
 	}
 	default:
@@ -279,7 +332,14 @@ int main(int argc, char **argv) {
   
   closedir(dir2_f);
 
-  printf("%d %d %d\n", saved_traversal, uncovered_path_count, fastest_time_reached);
+  int ul = uncovered_leaves();
+
+  /* Deallocate used memory */
+  clear_leaves();
+  remove_tree(global_root);
+
+  /* Print results */
+  printf("%d %d %d %d\n", saved_traversal, uncovered_path_count, (ul - saved_traversal), fastest_time_reached);
   
   return 0;
 }
