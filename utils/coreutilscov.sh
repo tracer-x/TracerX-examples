@@ -29,11 +29,10 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source $SCRIPT_DIR/../environ.sh
 
-START_TIME=`stat --format="%Z" $OUTPUT_DIR/test000001.ktest | tr -d '\n'`
-if [ -z "$TIME_SINCE" ] ; then
-    MIN_TIME=$START_TIME
-else
-    MIN_TIME=`expr $START_TIME + $TIME_SINCE`
+MAX_TIME=
+if [ ! -z "$TIME_SINCE" ] ; then
+    START_TIME=`stat --format="%Z" $OUTPUT_DIR/test000001.ktest | tr -d '\n'`
+    MAX_TIME=`expr $START_TIME + $TIME_SINCE`
 fi
 
 COREUTILS_DIR=$SCRIPT_DIR/../coreutils/coreutils-6.10
@@ -51,8 +50,12 @@ rm -f `find ${COREUTILS_COV_DIR} -name "*.gcda"`
     cd $COREUTILS_COV_DIR/src
     TEST_FILES=$OUTPUT_DIR/*.ktest
     for KTEST in $TEST_FILES ; do
-	TIME=`stat --format="%Z" $KTEST | tr -d '\n'`
-	if [ ! $MIN_TIME -gt $TIME ] ; then
+	if [ ! -z "$MAX_TIME" ] ; then
+	    TIME=`stat --format="%Z" $KTEST | tr -d '\n'`
+	    if [ $MAX_TIME -gt $TIME ] ; then
+		( LD_LIBRARY_PATH=$KLEE_HOME/lib KTEST_FILE=$KTEST KLEE_REPLAY_TIMEOUT=$KLEE_REPLAY_TIMEOUT $KLEE_REPLAY $PROGRAM $KTEST )
+	    fi
+	else
 	    ( LD_LIBRARY_PATH=$KLEE_HOME/lib KTEST_FILE=$KTEST KLEE_REPLAY_TIMEOUT=$KLEE_REPLAY_TIMEOUT $KLEE_REPLAY $PROGRAM $KTEST )
 	fi
     done

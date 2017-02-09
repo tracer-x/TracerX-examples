@@ -9,6 +9,12 @@ EXTRA_OPTIONS=-interpolation-stat
 # --sym-arg
 PROGRAM_OPTIONS=
 
+# The following is for computing coverage from the test files within
+# the start of the execution up to, and not including the specified
+# time.  Empty means no max time set for computing coverage of test,
+# so all tests will be considered in computing coverage.
+SCALABILITY_COV_MAX_TIME=
+
 # We remove bubble_llbmc.tx from KLEE targets, as it
 # is to be run with LLBMC
 TARGETS=$(patsubst %.c,%.tx,$(wildcard *.c))
@@ -172,7 +178,7 @@ clean: standard-clean
 		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
 	fi
 	# Generate line coverage information
-	${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR"
+	${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME}
 
 core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \

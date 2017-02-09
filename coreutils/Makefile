@@ -9,7 +9,12 @@ COREUTILS_DIR=${CURDIR}/coreutils-6.10
 COREUTILS_LLVM_DIR=${COREUTILS_DIR}/obj-llvm
 COREUTILS_COV_DIR=${COREUTILS_DIR}/obj-cov
 COREUTILS_NOLINK_DIR=${COREUTILS_DIR}/obj-nolink
-COREUTILS_COV_MIN_TIME=0
+
+# The following is for computing coverage from the test files within
+# the start of the execution up to, and not including the specified
+# time.  Empty means no max time set for computing coverage of test,
+# so all tests will be considered in computing coverage.
+COREUTILS_COV_MAX_TIME=
 
 CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_DIR}/src -I${COREUTILS_DIR}/lib
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
@@ -255,7 +260,7 @@ ${COREUTILS_NOLINK_DIR}:
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
-	${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR" ${COREUTILS_COV_MIN_TIME}
+	${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR" ${COREUTILS_COV_MAX_TIME}
 	GCDA_FILES=`find /home/dcsandr/software/klee-examples/coreutils/coreutils-6.10/obj-cov -name "*.gcda"` ; \
 	if [ ! -z "$$GCDA_FILES" ] ; then \
 		rm -f $$GCDA_FILES ; \

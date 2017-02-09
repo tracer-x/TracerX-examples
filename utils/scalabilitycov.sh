@@ -37,19 +37,22 @@ export CFLAGS="-g -I$KLEE_HOME/include $EXTRA_CFLAGS"
 
 export LDFLAGS="-L$KLEE_HOME/lib $EXTRA_LDFLAGS -lkleeRuntest"
 
-START_TIME=`stat --format="%Z" $OUTPUT_DIR/test000001.ktest | tr -d '\n'`
-if [ -z "$TIME_SINCE" ] ; then
-    MIN_TIME=$START_TIME
-else
-    MIN_TIME=`expr $START_TIME + $TIME_SINCE`
+MAX_TIME=
+if [ ! -z "$TIME_SINCE" ] ; then
+    START_TIME=`stat --format="%Z" $OUTPUT_DIR/test000001.ktest | tr -d '\n'`
+    MAX_TIME=`expr $START_TIME + $TIME_SINCE`
 fi
 
 rm -rf $PROGRAM $PROGRAM.gcno $PROGRAM.gcda
 $CLANG $CFLAGS -fprofile-arcs -ftest-coverage $LDFLAGS $PROGRAM.c -o $PROGRAM
 
 for KTEST in $OUTPUT_DIR/*.ktest ; do
-    TIME=`stat --format="%Z" $KTEST | tr -d '\n'`
-    if [ ! $MIN_TIME -gt $TIME ] ; then
+    if [ ! -z $MAX_TIME ] ; then
+	TIME=`stat --format="%Z" $KTEST | tr -d '\n'`
+	if [ $MAX_TIME -gt $TIME ] ; then
+	    ( LD_LIBRARY_PATH=$KLEE_HOME/lib KTEST_FILE=$KTEST KLEE_REPLAY_TIMEOUT=$KLEE_REPLAY_TIMEOUT $KLEE_REPLAY $PROGRAM $KTEST )
+	fi
+    else
 	( LD_LIBRARY_PATH=$KLEE_HOME/lib KTEST_FILE=$KTEST KLEE_REPLAY_TIMEOUT=$KLEE_REPLAY_TIMEOUT $KLEE_REPLAY $PROGRAM $KTEST )
     fi
 done
