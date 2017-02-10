@@ -30,9 +30,8 @@ DEFAULT_EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 
 # Scalability benchmark set for November/December 2016 experiment
 DEFAULT_EXPERIMENT_SET=bubble6 bubble9 compress cut_bytes cut_fields expint fac fibcall insertsort11 janne_complex lcdnum merge ns nsichneu prime recursion Regexp sample statemate tr tritype ud
-DEFAULT_EXPERIMENT_SET=bubble3
 
-DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .tx1
+DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
 
 EXPERIMENT_CSV=experiment.csv
 
