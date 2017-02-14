@@ -62,7 +62,7 @@ standard-clean:
 	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${TXCOV_TARGETS} ${KLEECOV_TARGETS} ${STPKLEECOV_TARGETS} ${EXTRA_REMOVAL} 
 
 # To prevent the removal of *.tx subdirectories
-.PRECIOUS: %.tx %.klee %.stpklee
+.PRECIOUS: %.csv %.tx %.klee %.stpklee
 
 .SUFFIXES: .tx .klee .stpklee .klee-out .inputs .bc .ll .cov .txcov .kleecov .stpkleecov
 
