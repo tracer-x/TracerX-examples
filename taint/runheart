@@ -1,0 +1,7 @@
+#!/bin/bash
+# A shell script to automate things up.
+clang heartbleed.c -emit-llvm -g -O0 -c
+clang heartbleed.c -S -emit-llvm -g -O0 -c
+rm -rf heartbleed.klee-out
+klee -taint=controlflow --output-dir=heartbleed.klee-out -exit-on-error heartbleed.bc
+
