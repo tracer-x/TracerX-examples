@@ -15,16 +15,20 @@ Each directory except **include** and **utils** contains a suite of simple examp
 
 - **include** - Include files for running with various tools.
 
-- **join** - Examples for testing `klee_join` API. This directory also contains
+- **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
+
+- **utils** - Scripts and other utilities. This contains, among others, `cav17-coreutils.sh` and `cav17-scalability.sh` for reproducing the experimental results of our CAV '17 paper submission.
+
+The following directories are work in progress.
+
+- **join** - Examples for testing Tracer-X `klee_join` API. This directory also contains
 academic programs focusing on program equivalence analysis, with an
 example taken from [KLEE OSDI paper 2008]
 (https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf).
 
-- **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
+- **memleak** - C programs with memory leak.
 
 - **taint** - Assortment of examples extracted from known vulnerabilities: some may require KLEE API introduced in [a version of KLEE with taint propagation](https://github.com/feliam/klee-taint.git).
-
-- **utils** - Scripts and other utilities. This contains, among others, `cav17-coreutils.sh` and `cav17-scalability.sh` for reproducing the experimental results of our CAV '17 paper submission.
 
 Running
 -------
