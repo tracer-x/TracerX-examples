@@ -29,7 +29,7 @@ DEFAULT_EXPERIMENT_SET=Regexp-6-3 Regexp-6-4 Regexp-6-5 Regexp-7-3 Regexp-7-4 Re
 DEFAULT_EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 
 # Standard experiment set
-DEFAULT_EXPERIMENT_SET=bitcount16 bitcount32 bubble6 bubble9 compress cut_bytes cut_fields expint fac fermat fibcall graycode insertsort11 janne_complex lcdnum matrixsqrt merge multiply ns nsichneu popcount prime queens recursion Regexp sample send-more-money statemate tr tritype ud wegner
+DEFAULT_EXPERIMENT_SET=bitcount16 bitcount32 bubble6 bubble9 compress cut_bytes cut_fields expint fac fermat fibcall graycode insertsort11 janne_complex lcdnum magic matrixsqrt merge multiply ns nsichneu popcount prime queens recursion Regexp sample send-more-money statemate tr tritype ud wegner
 
 DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
 
