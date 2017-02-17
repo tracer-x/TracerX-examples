@@ -1,5 +1,5 @@
 /*
- * Examples of subsumptions between pointers of different
+ * Example of subsumptions between pointers of different
  * allocations. This example should be run with depth-first strategy.
  * It triggered an assertion failure in Tracer-X.
  *
