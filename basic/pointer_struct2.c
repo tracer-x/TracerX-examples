@@ -6,6 +6,7 @@
  *
  * Copyright 2017 National University of Singapore
  */
+#include <stdlib.h>
 #include <klee/klee.h>
 
 struct Node {
