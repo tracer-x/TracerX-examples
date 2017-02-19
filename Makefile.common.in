@@ -38,6 +38,9 @@ DEFAULT_KLEE_REPLAY_TIMEOUT=@KLEE_REPLAY_TIMEOUT@
 CFLAGS=-g -I${KLEE_HOME}/include ${EXTRA_CFLAGS}
 LDFLAGS=-L${KLEE_HOME}/lib ${EXTRA_LDFLAGS} -lkleeRuntest
 
+# Timeout in seconds of SVG tree graph creation from .dot file
+SVG_CREATION_TIMEOUT=10
+
 CC=@CC@
 AS=${CC} -S
 KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
@@ -109,20 +112,23 @@ standard-clean:
 	# Create SVGs from .dot files
 	@for DOTFILE in $$OUTPUT_DIR/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
-		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+		timeout ${SVG_CREATION_TIMEOUT}s dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
+		if [ $$? = 124 ] ; then \
+			echo WARNING: Timed out creating .svg file ; \
+		fi ; \
 	done
 
 # Execute the following targets instead to also get coverage
 # information, e.g., make even.txcov
 .bc.txcov:
 	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$*.tx COV_FILE=$*.txcov make $*.cov
-	
+
 .bc.kleecov:
 	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$*.klee COV_FILE=$*.kleecov make $*.cov
 
 .bc.stpkleecov:
 	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$*.stpklee COV_FILE=$*.stpkleecov make $*.cov
-	
+
 .bc.cov:
 	@make $*.klee-out
 	####################################################################

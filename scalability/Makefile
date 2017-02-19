@@ -175,7 +175,10 @@ clean: standard-clean
 	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
-		dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
+		timeout ${SVG_CREATION_TIMEOUT}s dot -Tsvg $$OUTPUT_DIR/tree.dot -o $$OUTPUT_DIR/tree.svg ; \
+		if [ $$? = 124 ] ; then \
+			echo WARNING: Timed out creating .svg file ; \
+		fi ; \
 	fi
 	# Generate line coverage information
 	${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME}
