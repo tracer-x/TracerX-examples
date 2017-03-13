@@ -1,13 +1,17 @@
-/* 
- * treecmp - Comparing KLEE path files in two separate directories. 
+/*
+ * treecmp - Comparing KLEE path files in two separate directories.
  *
  * Copyright 2016, 2017 National University of Singapore
  *
+ * WARNING: For this utility to compute statistics as intended,
+ * Tracer-X KLEE must be run using -subsumed-test option. So that path
+ * information is generated, even from subsumed paths.
+ *
  * The first directory contains path files for KLEE runs without
  * abstraction learning. The second directory contains path files for
- * KLEE runs with abstraction learning. This utility prints
+ * KLEE runs with abstraction learning (Tracer-X). This utility prints
  * consecutively three numbers in one line:
- * 
+ *
  * 1) The number of proper extensions in the first directory, of a
  *    path in the second directory minus the number of those paths in
  *    the second directory that are being extended.
