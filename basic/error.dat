@@ -50,3 +50,4 @@ regexp_tiny.c		1
 rutledge.c		1
 sp.c			0
 testmem.c		1
+use_after_free.c	1

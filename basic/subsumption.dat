@@ -47,3 +47,4 @@ regexp_small.c		8
 regexp_tiny.c		2
 sp.c			0
 testmem.c		23
+use_after_free.c	0
