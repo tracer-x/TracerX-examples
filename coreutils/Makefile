@@ -171,16 +171,12 @@ ${COREUTILS_NOLINK_DIR}:
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
 # Tracer-X which can be seen in %.klee... and %.tx... targets.
-# 
-# Note that the .tx target below needs to be executed with
-# --subsumed-test to generate test data from subsumed paths, for
-# treecmp to produce statistics on tree generated, as intended.
 ###############################################################################
 %.tx:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY} --subsumed-test" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.klee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \

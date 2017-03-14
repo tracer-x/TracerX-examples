@@ -120,16 +120,12 @@ clean: standard-clean
 # The following targets can be used for running experiments. The
 # conducted experiments involved different option settings of KLEE and
 # Tracer-X which can be seen in %.klee... and %.tx... targets.
-# 
-# Note that the .tx target below needs to be executed with
-# --subsumed-test to generate test data from subsumed paths, for
-# treecmp to produce statistics on tree generated, as intended.
 ###############################################################################
 %.tx:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	SOLVER_FLAGS="-solver-backend=z3 -subsumed-test" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
 %.klee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
