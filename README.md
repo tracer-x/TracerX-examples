@@ -9,8 +9,6 @@ Each directory except **include** and **utils** contains a suite of simple examp
 
 - **basic**  - Basic examples. 
 
-- **abstract** - Examples for testing `klee_abstract` API.
-
 - **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials.
 
 - **include** - Include files for running with various tools.
@@ -20,6 +18,8 @@ Each directory except **include** and **utils** contains a suite of simple examp
 - **utils** - Scripts and other utilities. This contains, among others, `cav17-coreutils.sh` and `cav17-scalability.sh` for reproducing the experimental results of our CAV '17 paper submission.
 
 The following directories are work in progress.
+
+- **abstract** - Examples for testing `klee_abstract` API.
 
 - **join** - Examples for testing Tracer-X `klee_join` API. This directory also contains
 academic programs focusing on program equivalence analysis, with an
