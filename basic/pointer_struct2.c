@@ -1,8 +1,8 @@
 /*
  * Subsumption of linked lists. This example needs to be run with
  * depth-first strategy. Ideally, we want subsumption between paths as
- * the last if conditional is unrelated to whether third element
- * exists or not.
+ * the last memory access should be correct independent on the
+ * existence of the third element of the linked list or not.
  *
  * Copyright 2017 National University of Singapore
  */
@@ -50,11 +50,8 @@ int main(int argc, char **argv) {
     x += 2;
   }
 
-  // This condition only constrains the data value of the second
-  // element, hence whether the third element exists or not is
+  // This memory access only concerns the first and second elements of
+  // the linked list, hence whether the third element exists or not is
   // immaterial and we should see subsumptions.
-  if (p->next->data == 'b')
-    return 0;
-  
-  return 1;
+  return p->next->data;
 }
