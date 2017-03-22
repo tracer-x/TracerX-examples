@@ -1,8 +1,7 @@
 /*
- * This triggers assertion failure when Tracer-X KLEE is run with
- * -loaded-value-check option. Here the issue is that of the confusion
- * of loaded value since different allocations gets blurred between
- * iterations.
+ * This triggers warning of loaded value mismatch with Tracer-X.  Here
+ * the issue is that of the confusion of loaded value since different
+ * allocations becomes undistinguishable between iterations.
  *
  * Copyright 2017 National University of Singapore
  */
