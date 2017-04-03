@@ -15,7 +15,7 @@
 
 int input[N] = {5, 6, 7, 8, 0, 1, 2, 3, 4, };
 #else
-#define N 6
+#define N 5
 
 int input[N]; // make SYMBOLIC in tracerx
 #endif
