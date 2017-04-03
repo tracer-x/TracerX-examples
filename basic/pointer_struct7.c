@@ -5,7 +5,7 @@
  */
 
 #include <klee/klee.h>
-
+#include <assert.h>
 #include <stdlib.h>
 
 #define MAX 9
@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
   int i;
 
   klee_make_symbolic(&n, sizeof(int), "n");
-  
+  klee_assume(n < 100);
+ 
   x = malloc(sizeof(struct node));
   x->val = n;
   for (i = 1; i < MAX; i++) {
@@ -34,11 +35,11 @@ int main(int argc, char **argv) {
     if (nondet)
       y->val = x->val + 10;
     else
-      y->val = x->val + 10;
+      y->val = x->val + 5;
     x = y;
   }
 
-  klee_assert(x->val < 999);
+  klee_assert(x->val < n + 999);
 
   return 0;
 }
