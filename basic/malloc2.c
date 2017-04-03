@@ -10,40 +10,35 @@
 
 #define MAX 9
 
-struct node {
-  int val;
-  struct node *next;
-};
-
-int n; // symbolic
+int n; // symbolic input
 
 int main(int argc, char **argv) {
-  struct node *x, *y;
-  int z, i;
+  int *x, *y, z, i;
+  x = malloc(sizeof(int));
 
   klee_make_symbolic(&n, sizeof(int), "n");
   klee_assume(n <= 0);
- 
-  x = malloc(sizeof(struct node));
-  x->val = n;
+  
+  *x = n; 
   for (i = 1; i < MAX; i++) {
     char nondet;
+    
+    y = malloc(sizeof(int));
 
     klee_make_symbolic(&nondet, sizeof(char), "nondet");
-
-    x->next = y = malloc(sizeof(struct node));
+    
     if (nondet) {
       z += 1;
-      y->val = x->val + 10;
+      *y = *x + 10;
     } else {
       z += 2;
-      y->val = x->val + 10;
+      *y = *x + 10;
     }
     
     x = y;
   }
-
-  klee_assert(x->val < n + 999);
+  
+  klee_assert(*x < n + 999);
 
   return z;
 }
