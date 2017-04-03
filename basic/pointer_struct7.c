@@ -39,4 +39,6 @@ int main(int argc, char **argv) {
   }
 
   klee_assert(x->val < 999);
+
+  return 0;
 }
