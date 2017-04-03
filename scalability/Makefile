@@ -78,7 +78,7 @@ bubble: ${BUBBLE_TARGETS}
 
 
 clean: standard-clean
-	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} cav-${EXPERIMENT_CSV} \
+	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} \
 		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
 
 .SUFFIXES: .tr0
