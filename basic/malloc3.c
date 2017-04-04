@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
   for (i = 1; i < MAX; i++) {
     char c;
 #ifdef LLBMC
-    c = __llbmc_nondef_int();
+    c = __llbmc_nondef_char();
 #else
     klee_make_symbolic(&c, sizeof(c), "c");
 #endif
