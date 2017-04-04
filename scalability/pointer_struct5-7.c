@@ -5,7 +5,11 @@
  * Copyright 2017 National University of Singapore
  */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 #include <stdlib.h>
 
 #define N 7
@@ -20,7 +24,13 @@ struct node {
 int main(int argc, char **argv) {
   int i;
 
+#ifdef LLBMC
+  for (int j = 0; j < N; ++j) {
+    input[j] = __llbmc_nondef_int();
+  }
+#else
   klee_make_symbolic(input, N * sizeof(input[0]), "input");
+#endif
 
   for (i = 0; i < N; i++) {
     list = mybag;
