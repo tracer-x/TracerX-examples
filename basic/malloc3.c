@@ -11,6 +11,7 @@
 #include <llbmc.h>
 #else
 #include <klee/klee.h>
+#include <assert.h>
 #endif
 #include <stdlib.h>
 
