@@ -133,10 +133,14 @@ clean: standard-clean
 	fi ; \
 	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
+# The following is for running using STP, so we do 'ulimit -s
+# unlimited' beforehand, as recommended in
+# http://klee.github.io/build-stp/
 %.stpklee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
+	ulimit -s unlimited ; \
 	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
 %.klee-out:
@@ -275,13 +279,16 @@ ${EXPERIMENT_CSV}: core-experiment
 	rm -f small-$@
 	cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@
 
-# This target is used for running experiment with LLBMC.
+# This target is used for running experiment with LLBMC. LLBMC uses
+# STP as backend, so we do 'ulimit -s unlimited' as recommended in
+# http://klee.github.io/build-stp/
 %.llbmc :
 	( \
 		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
 			mkdir ${LLBMC_OUTPUT_DIR}; \
 		fi ; \
 		${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc ; \
+		ulimit -s unlimited ; \
 		PATH="${EXTRA_PATH}:$$PATH" timeout ${EXPERIMENT_TIMEOUT} llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
 		if [ $$? = "124" ] ; then \
 			touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \

@@ -101,8 +101,11 @@ standard-clean:
 .bc.klee:
 	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$@ make $*.klee-out
 
-# For running KLEE with STP without interpolation
+# For running KLEE with STP without interpolation. Since we run using
+# STP, we do 'ulimit -s unlimited' beforehand, as recommended in
+# http://klee.github.io/build-stp/
 .bc.stpklee:
+	ulimit -s unlimited ; \
 	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$@ make $*.klee-out
 
 .bc.klee-out:
