@@ -45,7 +45,27 @@ LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 
 # In the following, --no-max-loop-iterations-checks
 # --no-max-function-call-depth-checks prevents reaching of the bounds
-# as errors to avoid confusion
+# as errors to avoid confusion.
+#
+# You may need to try to figure out the right values of:
+#
+# -max-loop-iterations=<m> -max-function-call-depth=<n>
+#
+# To figure out the right values, one can start from (m,n) = (0,0).
+# Run LLBMC without using --no-max-loop-iterations-checks
+# --no-max-function-call-depth-checks
+#
+# If they were insufficient, LLBMC will report:
+#
+# Loop iteration bound is not sufficient. The program analysis is thus
+# not complete.
+#
+# OR
+#
+# Function call depth is not sufficient. The program analysis is thus
+# not complete.
+#
+# Then you can try to increase the values.
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
