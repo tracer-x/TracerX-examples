@@ -42,7 +42,11 @@ EXPERIMENT_MEMORY=13000
 KLEE_DEFAULT_OPTIONS=--search=dfs
 
 LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
-LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=20 -max-function-call-depth=10
+
+# In the following, --no-max-loop-iterations-checks
+# --no-max-function-call-depth-checks prevents reaching of the bounds
+# as errors to avoid confusion
+LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 

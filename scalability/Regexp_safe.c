@@ -10,7 +10,8 @@
  *   http://klee.github.io/resources/Regexp.c.html
  *
  * This is a "safe" version where the last character of the string
- * 're' is assigned '\0'.
+ * 're' is assigned '\0'. With LLBMC, this program is verified with
+ * minimum of -max-loop-iterations=6 -max-function-call-depth=9.
  *
  * Portions copyright 2017 National University of Singapore
  */
