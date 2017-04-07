@@ -16,7 +16,7 @@
 int n; // symbolic input
 
 int main(int argc, char **argv) {
-  int *x, *y, z, i;
+  int *x, *y, z = 0, i;
   x = malloc(sizeof(int));
 
 #ifdef LLBMC
