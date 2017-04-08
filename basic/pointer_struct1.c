@@ -6,7 +6,11 @@
  * Copyright 2017 National University of Singapore
  */
 #include <stdlib.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 struct Node {
   char data;
@@ -34,9 +38,14 @@ int main(int argc, char **argv) {
   int p1, p2; // predicates
   int x = 0;
 
+#ifdef LLBMC
+  p1 = __llbmc_nondef_int();
+  p2 = __llbmc_nondef_int();
+#else
   klee_make_symbolic(&p1, sizeof(p1), "p1");
   klee_make_symbolic(&p2, sizeof(p2), "p2");
-  
+#endif
+
   if (p1) {
     p = make_list(2);
   } else {

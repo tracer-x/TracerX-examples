@@ -2,7 +2,11 @@
  *
  * Copyright 2017 National University of Singapore
  */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 

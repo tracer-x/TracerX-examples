@@ -1,4 +1,4 @@
-/* 
+/*
  * Test code from simple regular expression matching.
  *
  * A modification of the code with KLEE harness from the
@@ -6,9 +6,12 @@
  *   http://klee.github.io/resources/Regexp.c.html
  *
  * This triggered an assertion failure.
- */ 
-
+ */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 static int matchhere(char*,char*);
 
@@ -44,9 +47,15 @@ int match(char *re, char *text) {
 int main() {
   // The input regular expression.
   char re[SIZE];
-  
-  // Make the input symbolic. 
+
+// Make the input symbolic.
+#ifdef LLBMC
+  for (int i = 0; i < sizeof(re); ++i) {
+    re[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(re, sizeof re, "re");
+#endif
 
   // Try to match against a constant string "h".
   match(re, "h");

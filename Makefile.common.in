@@ -1,6 +1,6 @@
 # Makefile to build and run the examples using KLEE.
 #
-# Copyright 2015, 2016 National University of Singapore
+# Copyright 2015-2017 National University of Singapore
 #
 # Environment variables that can be set externally include:
 #
@@ -41,6 +41,36 @@ LDFLAGS=-L${KLEE_HOME}/lib ${EXTRA_LDFLAGS} -lkleeRuntest
 # Timeout in seconds of SVG tree graph creation from .dot file
 SVG_CREATION_TIMEOUT=10
 
+LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
+
+# LLBMC default timeout (in seconds)
+LLBMC_DEFAULT_TIMEOUT=3600
+
+# In the following, --no-max-loop-iterations-checks
+# --no-max-function-call-depth-checks prevents reaching of the bounds
+# as errors to avoid confusion.
+#
+# You may need to try to figure out the right values of:
+#
+# -max-loop-iterations=<m> -max-function-call-depth=<n>
+#
+# To figure out the right values, one can start from (m,n) = (0,0).
+# Run LLBMC without using --no-max-loop-iterations-checks
+# --no-max-function-call-depth-checks
+#
+# If they were insufficient, LLBMC will report:
+#
+# Loop iteration bound is not sufficient. The program analysis is thus
+# not complete.
+#
+# OR
+#
+# Function call depth is not sufficient. The program analysis is thus
+# not complete.
+#
+# Then you can try to increase the values.
+LLBMC_DEFAULT_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10
+
 CC=@CC@
 AS=${CC} -S
 KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
@@ -62,7 +92,8 @@ all-replay: ${TXCOV_TARGETS}
 
 standard-clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
-	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${TXCOV_TARGETS} ${KLEECOV_TARGETS} ${STPKLEECOV_TARGETS} ${EXTRA_REMOVAL} 
+	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${TXCOV_TARGETS} ${KLEECOV_TARGETS} ${STPKLEECOV_TARGETS} ${EXTRA_REMOVAL}
+	rm -rf ${LLBMC_OUTPUT_DIR}
 
 # To prevent the removal of *.tx subdirectories
 .PRECIOUS: %.csv %.tx %.klee %.stpklee
@@ -163,6 +194,32 @@ standard-clean:
 	fi ; \
 	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
 
+# This target is used for running experiment with LLBMC. LLBMC uses
+# STP as backend, so we do 'ulimit -s unlimited' as recommended in
+# http://klee.github.io/build-stp/
+%.llbmc :
+	( \
+		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
+			mkdir ${LLBMC_OUTPUT_DIR}; \
+		fi ; \
+		${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc ; \
+		ulimit -s unlimited ; \
+		if [ -z "${LLBMC_OPTIONS}" ] ; then \
+			LLBMC_OPTIONS="${LLBMC_DEFAULT_OPTIONS}" ; \
+		else \
+			LLBMC_OPTIONS="${LLBMC_OPTIONS}" ; \
+		fi ; \
+		if [ -z "${EXPERIMENT_TIMEOUT}" ] ; then \
+			LLBMC_TIMEOUT="${LLBMC_DEFAULT_TIMEOUT}" ; \
+		else \
+			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
+		fi ; \
+		PATH="${EXTRA_PATH}:$$PATH" timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+		if [ $$? = "124" ] ; then \
+			touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \
+		fi ; \
+		rm -f $*.bc \
+	)
 
 .tx.inputs:
 	for KTEST in $</*.ktest ; do \

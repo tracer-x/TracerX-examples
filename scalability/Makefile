@@ -15,8 +15,6 @@ PROGRAM_OPTIONS=
 # so all tests will be considered in computing coverage.
 SCALABILITY_COV_MAX_TIME=
 
-# We remove bubble_llbmc.tx from KLEE targets, as it
-# is to be run with LLBMC
 TARGETS=$(patsubst %.c,%.tx,$(wildcard *.c))
 
 # Regexp-only experiment set, with fixed "hello" string input
@@ -41,32 +39,9 @@ EXPERIMENT_MEMORY=13000
 
 KLEE_DEFAULT_OPTIONS=--search=dfs
 
-LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
-
-# In the following, --no-max-loop-iterations-checks
-# --no-max-function-call-depth-checks prevents reaching of the bounds
-# as errors to avoid confusion.
-#
-# You may need to try to figure out the right values of:
-#
-# -max-loop-iterations=<m> -max-function-call-depth=<n>
-#
-# To figure out the right values, one can start from (m,n) = (0,0).
-# Run LLBMC without using --no-max-loop-iterations-checks
-# --no-max-function-call-depth-checks
-#
-# If they were insufficient, LLBMC will report:
-#
-# Loop iteration bound is not sufficient. The program analysis is thus
-# not complete.
-#
-# OR
-#
-# Function call depth is not sufficient. The program analysis is thus
-# not complete.
-#
-# Then you can try to increase the values.
-LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10
+# LLBMC options can be set here; when empty, default options will be
+# used instead.
+LLBMC_OPTIONS=
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
@@ -103,7 +78,7 @@ bubble: ${BUBBLE_TARGETS}
 
 clean: standard-clean
 	rm -rf *.klee* *.tx* *.stpklee* ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} \
-		${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR}
+		${LLBMC_EXPERIMENT_CSV}
 
 .SUFFIXES: .tr0
 
@@ -302,23 +277,6 @@ ${EXPERIMENT_CSV}: core-experiment
 	done
 	rm -f small-$@
 	cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@
-
-# This target is used for running experiment with LLBMC. LLBMC uses
-# STP as backend, so we do 'ulimit -s unlimited' as recommended in
-# http://klee.github.io/build-stp/
-%.llbmc :
-	( \
-		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
-			mkdir ${LLBMC_OUTPUT_DIR}; \
-		fi ; \
-		${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc ; \
-		ulimit -s unlimited ; \
-		PATH="${EXTRA_PATH}:$$PATH" timeout ${EXPERIMENT_TIMEOUT} llbmc ${LLBMC_OPTIONS} $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
-		if [ $$? = "124" ] ; then \
-			touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \
-		fi ; \
-		rm -f $*.bc \
-	)
 
 # This target is used for collecting data from LLBMC experiment into CSV file.
 ${LLBMC_EXPERIMENT_CSV}:

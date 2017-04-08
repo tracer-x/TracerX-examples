@@ -6,7 +6,11 @@
  * Copyright 2017 National University of Singapore
  */
 #include <stdlib.h>
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 struct Node {
   char data;

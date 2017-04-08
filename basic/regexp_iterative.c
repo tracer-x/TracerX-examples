@@ -1,4 +1,4 @@
-/* 
+/*
  * This is an iterative and simplified version of simple regular
  * expression matching. Functionality of matchstar has been removed.
  * In some version of Tracer-X KLEE, this iterative version shows
@@ -13,9 +13,12 @@
  * From an original in:
  *   The Practice of Programming
  *   Brian W. Kernighan, Rob Pike
- */ 
-
+ */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 int match(char *re, char *text) {
   if (re[0] == '^') {
@@ -68,9 +71,15 @@ int match(char *re, char *text) {
 int main() {
   // The input regular expression.
   char re[SIZE];
-  
-  // Make the input symbolic. 
+
+// Make the input symbolic.
+#ifdef LLBMC
+  for (int i = 0; i < SIZE; ++i) {
+    re[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(re, sizeof re, "re");
+#endif
 
   // Try to match against a constant string "hello".
   match(re, "hello");

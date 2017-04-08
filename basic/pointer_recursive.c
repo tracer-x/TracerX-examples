@@ -6,7 +6,11 @@
  * paths, but the same callsite sequences.
  */
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #define LEN 5
 
@@ -43,8 +47,14 @@ void foo1(char *p, char *out) {
 int main(int argc, char **argv) {
   char str[LEN], out[LEN];
   char *p;
-  
+
+#ifdef LLBMC
+  for (int i = 0; i < LEN; ++i) {
+    str[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(str, LEN, "str");
+#endif
 
   p = str;
 

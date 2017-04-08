@@ -8,7 +8,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 #ifdef DEBUG
 #define N 9
@@ -41,8 +45,14 @@ void print_tree(struct node *);
 int main() {
     int i;
 
+#ifdef LLBMC
+  for (int j = 0; j < N; ++j) {
+    input[j] = __llbmc_nondef_int();
+  }
+#else
     klee_make_symbolic(input, N * sizeof(int), "input");
-    
+#endif
+
     makenode(bst, input[0]);
     for (i = 1; i < N; i++)
       search_insert(bst, input[i]);

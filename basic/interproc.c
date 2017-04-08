@@ -1,5 +1,5 @@
 /*
-Copyright 2015 National University of Singapore 
+Copyright 2015, 2017 National University of Singapore 
 cd
 cd nus/kleetest
 llvm-gcc --emit-llvm -c -g interproc.c
@@ -11,8 +11,12 @@ ktest-tool --write-ints klee-last/test000002.ktest
 ktest-tool --write-ints klee-last/test000003.ktest
 
 */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
 #include <assert.h>
+#endif
 
 int y;
 
@@ -39,16 +43,29 @@ int add(int p1, int p2, int p3, int x) {
     x = add1(p1, x);
     x = add2(p2, x);
     x = add3(p3, x);
+#ifdef LLBMC
+    __llbmc_assert(x <= 6);
+#else
     assert(x <= 6);
+#endif
   }
   return x;
 }
 
 int main() {
-  int p1,p2, p3;
+  int p1, p2, p3;
+  
+#ifdef LLBMC
+  p1 = __llbmc_nondef_int();
+  p2 = __llbmc_nondef_int();
+  p3 = __llbmc_nondef_int();
+  y = __llbmc_nondef_int();
+#else
   klee_make_symbolic(&p1, sizeof(p1), "p1");
   klee_make_symbolic(&p2, sizeof(p2), "p2");
   klee_make_symbolic(&p3, sizeof(p3), "p3");
   klee_make_symbolic(&y, sizeof(y), "y");
+#endif
+  
   return add(p1, p2, p3, y);
 } 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Simple regular expression matching.
  *
  * From:
@@ -11,9 +11,12 @@
  *
  * This is a "small" version where both the inputs are smaller
  * in size and parts of the code have been commented out.
- */ 
-
+ */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 static int matchhere(char*,char*);
 
@@ -61,9 +64,15 @@ int match(char *re, char *text) {
 int main() {
   // The input regular expression.
   char re[SIZE];
-  
-  // Make the input symbolic. 
+
+// Make the input symbolic.
+#ifdef LLBMC
+  for (int i = 0; i < sizeof(re); ++i) {
+    re[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(re, sizeof re, "re");
+#endif
 
   // Try to match against a constant string "h".
   match(re, "h");

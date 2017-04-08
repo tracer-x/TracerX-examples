@@ -1,11 +1,16 @@
 /* KLEE adaptation of openssl.c in LLBMC 2013.1
- * Portions Copyright 2016 National University of Singapore
+ * Portions Copyright 2016, 2017 National University of Singapore
  *
  * See also LLBMC copyright and license in license/LLBMC_LICENSE.
  */
 
 #include <stdlib.h>
+
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 char *SSL_get_shared_ciphers(const char *cp, char *buf, int len)
 {
@@ -35,7 +40,14 @@ char *SSL_get_shared_ciphers(const char *cp, char *buf, int len)
 int main()
 {
     char *buf = malloc(BUF_SIZE);
-    klee_make_symbolic(buf, BUF_SIZE, "buf");
+
+#ifdef LLBMC
+  for (int i = 0; i < BUF_SIZE; ++i) {
+    buf[i] = __llbmc_nondef_char();
+  }
+#else
+  klee_make_symbolic(buf, BUF_SIZE, "buf");
+#endif
 
     // Set up string variable 'name' with arbitrary content
     // and length at most MAX_S (including terminator).
@@ -43,8 +55,14 @@ int main()
     int s = MAX_S;
     char *name = malloc(s);
     name[s-1] = '\0';
-    klee_make_symbolic(name, s, "name");
 
+#ifdef LLBMC
+  for (int i = 0; i < MAX_S; ++i) {
+    name[i] = __llbmc_nondef_char();
+  }
+#else
+  klee_make_symbolic(name, s, "name");
+#endif
 
     // Check SSL_get_shared_ciphers for all strings 'name'
     // of size up to MAX_S.

@@ -17,7 +17,6 @@ COREUTILS_NOLINK_DIR=${COREUTILS_DIR}/obj-nolink
 COREUTILS_COV_MAX_TIME=
 
 CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_DIR}/src -I${COREUTILS_DIR}/lib
-LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
 LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
 
 BASH=/bin/bash
@@ -412,7 +411,17 @@ ${EXPERIMENT_CSV}: core-experiment
 		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
 			mkdir ${LLBMC_OUTPUT_DIR}; \
 		fi ; \
-		PATH=${EXTRA_PATH}:$$PATH timeout ${EXPERIMENT_TIMEOUT} llbmc ${LLBMC_OPTIONS} -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+		if [ -z "${LLBMC_OPTIONS}" ] ; then \
+			LLBMC_OPTIONS="${LLBMC_DEFAULT_OPTIONS}" ; \
+		else \
+			LLBMC_OPTIONS="${LLBMC_OPTIONS}" ; \
+		fi ; \
+		if [ -z "${EXPERIMENT_TIMEOUT}" ] ; then \
+			LLBMC_TIMEOUT="${LLBMC_DEFAULT_TIMEOUT}" ; \
+		else \
+			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
+		fi ; \
+		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
                 if [ $$? = "124" ] ; then \
                         touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \
                 fi \

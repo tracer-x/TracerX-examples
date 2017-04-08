@@ -4,7 +4,11 @@
  *
  * A simplified version of regexp_nonrecursive2.c.
  */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
 #include <klee/klee.h>
+#endif
 
 static int matchhere(char *re, char *text) {
   if (re[0] == '\0')
@@ -36,11 +40,20 @@ int main() {
   char re[SIZE];
   char str[6];
 
-  // Make the inputs symbolic. 
+// Make the inputs symbolic.
+#ifdef LLBMC
+  for (unsigned i = 0; i < sizeof(re); ++i) {
+    re[i] = __llbmc_nondef_char();
+  }
+  for (unsigned i = 0; i < sizeof(str); ++i) {
+    str[i] = __llbmc_nondef_char();
+  }
+#else
   klee_make_symbolic(re, sizeof re, "re");
   klee_make_symbolic(str, sizeof str, "str");
+#endif
 
-  // Try to match against a constant string "hello".
+  // Put a sentinel at the end of string
   str[5] = 0;
 
   match(re, str);

@@ -101,6 +101,10 @@ Sample usages:
 
   `make addition_safe1.stpcov`
 
+- You can also execute LLBMC to analyze `addition_safe1.c` after properly configuring this repository using `--with-llbmc`. The execution can be done as in the following example:
+
+  `make addition_safe1.llbmc`
+
 - To build an LLVM IR file of `addition_safe1.c`:
 
   `make addition_safe1.ll`
