@@ -1,5 +1,7 @@
 /*
- * Simple example to show heap subsumption challenge
+ * Simple example to show heap subsumption challenge. Here, malloc()
+ * is outside of the if conditional within the for loop. In this case,
+ * LLBMC finishes fast.
  *
  * Copyright 2017 National University of Singapore
  */
@@ -43,7 +45,9 @@ int main(int argc, char **argv) {
       z += 1;
       *y = *x + 10;
     } else {
-      z += 2;
+      /* LLBMC becomes significantly slower when we replaced 10 with
+         11, due to larger difference between branches that cannot be
+         hoisted outside of the if conditional. */
       *y = *x + 10;
     }
     
