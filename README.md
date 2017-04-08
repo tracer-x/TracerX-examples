@@ -69,15 +69,15 @@ Instruction on running the examples in the `join` and `coreutils` directories ca
 The `Makefile` in each directory will create KLEE output directories `<example-name>.tx` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for all of the generated tests.
 
 Sample usages:
-- To run a single example, e.g., addition.c in the basic directory with KLEE using Z3 solver and interpolation:
+- To run a single example, e.g., addition_safe1.c in the basic directory with KLEE using Z3 solver and interpolation:
 
-  `make addition.tx`
+  `make addition_safe1.tx`
 
   If the file `subsumption.dat` exists, this would also perform a regression test on the number of subsumptions compared to reference data in `subsumption.dat`.
 
-- For running addition.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
+- For running addition_safe1.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
 
-  `make addition.txcov`
+  `make addition_safe1.txcov`
 
 - To run all examples with KLEE using Z3 solver and interpolation:
 
@@ -85,25 +85,25 @@ Sample usages:
 
   This is the same as executing `make <example_name>.tx` for all examples.
 
-- To run a single example, e.g., addition.c in the basic directory using Z3 solver but without interpolation:
+- To run a single example, e.g., addition_safe1.c in the basic directory using Z3 solver but without interpolation:
 
-  `make addition.klee`
+  `make addition_safe1.klee`
 
 - And for in addition to running Z3 solver without interpolation but additionally generating coverage statistics, run instead:
 
-  `make addition.kleecov`
+  `make addition_safe1.kleecov`
 
-- To run a single example, e.g., addition.c in the basic directory using STP solver and without interpolation:
+- To run a single example, e.g., addition_safe1.c in the basic directory using STP solver and without interpolation:
 
-  `make addition.stpklee`
+  `make addition_safe1.stpklee`
 
 - And for additionally generating coverage statistics using STP solver backend and without interpolation, run instead:
 
-  `make addition.stpcov`
+  `make addition_safe1.stpcov`
 
-- To build an LLVM IR file of `addition.c`:
+- To build an LLVM IR file of `addition_safe1.c`:
 
-  `make addition.ll`
+  `make addition_safe1.ll`
 
 - To clean the directory:
 
