@@ -175,38 +175,38 @@ ${COREUTILS_NOLINK_DIR}:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.klee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.stpklee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 # These are for the no-linking runs, without linking with uclibc
 %.tx-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.stpklee-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --write-paths --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-out: build
 	# The testing sandbox reconstructed here is from

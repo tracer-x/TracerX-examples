@@ -92,28 +92,28 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tx1 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx3 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx4 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx5 : 
-	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx6 : 
-	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT}" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 ###############################################################################
 # The following targets can be used for running experiments. The
@@ -142,6 +142,8 @@ clean: standard-clean
 	ulimit -s unlimited ; \
 	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
 
+# In the following, we use -only-output-states-covering-new to save
+# disk space.
 %.klee-out:
 	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
 	if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
@@ -150,16 +152,15 @@ clean: standard-clean
 	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	if [ -z "$$KLEE_MORE_OPTIONS" ] ; then \
-		if [ $* = "Regexp" ] ; then \
-			KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-		elif [ $* = "tr" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		if [ $* = "tr" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -allow-external-sym-calls" ; \
 		elif [ $* = "tr_nosyscall" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -allow-external-sym-calls" ; \
 		elif [ $* = "tr_small" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -allow-external-sym-calls" ; \
 		fi ; \
 	fi ; \
+	KLEE_MORE_OPTIONS="$$KLEE_MORE_OPTIONS -only-output-states-covering-new" ; \
 	if [ -z "$$KLEE_PROGRAM_OPTIONS" ] ; then \
 		if [ $* = "tr" ] ; then \
 			KLEE_PROGRAM_OPTIONS="--sym-arg 2 --sym-arg 2 --sym-stdin 2000 --max-fail 1" ; \
