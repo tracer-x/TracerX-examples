@@ -39,7 +39,7 @@ PRINTF_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
 # Coreutils benchmark set for November/December 2016 experiment
 DEFAULT_EXPERIMENT_SET=comm cut dirname expand factor join split sum uniq
 
-DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
+DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6 .klee11 .tx11 .tx12 .tx13 .tx14
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -49,12 +49,12 @@ EXPERIMENT_MEMORY=13000
 
 # From http://klee.github.io/docs/coreutils-experiments/
 # with --search, --max-time, and --max-memory excluded to be
-# specified via KLEE_COREUTILS_MORE_OPTIONS or
+# specified via KLEE_COREUTILS_OPTIONS or
 # KLEE_COREUTILS_DEFAULT_OPTIONS (see below).
 KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
 	--disable-inlining --optimize --use-forked-solver \
 	--use-cex-cache --posix-runtime \
-	--allow-external-sym-calls --only-output-states-covering-new \
+	--allow-external-sym-calls \
 	--max-sym-array-size=4096 --max-instruction-time=30. \
 	--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \
 	--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \
@@ -62,7 +62,7 @@ KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --o
 	--use-batching-search --batch-instructions=10000
 
 # The defaults from http://klee.github.io/docs/coreutils-experiments/
-KLEE_COREUTILS_DEFAULT_OPTIONS=--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY}
+KLEE_COREUTILS_DEFAULT_OPTIONS=--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -only-output-states-covering-new
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
@@ -143,28 +143,46 @@ ${COREUTILS_NOLINK_DIR}:
 	)
 
 %.klee1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_COREUTILS_OPTIONS="--search=dfs -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_COREUTILS_OPTIONS="--search=random-path --search=nurs:covnew -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tx1 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_OPTIONS="--search=dfs -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx2 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_OPTIONS="--search=dfs -max-subsumption-failure=3 -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx3 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_OPTIONS="--search=random-path --search=nurs:covnew -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx4 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx5 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -exact-address-interpolant" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_OPTIONS="--search=dfs -exact-address-interpolant -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx6 : 
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-subsumption-failure=3 -exact-address-interpolant" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_COREUTILS_OPTIONS="--search=dfs -max-subsumption-failure=3 -exact-address-interpolant -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+# The following targets are run with -write-paths and without
+# -only-output-states-covering-new for comparing tree sizes using
+# utils/treecmp.c.
+%.klee11 : 
+	KLEE_COREUTILS_OPTIONS="--search=dfs -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+
+%.tx11 :
+	KLEE_COREUTILS_OPTIONS="--search=dfs -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+
+%.tx12 :
+	KLEE_COREUTILS_OPTIONS="--search=dfs -max-subsumption-failure=3 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+%.tx13 : 
+	KLEE_COREUTILS_OPTIONS="--search=dfs -exact-address-interpolant -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+%.tx14 : 
+	KLEE_COREUTILS_OPTIONS="--search=dfs -max-subsumption-failure=3 -exact-address-interpolant -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 ###############################################################################
 # The following targets can be used for running experiments. The
@@ -175,38 +193,56 @@ ${COREUTILS_NOLINK_DIR}:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
+		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	KLEE_COREUTILS_OPTIONS="$$KLEE_COREUTILS_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.klee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
+		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	KLEE_COREUTILS_OPTIONS="$$KLEE_COREUTILS_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.stpklee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
+		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	KLEE_COREUTILS_OPTIONS="$$KLEE_COREUTILS_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 # These are for the no-linking runs, without linking with uclibc
 %.tx-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
+		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	KLEE_COREUTILS_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
+		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	KLEE_COREUTILS_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.stpklee-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	KLEE_COREUTILS_MORE_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
+		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
+	fi ; \
+	KLEE_COREUTILS_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-out: build
 	# The testing sandbox reconstructed here is from
@@ -252,8 +288,8 @@ ${COREUTILS_NOLINK_DIR}:
 		OUTPUT_DIR="${CURDIR}/$@" ; \
 	fi ; \
 	rm -rf $$OUTPUT_DIR; \
-	KLEE_COREUTILS_EXTRA_OPTIONS="$$KLEE_COREUTILS_MORE_OPTIONS"; \
-	if [ -z "$$KLEE_COREUTILS_MORE_OPTIONS" ] ; then \
+	KLEE_COREUTILS_EXTRA_OPTIONS="$$KLEE_COREUTILS_OPTIONS"; \
+	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
 		KLEE_COREUTILS_EXTRA_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
@@ -353,8 +389,8 @@ ${EXPERIMENT_CSV}.only:
 				printf ", " >> $@; \
 				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
-				if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
-					( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> $@ ; \
+				if [ $$ext = .tx11 -o $$ext = .tx12 -o $$ext = .tx13 -o $$ext = .tx14 ] ;  then \
+					( ../utils/treecmp $$program.klee11 $$program$$ext | sed -e 's/\s/\,/g'  ) >> $@ ; \
 				else \
 					printf "\n" >> $@; \
 				fi ; \
