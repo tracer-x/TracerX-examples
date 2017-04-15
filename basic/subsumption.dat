@@ -18,7 +18,7 @@ arraysimple2.c		0
 arraysimple3.c		0
 arraysimple4.c		2
 arraysimple5.c		11
-arraysimple6.c		12
+arraysimple6.c		14
 branch.c		0
 bubble.c		6
 double-free.c		0
@@ -29,8 +29,6 @@ loop_safe1.c		0
 loop_safe2.c		9
 loop_unsafe1.c		5
 malloc1.c		0
-malloc2.c		2
-malloc3.c		0
 memory-access.c		3
 openssl.c		4
 openssl_partial_fix.c	0
@@ -43,16 +41,14 @@ pointer_struct1.c	0
 pointer_struct2.c	0
 pointer_struct3.c	2
 pointer_struct4.c	0
-pointer_struct5.c	209
 pointer_struct6.c	0
-pointer_struct7.c	0
 polynomial.c		0
 regexp_iterative.c	148
 regexp_nonrecursive1.c	4
-regexp_nonrecursive2.c	16
+regexp_nonrecursive2.c	18
 regexp_nonrecursive3.c	3
-regexp_small.c		10
-regexp_tiny.c		4
+regexp_small.c		8
+regexp_tiny.c		2
 sp.c			0
 testmem.c		23
 use_after_free.c	0
