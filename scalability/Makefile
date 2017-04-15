@@ -29,7 +29,7 @@ DEFAULT_EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 # Standard experiment set
 DEFAULT_EXPERIMENT_SET=bitcount16 bitcount32 bubble6 bubble9 compress cut_bytes cut_fields expint fac fermat fibcall graycode insertsort11 janne_complex lcdnum magic matrixsqrt merge multiply ns nsichneu popcount prime queens recursion Regexp sample send-more-money statemate tr tritype ud wegner
 
-DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6
+DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6 .klee11 .tx11 .tx12 .tx13 .tx14
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -37,7 +37,8 @@ EXPERIMENT_TIMEOUT=3600
 
 EXPERIMENT_MEMORY=13000
 
-KLEE_DEFAULT_OPTIONS=--search=dfs
+# Here we use -only-output-states-covering-new by default to save disk space.
+KLEE_DEFAULT_OPTIONS=-search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new
 
 # LLBMC options can be set here; when empty, default options will be
 # used instead.
@@ -92,27 +93,45 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tx1 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx3 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx4 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx5 : 
-	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx6 : 
+	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+# The following targets are run with -write-paths and without
+# -only-output-states-covering-new for comparing tree sizes using
+# utils/treecmp.c.
+%.klee11 : 
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+
+%.tx11 : 
+	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+%.tx12 : 
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+%.tx13 : 
+	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+%.tx14 : 
 	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 ###############################################################################
@@ -124,13 +143,13 @@ clean: standard-clean
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR="$$OUTPUT_DIR" make $*.klee-out
 
 %.klee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
-	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR="$$OUTPUT_DIR" make $*.klee-out
 
 # The following is for running using STP, so we do 'ulimit -s
 # unlimited' beforehand, as recommended in
@@ -140,7 +159,7 @@ clean: standard-clean
 		OUTPUT_DIR=${CURDIR}/$@ ; \
 	fi ; \
 	ulimit -s unlimited ; \
-	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR make $*.klee-out
+	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR="$$OUTPUT_DIR" make $*.klee-out
 
 %.klee-out:
 	@KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
@@ -150,14 +169,12 @@ clean: standard-clean
 	fi
 	${CC} -emit-llvm ${CFLAGS} -c $*.c
 	if [ -z "$$KLEE_MORE_OPTIONS" ] ; then \
-		if [ $* = "Regexp" ] ; then \
-			KLEE_MORE_OPTIONS="--only-output-states-covering-new" ; \
-		elif [ $* = "tr" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+		if [ $* = "tr" ] ; then \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -allow-external-sym-calls" ; \
 		elif [ $* = "tr_nosyscall" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -allow-external-sym-calls" ; \
 		elif [ $* = "tr_small" ] ; then \
-			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls" ; \
+			KLEE_MORE_OPTIONS="-libc=uclibc --posix-runtime -allow-external-sym-calls" ; \
 		fi ; \
 	fi ; \
 	if [ -z "$$KLEE_PROGRAM_OPTIONS" ] ; then \
@@ -267,8 +284,8 @@ ${EXPERIMENT_CSV}: core-experiment
 				printf ", " >> $@; \
 				grep "KLEE: done:     Number of subsumption checks" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
-				if [ $$ext = .tx1 -o $$ext = .tx2 -o $$ext = .tx5 -o $$ext = .tx6 ] ;  then \
-					( ../utils/treecmp $$program.klee1 $$program$$ext | sed -e 's/\s/\,/g'  ) >> $@ ; \
+				if [ $$ext = .tx11 -o $$ext = .tx12 -o $$ext = .tx13 -o $$ext = .tx14 ] ;  then \
+					( ../utils/treecmp $$program.klee11 $$program$$ext | sed -e 's/\s/\,/g'  ) >> $@ ; \
 				else \
 					printf "\n" >> $@; \
 				fi ; \

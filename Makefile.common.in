@@ -31,6 +31,9 @@ KLEE_STATS=${KLEE_HOME}/bin/klee-stats
 KLEE_REPLAY=${KLEE_HOME}/bin/klee-replay
 KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 
+# We use -only-output-states-covering-new to save disk space
+KLEE_FLAGS=${EXTRA_OPTIONS} -only-output-states-covering-new -search=dfs
+
 # klee-replay timeout
 DEFAULT_KLEE_REPLAY_TIMEOUT=@KLEE_REPLAY_TIMEOUT@
 
@@ -73,7 +76,6 @@ LLBMC_DEFAULT_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-
 
 CC=@CC@
 AS=${CC} -S
-KLEE_FLAGS=${EXTRA_OPTIONS} -search=dfs
 
 INPUT_TARGETS=$(subst .tx,.inputs,${TARGETS})
 IR_TARGETS=$(subst .tx,.ll,${TARGETS})

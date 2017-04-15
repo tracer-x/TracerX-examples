@@ -3,9 +3,14 @@
  *
  * Copyright 2016, 2017 National University of Singapore
  *
- * WARNING: For this utility to compute statistics as intended,
- * Tracer-X KLEE must not be run using -no-subsumed-test option. So
- * that path information is generated, even from subsumed paths.
+ * WARNING: For this utility to compute statistics as intended:
+ *
+ * 1) Tracer-X KLEE must not be run using -no-subsumed-test option. So
+ *    that path information is generated, even from subsumed paths.
+ * 2) -write-paths KLEE option should be used, and so done without
+ *    -only-output-states-covering-new option, since the latter
+ *    would cause only paths of the tree that visits new code to be
+ *    generated.
  *
  * The first directory contains path files for KLEE runs without
  * abstraction learning. The second directory contains path files for
