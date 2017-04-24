@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     if (c) {
       y = (int *) malloc(sizeof(int));
       *y = *x + 10; z = z + 1;
-    } else { \
+    } else {
       y = (int *) malloc(sizeof(int));
       *y = *x + 10;
     }
