@@ -39,7 +39,7 @@ pointer_recursive.c	4
 pointer_iterative.c	1
 pointer_struct1.c	0
 pointer_struct2.c	0
-pointer_struct3.c	2
+pointer_struct3.c	0
 pointer_struct4.c	0
 pointer_struct6.c	0
 polynomial.c		0

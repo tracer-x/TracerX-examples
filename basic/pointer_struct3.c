@@ -1,8 +1,8 @@
 /*
- * Subsumption of dynamically-allocated memory. Although make_node is
- * executed in different paths and should result in different base
- * allocation address, subsumption should still occur as we are using
- * abstract address for comparison.
+ * Subsumption of dynamically-allocated memory. make_node is executed
+ * in different paths and should result in different base allocation
+ * address, so no subsumption unless the heap allocations can be
+ * abstracted away.
  *
  * Copyright 2017 National University of Singapore
  */
