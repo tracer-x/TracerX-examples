@@ -17,24 +17,14 @@
 int main(int argc, char **argv)
 {
   char s[1000];
-  int p1, p2, p3, p4;
   char *p;
   int flag[N];
 
 #ifdef LLBMC
-  p1 = __llbmc_nondef_int();
-  p2 = __llbmc_nondef_int();
-  p3 = __llbmc_nondef_int();
-  p4 = __llbmc_nondef_int();
-
   for (int i = 0; i < N; ++i) {
     flag[i] = __llbmc_nondef_int();
   }
 #else
-  klee_make_symbolic(&p1, sizeof(int), "p1");
-  klee_make_symbolic(&p2, sizeof(int), "p2");
-  klee_make_symbolic(&p3, sizeof(int), "p3");
-  klee_make_symbolic(&p4, sizeof(int), "p4");
   klee_make_symbolic(flag, sizeof(int) * N, "flag");
 #endif
 
