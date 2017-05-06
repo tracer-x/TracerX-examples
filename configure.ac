@@ -85,9 +85,9 @@ AC_ARG_WITH(texinfo,
 	[AS_HELP_STRING([--with-texinfo],
 		[GNU texinfo 4.13 installation directory, i.e., the info utility should be under the bin subdirectory of the specified directory. Coreutils 6.10 requires GNU texinfo no later than 4.13.])])
 
-if test "$with_texinfo" != no
+AC_MSG_CHECKING([whether texinfo exists])
+if test "$with_texinfo" != yes -a "$with_texinfo" != no -a "x$with_texinfo" != x
 then
-	AC_MSG_CHECKING([whether texinfo exists])
 	if test -x $with_texinfo/bin/info
 	then
 		AC_MSG_RESULT([yes])
@@ -101,7 +101,8 @@ then
 		AC_MSG_RESULT([no])
 	fi
 else
-	AC_MSG_NOTICE([To look for texinfo in PATH])
+	AC_MSG_RESULT([unknown])
+	AC_MSG_NOTICE([to look for texinfo in PATH])
 fi
 
 
