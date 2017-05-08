@@ -49,7 +49,6 @@ int main(int argc, char **argv) {
   }
 
   int offset = (*x);
-  printf(">>>>>>> %d\n", offset);
 
   return *(a + offset);
 }
