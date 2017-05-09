@@ -51,3 +51,4 @@ regexp_tiny.c		2
 sp.c			0
 testmem.c		23
 use_after_free.c	0
+validation.c		0
