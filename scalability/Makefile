@@ -26,6 +26,9 @@ DEFAULT_EXPERIMENT_SET=Regexp-6-3 Regexp-6-4 Regexp-6-5 Regexp-7-3 Regexp-7-4 Re
 # Bubble sort-only experiment set
 DEFAULT_EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 
+# malloc-only experiment set
+DEFAULT_EXPERIMENT_SET=malloc9 malloc12 malloc15 malloc18
+
 # Standard experiment set
 DEFAULT_EXPERIMENT_SET=bitcount16 bitcount32 bubble6 bubble9 compress cut_bytes cut_fields expint fac fermat fibcall graycode insertsort11 janne_complex lcdnum magic matrixsqrt merge multiply ns nsichneu popcount prime queens recursion Regexp sample send-more-money statemate tr tritype ud wegner
 
