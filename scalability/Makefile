@@ -24,7 +24,7 @@ DEFAULT_EXPERIMENT_SET=Regexp RegexpSize8 RegexpSize9 RegexpSize10
 DEFAULT_EXPERIMENT_SET=Regexp-6-3 Regexp-6-4 Regexp-6-5 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-8-3 Regexp-8-4 Regexp-8-5
 
 # Bubble sort-only experiment set
-DEFAULT_EXPERIMENT_SET=bubble6 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
+DEFAULT_EXPERIMENT_SET=bubble3 bubble4 bubble5 bubble6 bubble7 bubble8 bubble9 bubble12 bubble9_unsafe bubble12_unsafe
 
 # malloc-only experiment set
 DEFAULT_EXPERIMENT_SET=malloc9 malloc18 malloc27 malloc36
