@@ -304,7 +304,7 @@ ${COREUTILS_NOLINK_DIR}:
 	fi
 
 clean:
-	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
+	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} ${COREUTILS_NOLINK_DIR}
