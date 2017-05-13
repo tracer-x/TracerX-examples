@@ -12,7 +12,7 @@ unset C_INCLUDE_PATH
 unset CPLUS_INCLUDE_PATH
 
 cd $COREUTILS_DIR
-export KLEE_COREUTILS_MORE_OPTIONS="--search=dfs -max-time=3600. -max-memory=13000 -write-paths"
+export KLEE_COREUTILS_OPTIONS="--search=dfs -max-time=3600. -max-memory=13000 -write-paths"
 export OUTPUT_DIR=$COREUTILS_DIR/pr.klee101
 export PROGRAM_OPTIONS="-a -sym-stdin 4 --sym-stdout"
 make pr.klee
