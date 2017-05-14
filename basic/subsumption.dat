@@ -19,7 +19,7 @@ arraysimple3.c		0
 arraysimple4.c		2
 arraysimple5.c		11
 branch.c		0
-bubble.c		6
+bubble_assert.c		6
 double-free.c		0
 even.c			0
 interproc.c		0

@@ -1,8 +1,10 @@
 /*
  * Bubble sort
- *
+ * 
  * From
  * http://www.programmingsimplified.com/c/source-code/c-program-bubble-sort
+ *
+ * Has correctness assertion added.
  *
  * This is an example whose analysis by naive path exploration is
  * expensive. Note that the paper "Sorting nine inputs requires
@@ -18,14 +20,14 @@
 #include <klee/klee.h>
 #endif
 
-#define ARRAY_SIZE 12
+#define ARRAY_SIZE 5
 
 int main() {
   int a[ARRAY_SIZE];
   int n, c, d, swap;
 
 #ifdef LLBMC
-  for (int i = 0; i < ARRAY_SIZE; ++i) {
+  for (int i = 0; i < ARRAY_SIZE ; ++i) {
     a[i] = __llbmc_nondef_int();
   }
 #else
@@ -46,12 +48,8 @@ int main() {
   }
 
 #ifdef LLBMC
-  __llbmc_assert(a[0] <= a[1] && a[1] <= a[2] && a[2] <= a[3] && a[3] <= a[4] &&
-                 a[4] <= a[5] && a[6] <= a[7] && a[7] <= a[8] && a[8] <= a[9] &&
-                 a[9] <= a[10] && a[10] <= a[11]);
+  __llbmc_assert(a[0] <= a[1] && a[1] <= a[2] && a[2] <= a[3] && a[3] <= a[4]);
 #else
-  klee_assert(a[0] <= a[1] && a[1] <= a[2] && a[2] <= a[3] && a[3] <= a[4] &&
-              a[4] <= a[5] && a[6] <= a[7] && a[7] <= a[8] && a[8] <= a[9] &&
-              a[9] <= a[10] && a[10] <= a[11]);
+  klee_assert(a[0] <= a[1] && a[1] <= a[2] && a[2] <= a[3] && a[3] <= a[4]);
 #endif
 }

@@ -4,6 +4,8 @@
  * From
  * http://www.programmingsimplified.com/c/source-code/c-program-bubble-sort
  *
+ * Has correctness assertion added.
+ *
  * This is an example whose analysis by naive path exploration is
  * expensive. Note that the paper "Sorting nine inputs requires
  * twenty-five comparisons" by Codish et

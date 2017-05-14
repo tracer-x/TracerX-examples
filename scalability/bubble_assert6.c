@@ -1,10 +1,10 @@
 /*
  * Bubble sort
- *
+ * 
  * From
  * http://www.programmingsimplified.com/c/source-code/c-program-bubble-sort
  *
- * With the array modified to be a char instead of int array.
+ * Has correctness assertion added.
  *
  * This is an example whose analysis by naive path exploration is
  * expensive. Note that the paper "Sorting nine inputs requires
@@ -20,18 +20,18 @@
 #include <klee/klee.h>
 #endif
 
-#define ARRAY_SIZE 4
+#define ARRAY_SIZE 6
 
 int main() {
-  char a[ARRAY_SIZE], swap;
-  int n, c, d;
+  int a[ARRAY_SIZE];
+  int n, c, d, swap;
 
 #ifdef LLBMC
-  for (int i = 0; i < ARRAY_SIZE; ++i) {
-    a[i] = __llbmc_nondef_char();
+  for (int i = 0; i < ARRAY_SIZE ; ++i) {
+    a[i] = __llbmc_nondef_int();
   }
 #else
-  klee_make_symbolic(a, ARRAY_SIZE * sizeof(a[0]), "a");
+  klee_make_symbolic(a, ARRAY_SIZE * sizeof(int), "a");
 #endif
 
   for (c = 0 ; c < ( ARRAY_SIZE - 1 ); c++)
@@ -48,10 +48,16 @@ int main() {
   }
 
 #ifdef LLBMC
-  __llbmc_assert(a[0] <= a[1] && a[1] <= a[2] && a[2] <= a[3]);
+  __llbmc_assert(a[0] <= a[1] && \
+		 a[1] <= a[2] && \
+		 a[2] <= a[3] && \
+		 a[3] <= a[4] && \
+		 a[4] <= a[5]);
 #else
-  klee_assert(a[0] <= a[1] && a[1] <= a[2] && a[2] <= a[3]);
+  klee_assert(a[0] <= a[1] && \
+	      a[1] <= a[2] && \
+	      a[2] <= a[3] && \
+	      a[3] <= a[4] && \
+	      a[4] <= a[5]);
 #endif
-
-  return 0;
 }
