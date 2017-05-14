@@ -16,7 +16,7 @@ EXTRA_PATH=@EXTRA_PATH@
 
 # Extra libraries that may be needed for running KLEE to be added to
 # LD_LIBRARY_PATH environment variable, e.g., the path of libz3.so
-EXTRA_LD_LIBRARY_PATH=@EXTRA_LD_LIBRARY_PATH@
+EXTRA_LD_LIBRARY_PATH=@EXTRA_LD_LIBRARY_PATH@:@LLVM_LIBDIR@
 
 # Where KLEE resides in the system
 KLEE_HOME=@KLEE@

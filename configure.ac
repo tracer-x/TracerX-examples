@@ -2,6 +2,8 @@ AC_INIT(klee-examples-config, version-0.1)
 
 AC_PROG_CC([clang])
 
+AC_CHECK_PROG(LLVM_LIBDIR, [llvm-config], [`llvm-config --libdir`])
+
 AC_ARG_WITH(klee,
 	[AS_HELP_STRING([--with-klee],
 		[KLEE installation directory (defaults to /usr/local/lib/tracerx)])],
