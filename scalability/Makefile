@@ -32,7 +32,7 @@ DEFAULT_EXPERIMENT_SET=malloc9 malloc18 malloc27 malloc36
 # Standard experiment set
 DEFAULT_EXPERIMENT_SET=bitcount16 bitcount32 bubble6 bubble9 compress cut_bytes cut_fields expint fac fermat fibcall graycode insertsort11 janne_complex lcdnum magic matrixsqrt merge multiply ns nsichneu popcount prime queens recursion Regexp sample send-more-money statemate tr tritype ud wegner
 
-DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6 .klee11 .tx11 .tx12 .tx13 .tx14
+DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx2a .tx3 .tx4 .tx5 .tx6 .klee11 .tx11 .tx12 .tx13 .tx14
 
 EXPERIMENT_CSV=experiment.csv
 
@@ -106,6 +106,9 @@ clean: standard-clean
 
 %.tx2 : 
 	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+
+%.tx2a : 
+	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=1 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx3 : 
 	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
