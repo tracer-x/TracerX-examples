@@ -47,10 +47,10 @@ EXPERIMENT_TIMEOUT=3600
 
 EXPERIMENT_MEMORY=13000
 
-# From http://klee.github.io/docs/coreutils-experiments/
-# with --search, --max-time, and --max-memory excluded to be
-# specified via KLEE_COREUTILS_OPTIONS or
-# KLEE_COREUTILS_DEFAULT_OPTIONS (see below).
+# From http://klee.github.io/docs/coreutils-experiments/ with
+# --search, --max-time, and --max-memory excluded, to be defined in
+# the targets. These we originally --max-time=3600. and
+# --max-memory=1000, respectively.
 KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --output-module \
 	--disable-inlining --optimize --use-forked-solver \
 	--use-cex-cache --posix-runtime \
@@ -62,7 +62,7 @@ KLEE_COREUTILS_BASIC_OPTIONS=--simplify-sym-indices --write-cvcs --write-cov --o
 	--use-batching-search --batch-instructions=10000
 
 # The defaults from http://klee.github.io/docs/coreutils-experiments/
-KLEE_COREUTILS_DEFAULT_OPTIONS=--search=random-path --search=nurs:covnew -max-time=${EXPERIMENT_TIMEOUT} -max-memory=${EXPERIMENT_MEMORY} -only-output-states-covering-new
+KLEE_COREUTILS_DEFAULT_OPTIONS=--search=random-path --search=nurs:covnew -only-output-states-covering-new
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
