@@ -305,7 +305,7 @@ ${COREUTILS_NOLINK_DIR}:
 
 clean:
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
-		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT"
+		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
 	fi ; \
 	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
 
