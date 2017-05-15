@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# Scalability experiments for FMCAD '17 submission
+#
+# Scalability experiments for FMCAD '17 submission. We run the new
+# version (experiment-201705 branch) for malloc example, and we get
+# previous results from CAV version (experiment-201701 branch). We run
+# LLBMC for every benchmark.
 #
 # Copyright 2017 National University of Singapore
 
@@ -11,10 +15,18 @@ source $SCRIPT_DIR/../environ.sh
 unset C_INCLUDE_PATH
 unset CPLUS_INCLUDE_PATH
 
+export EXPERIMENT_SET="malloc9 malloc18 malloc27"
+export EXPERIMENT_TYPE_SET=".klee1 .tx1"
+
 ( \
     cd $SCALABILITY_DIR ; \
-    export EXPERIMENT_SET="malloc9 malloc18 malloc27 insertsort5 insertsort7 insertsort9 insertsort11 insertsort_assert5 insertsort_assert7 insertsort_assert9 insertsort_assert11 bubble3 bubble4 bubble5 bubble6 bubble7 bubble8 bubble9 bubble12 bubble_assert3 bubble_assert4 bubble_assert5 bubble_assert6 bubble_assert7 bubble_assert8 bubble_assert9 bubble_assert12 Regexp-6-3 Regexp-6-4 Regexp-6-5 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-7-6 Regexp-8-3 Regexp-8-4 Regexp-8-5 nsichneu statemate" ; \
-    export EXPERIMENT_TYPE_SET=".klee1 .tx1 .tx2a" ; \
     make experiment.csv ; \
+    make llbmc-experiment.csv ; \
+)
+
+export EXPERIMENT_SET="insertsort7 insertsort9 insertsort11 bubble_assert3 bubble_assert6 bubble_assert9 Regexp-7-4 Regexp-7-5 Regexp-7-6 nsichneu statemate"
+
+( \
+    cd $SCALABILITY_DIR ; \
     make llbmc-experiment.csv ; \
 )
