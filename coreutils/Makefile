@@ -423,7 +423,8 @@ ${EXPERIMENT_CSV}: core-experiment
 # with the rest of the libraries, including libc. This is because
 # LLBMC cannot handle e.g., variadic functions, which can be found in
 # libraries.
-%.llbmc : build-nolink
+%.llbmc :
+	make build-nolink
 	( \
 		if [ -z "$$PROGRAM_OPTIONS" ] ; then \
 			if [ $* = "dd" ]; then \
