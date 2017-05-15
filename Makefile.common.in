@@ -93,7 +93,7 @@ all-replay: ${TXCOV_TARGETS}
 standard-clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
 	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${TXCOV_TARGETS} ${KLEECOV_TARGETS} ${STPKLEECOV_TARGETS} ${EXTRA_REMOVAL}
-	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; \
+	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
 		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
 	fi ; \
 	rm -rf $$LLBMC_OUTPUT_DIR
