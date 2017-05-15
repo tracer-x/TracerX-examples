@@ -44,8 +44,6 @@ LDFLAGS=-L${KLEE_HOME}/lib ${EXTRA_LDFLAGS} -lkleeRuntest
 # Timeout in seconds of SVG tree graph creation from .dot file
 SVG_CREATION_TIMEOUT=10
 
-LLBMC_OUTPUT_DIR=${CURDIR}/LLBMC_OUTPUT
-
 # LLBMC default timeout (in seconds)
 LLBMC_DEFAULT_TIMEOUT=3600
 
@@ -95,7 +93,10 @@ all-replay: ${TXCOV_TARGETS}
 standard-clean:
 	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
 	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${TXCOV_TARGETS} ${KLEECOV_TARGETS} ${STPKLEECOV_TARGETS} ${EXTRA_REMOVAL}
-	rm -rf ${LLBMC_OUTPUT_DIR}
+	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; \
+		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
+	fi ; \
+	rm -rf $$LLBMC_OUTPUT_DIR
 
 # To prevent the removal of *.tx subdirectories
 .PRECIOUS: %.csv %.tx %.klee %.stpklee
@@ -201,8 +202,11 @@ standard-clean:
 # http://klee.github.io/build-stp/
 %.llbmc :
 	( \
-		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
-			mkdir ${LLBMC_OUTPUT_DIR}; \
+		if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
+			LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT"
+		fi ; \
+		if [ ! -d "$$LLBMC_OUTPUT_DIR" ]; then \
+			mkdir "$$LLBMC_OUTPUT_DIR"; \
 		fi ; \
 		${CC} -emit-llvm -DLLBMC -I../include -c ${CFLAGS} $*.c -o $*.bc ; \
 		ulimit -s unlimited ; \
@@ -216,9 +220,9 @@ standard-clean:
 		else \
 			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
 		fi ; \
-		PATH="${EXTRA_PATH}:$$PATH" timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS $*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+		PATH="${EXTRA_PATH}:$$PATH" timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS $*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
 		if [ $$? = "124" ] ; then \
-			touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \
+			touch "$$LLBMC_OUTPUT_DIR"/$*.timeout ; \
 		fi ; \
 		rm -f $*.bc \
 	)

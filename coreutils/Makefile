@@ -304,7 +304,10 @@ ${COREUTILS_NOLINK_DIR}:
 	fi
 
 clean:
-	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} ${LLBMC_OUTPUT_DIR} sandbox sandbox.temps test.env
+	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
+		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT"
+	fi ; \
+	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} ${COREUTILS_NOLINK_DIR}
@@ -448,7 +451,7 @@ ${EXPERIMENT_CSV}: core-experiment
 			fi ; \
 		fi ; \
 		if [ -z "$$LLBMC_OUTPUT_DIR" ]; then \
-			LLBMC_OUTPUT_DIR=${LLBMC_OUTPUT_DIR} ; \
+			LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
 		fi ; \
 		if [ ! -d "$$LLBMC_OUTPUT_DIR" ]; then \
 			mkdir "$$LLBMC_OUTPUT_DIR" ; \
@@ -465,7 +468,7 @@ ${EXPERIMENT_CSV}: core-experiment
 		fi ; \
 		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
                 if [ $$? = "124" ] ; then \
-                        touch $$LLBMC_OUTPUT_DIR/$*.timeout ; \
+                        touch "$$LLBMC_OUTPUT_DIR"/$*.timeout ; \
                 fi \
 	)
 
@@ -499,26 +502,29 @@ ${LLBMC_EXPERIMENT_CSV}.only:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
 	fi ; \
+	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
+		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
+	fi ; \
 	for program in $$EXPERIMENT_SET ; \
 	do \
-		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
+		if [ -e "$$LLBMC_OUTPUT_DIR/$$program" ]; then \
 			printf "$$program," >> ${LLBMC_EXPERIMENT_CSV}; \
-                        if [ -e ${LLBMC_OUTPUT_DIR}/$$program.timeout ] ; then \
+                        if [ -e "$$LLBMC_OUTPUT_DIR/$$program.timeout" ] ; then \
                                 echo -n "Yes," >> ${LLBMC_EXPERIMENT_CSV} ; \
                         else \
                                 echo -n "No," >> ${LLBMC_EXPERIMENT_CSV} ; \
                         fi ; \
-			grep "Performing transformations on LLVM IR" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Performing transformations on LLVM IR" "$$LLBMC_OUTPUT_DIR/$$program" | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
-			grep "Performing logical encoding" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Performing logical encoding" "$$LLBMC_OUTPUT_DIR/$$program" | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
-			grep "Performing formula transformations" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Performing formula transformations" "$$LLBMC_OUTPUT_DIR/$$program" | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
-			grep "Running SMT solver (STP with MiniSat)" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Running SMT solver (STP with MiniSat)" "$$LLBMC_OUTPUT_DIR/$$program" | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
-			awk '/[DONE]/{i++}i==5' ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_EXPERIMENT_CSV}; \
+			awk '/[DONE]/{i++}i==5' "$$LLBMC_OUTPUT_DIR/$$program" | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
-			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Error detected." "$LLBMC_OUTPUT_DIR/$$program" | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf "\n" >> ${LLBMC_EXPERIMENT_CSV}; \
 		fi ; \
 	done

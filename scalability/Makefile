@@ -310,25 +310,28 @@ ${LLBMC_EXPERIMENT_CSV}:
 		make $$program.llbmc ; \
 	done ; \
 	echo "Program,Timed out,Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV} ; \
+	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
+		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
+	fi ; \
 	for program in $$EXPERIMENT_SET ; do \
-		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
+		if [ -e "$$LLBMC_OUTPUT_DIR"/$$program ]; then \
 			printf "$$program," >> ${LLBMC_EXPERIMENT_CSV} ; \
-			if [ -e ${LLBMC_OUTPUT_DIR}/$$program.timeout ] ; then \
+			if [ -e "$$LLBMC_OUTPUT_DIR"/$$program.timeout ] ; then \
 				echo -n "Yes," >> ${LLBMC_EXPERIMENT_CSV} ; \
 			else \
 				echo -n "No," >> ${LLBMC_EXPERIMENT_CSV} ; \
 			fi ; \
-			grep "Performing transformations on LLVM IR" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
+			grep "Performing transformations on LLVM IR" "$$LLBMC_OUTPUT_DIR"/$$program | tr -d 'Performing transformations on LLVM IR sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV} ; \
-			grep "Performing logical encoding" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
+			grep "Performing logical encoding" "$$LLBMC_OUTPUT_DIR"/$$program | tr -d 'Performing logical encoding sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV} ; \
-			grep "Performing formula transformations" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
+			grep "Performing formula transformations" "$$LLBMC_OUTPUT_DIR"/$$program | tr -d 'Performing formula transformations sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV} ; \
-			grep "Running SMT solver (STP with MiniSat)" ${LLBMC_OUTPUT_DIR}/$$program | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
+			grep "Running SMT solver (STP with MiniSat)" "$$LLBMC_OUTPUT_DIR"/$$program | tr -d 'Running SMT solver (STP with MiniSat) sec [DONE]\n' |  sed -r 's/^.{3}//' >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV} ; \
-			awk '/[DONE]/{i++}i==5' ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_EXPERIMENT_CSV} ; \
+			awk '/[DONE]/{i++}i==5' "$$LLBMC_OUTPUT_DIR"/$$program | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV} ; \
-			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV} ; \
+			grep "Error detected." "$$LLBMC_OUTPUT_DIR"/$$program | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV} ; \
 			printf "\n" >> ${LLBMC_EXPERIMENT_CSV} ; \
 		fi ; \
 	done
