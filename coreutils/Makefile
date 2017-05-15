@@ -426,6 +426,9 @@ ${EXPERIMENT_CSV}: core-experiment
 # with the rest of the libraries, including libc. This is because
 # LLBMC cannot handle e.g., variadic functions, which can be found in
 # libraries.
+#
+# LLBMC uses STP as backend, so we do 'ulimit -s unlimited' as
+# recommended in http://klee.github.io/build-stp/
 %.llbmc :
 	make build-nolink
 	( \
@@ -466,6 +469,7 @@ ${EXPERIMENT_CSV}: core-experiment
 		else \
 			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
 		fi ; \
+		ulimit -s unlimited ; \
 		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
                 if [ $$? = "124" ] ; then \
                         touch "$$LLBMC_OUTPUT_DIR"/$*.timeout ; \
