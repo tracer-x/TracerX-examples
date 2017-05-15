@@ -38,7 +38,7 @@ KLEE_FLAGS=${EXTRA_OPTIONS} -only-output-states-covering-new -search=dfs
 DEFAULT_KLEE_REPLAY_TIMEOUT=@KLEE_REPLAY_TIMEOUT@
 
 # In the following, please select suitable include and DLL directories
-CFLAGS=-g -I${KLEE_HOME}/include ${EXTRA_CFLAGS}
+CFLAGS=-g -I${KLEE_HOME}/include -I${KLEE_HOME}/../include ${EXTRA_CFLAGS}
 LDFLAGS=-L${KLEE_HOME}/lib ${EXTRA_LDFLAGS} -lkleeRuntest
 
 # Timeout in seconds of SVG tree graph creation from .dot file
