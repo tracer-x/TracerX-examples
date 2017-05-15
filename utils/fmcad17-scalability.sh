@@ -22,6 +22,7 @@ export EXPERIMENT_TYPE_SET=".klee1 .tx1"
     cd $SCALABILITY_DIR ; \
     make experiment.csv ; \
     make llbmc-experiment.csv ; \
+    mv llbmc-experiment.csv llbmc-experiment.csv0 ; \
 )
 
 export EXPERIMENT_SET="insertsort7 insertsort9 insertsort11 bubble_assert3 bubble_assert6 bubble_assert9 Regexp-7-4 Regexp-7-5 Regexp-7-6 nsichneu statemate"
@@ -29,4 +30,5 @@ export EXPERIMENT_SET="insertsort7 insertsort9 insertsort11 bubble_assert3 bubbl
 ( \
     cd $SCALABILITY_DIR ; \
     make llbmc-experiment.csv ; \
+    cat llbmc-experiment.csv0 >> llbmc-experiment.csv ; \
 )
