@@ -203,7 +203,7 @@ standard-clean:
 %.llbmc :
 	( \
 		if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
-			LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT"
+			LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
 		fi ; \
 		if [ ! -d "$$LLBMC_OUTPUT_DIR" ]; then \
 			mkdir "$$LLBMC_OUTPUT_DIR"; \
