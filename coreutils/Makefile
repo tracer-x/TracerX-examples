@@ -425,27 +425,32 @@ ${EXPERIMENT_CSV}: core-experiment
 # libraries.
 %.llbmc : build-nolink
 	( \
-		if [ $* = "dd" ]; then \
-			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-		elif [ $* = "dircolors" ]; then \
-			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-		elif [ $* = "echo" ]; then \
-			PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
-		elif [ $* = "expr" ]; then \
-			PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
-		elif [ $* = "mknod" ]; then \
-			PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
-		elif [ $* = "od" ]; then \
-			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-		elif [ $* = "pathchk" ]; then \
-			PROGRAM_OPTIONS="x x" ; \
-		elif [ $* = "printf" ]; then \
-			PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-		else \
-			PROGRAM_OPTIONS="xx xx xxxxxxxxxx" ; \
+		if [ -z "$$PROGRAM_OPTIONS" ] ; then \
+			if [ $* = "dd" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+			elif [ $* = "dircolors" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+			elif [ $* = "echo" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
+			elif [ $* = "expr" ]; then \
+				PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
+			elif [ $* = "mknod" ]; then \
+				PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
+			elif [ $* = "od" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+			elif [ $* = "pathchk" ]; then \
+				PROGRAM_OPTIONS="x x" ; \
+			elif [ $* = "printf" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+			else \
+				PROGRAM_OPTIONS="xx xx xxxxxxxxxx" ; \
+			fi ; \
 		fi ; \
-		if [ ! -d ${LLBMC_OUTPUT_DIR} ]; then \
-			mkdir ${LLBMC_OUTPUT_DIR}; \
+		if [ -z "$$LLBMC_OUTPUT_DIR" ]; then \
+			LLBMC_OUTPUT_DIR=${LLBMC_OUTPUT_DIR} ; \
+		fi ; \
+		if [ ! -d "$$LLBMC_OUTPUT_DIR" ]; then \
+			mkdir "$$LLBMC_OUTPUT_DIR" ; \
 		fi ; \
 		if [ -z "${LLBMC_OPTIONS}" ] ; then \
 			LLBMC_OPTIONS="${LLBMC_DEFAULT_OPTIONS}" ; \
@@ -457,9 +462,9 @@ ${EXPERIMENT_CSV}: core-experiment
 		else \
 			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
 		fi ; \
-		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > ${LLBMC_OUTPUT_DIR}/$* ; \
+		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
                 if [ $$? = "124" ] ; then \
-                        touch ${LLBMC_OUTPUT_DIR}/$*.timeout ; \
+                        touch $$LLBMC_OUTPUT_DIR/$*.timeout ; \
                 fi \
 	)
 
@@ -482,8 +487,17 @@ llbmc-core-experiment:
 # data of Tracer-X and KLEE runs on the main function bitcode only,
 # for comparison to LLBMC.
 ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
+	if [ -z "$$EXPERIMENT_SET" ] ; then \
+		EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
+	fi ; \
+	make ${LLBMC_EXPERIMENT_CSV}.only ; \
+	EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only
+
+${LLBMC_EXPERIMENT_CSV}.only: 
 	echo "Program,Timed out,Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV}
-	EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
+	if [ -z "$$EXPERIMENT_SET" ] ; then \
+		EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
+	fi ; \
 	for program in $$EXPERIMENT_SET ; \
 	do \
 		if [ -e ${LLBMC_OUTPUT_DIR}/$$program ]; then \
@@ -506,7 +520,4 @@ ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
 			grep "Error detected." ${LLBMC_OUTPUT_DIR}/$$program | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf "\n" >> ${LLBMC_EXPERIMENT_CSV}; \
 		fi ; \
-	done ; \
-	EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only
-
-
+	done
