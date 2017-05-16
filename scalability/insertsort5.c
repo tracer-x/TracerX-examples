@@ -1,5 +1,5 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with LLBMC KLEE harnessing added */
+ * with bugfix and LLBMC and KLEE harnessing added */
 
 /* $Id: insertsort.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
@@ -85,8 +85,7 @@ int main()
 #ifdef DEBUG
 	cnt2=0;
 #endif
-      while (a[j] < a[j-1])
-      {
+    while (j > 0 && a[j] < a[j - 1]) {
 #ifdef DEBUG
 	cnt2++;
 #endif

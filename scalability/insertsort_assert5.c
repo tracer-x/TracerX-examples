@@ -1,5 +1,6 @@
 /* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
- * with LLBMC and KLEE harnessing, and correctness assertion added */
+ * with bugfix, LLBMC and KLEE harnessing, and correctness assertion
+ * added */
 
 /* $Id: insertsort.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
 
