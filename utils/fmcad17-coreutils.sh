@@ -43,6 +43,24 @@ export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/basename.llbmc104
 export PROGRAM_OPTIONS="xxxxxxxxxx xxxxx xxxxx"
 make basename.llbmc
 
+export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc101
+# Following is the KLEE options substituted
+#export PROGRAM_OPTIONS="-sym-arg 13 --sym-stdout"
+export PROGRAM_OPTIONS="xxxxxxxxxxxxx"
+make pathchk.llbmc
+
+export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc102
+# Following is the KLEE options substituted
+#export PROGRAM_OPTIONS="-sym-arg 14 --sym-stdout"
+export PROGRAM_OPTIONS="xxxxxxxxxxxxxx"
+make pathchk.llbmc
+
+export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc103
+# Following is the KLEE options substituted
+#export PROGRAM_OPTIONS="-sym-arg 15 --sym-stdout"
+export PROGRAM_OPTIONS="xxxxxxxxxxxxxxx"
+make pathchk.llbmc
+
 export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc104
 # Following is the KLEE options substituted
 #export PROGRAM_OPTIONS="-sym-arg 16 --sym-stdout"
@@ -61,7 +79,7 @@ export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc106
 export PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxx"
 make pathchk.llbmc
 
-export OUTPUT_DIR_SET="$COREUTILS_DIR/cut.llbmc102 $COREUTILS_DIR/basename.llbmc102 $COREUTILS_DIR/basename.llbmc103 $COREUTILS_DIR/basename.llbmc104 $COREUTILS_DIR/pathchk.llbmc104 $COREUTILS_DIR/pathchk.llbmc105 $COREUTILS_DIR/pathchk.llbmc106"
+export OUTPUT_DIR_SET="$COREUTILS_DIR/cut.llbmc102 $COREUTILS_DIR/basename.llbmc102 $COREUTILS_DIR/basename.llbmc103 $COREUTILS_DIR/basename.llbmc104 $COREUTILS_DIR/pathchk.llbmc101 $COREUTILS_DIR/pathchk.llbmc102 $COREUTILS_DIR/pathchk.llbmc103 $COREUTILS_DIR/pathchk.llbmc104 $COREUTILS_DIR/pathchk.llbmc105 $COREUTILS_DIR/pathchk.llbmc106"
 make llbmc-experiment.csv.only
 	      
 cd $SCRIPT_DIR
