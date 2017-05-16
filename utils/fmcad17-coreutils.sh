@@ -61,4 +61,7 @@ export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc106
 export PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxx"
 make pathchk.llbmc
 
+export OUTPUT_DIR_SET="$COREUTILS_DIR/cut.llbmc102 $COREUTILS_DIR/basename.llbmc102 $COREUTILS_DIR/basename.llbmc103 $COREUTILS_DIR/basename.llbmc104 $COREUTILS_DIR/pathchk.llbmc104 $COREUTILS_DIR/pathchk.llbmc105 $COREUTILS_DIR/pathchk.llbmc106"
+make llbmc-experiment.csv.only
+	      
 cd $SCRIPT_DIR

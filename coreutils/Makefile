@@ -307,7 +307,7 @@ clean:
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
 		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
 	fi ; \
-	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
+	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} ${COREUTILS_NOLINK_DIR}
@@ -501,8 +501,10 @@ ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
 	make ${LLBMC_EXPERIMENT_CSV}.only ; \
 	EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only
 
-${LLBMC_EXPERIMENT_CSV}.only: 
+${LLBMC_EXPERIMENT_CSV}.header:
 	echo "Program,Timed out,Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV}
+
+${LLBMC_EXPERIMENT_CSV}.body: 
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
 	fi ; \
@@ -532,3 +534,25 @@ ${LLBMC_EXPERIMENT_CSV}.only:
 			printf "\n" >> ${LLBMC_EXPERIMENT_CSV}; \
 		fi ; \
 	done
+
+${LLBMC_EXPERIMENT_CSV}.only:
+	if [ ! -z "$$LLBMC_OUTPUT_DIR_SET" ] ; then \
+		rm -f ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp ; \
+		make ${LLBMC_EXPERIMENT_CSV}.header ; \
+		mv ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp ; \
+		for LLBMC_OUTPUT_DIR in "$$LLBMC_OUTPUT_DIR_SET" ; \
+		do \
+			make ${LLBMC_EXPERIMENT_CSV}.body ; \
+			cat ${LLBMC_EXPERIMENT_CSV} >> ${LLBMC_EXPERIMENT_CSV}.tmp ; \
+			rm -f ${LLBMC_EXPERIMENT_CSV} ; \
+		done ; \
+		mv ${LLBMC_EXPERIMENT_CSV}.tmp ${LLBMC_EXPERIMENT_CSV} ; \
+	else \
+		make ${LLBMC_EXPERIMENT_CSV}.header ; \
+		mv ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp ; \
+		make ${LLBMC_EXPERIMENT_CSV}.body ; \
+		cat ${LLBMC_EXPERIMENT_CSV} >> ${LLBMC_EXPERIMENT_CSV}.tmp ; \
+		rm -f ${LLBMC_EXPERIMENT_CSV} ; \
+		mv ${LLBMC_EXPERIMENT_CSV}.tmp ${LLBMC_EXPERIMENT_CSV} ; \
+		EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only ; \
+	fi
