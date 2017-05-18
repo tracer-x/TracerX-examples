@@ -307,7 +307,7 @@ clean:
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
 		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
 	fi ; \
-	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
+	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out *.llbmc* ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${COREUTILS_LLVM_DIR} ${COREUTILS_COV_DIR} ${COREUTILS_NOLINK_DIR}
@@ -504,17 +504,20 @@ ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
 ${LLBMC_EXPERIMENT_CSV}.header:
 	echo "Program,Timed out,Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV}
 
-${LLBMC_EXPERIMENT_CSV}.body: 
+${LLBMC_EXPERIMENT_CSV}.body:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
-		EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
+		EXPERIMENT_SET="$(subst .tx,,${LESS_TARGETS})" ; \
 	fi ; \
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
 		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
+	else \
+		LLBMC_OUTPUT_DIR_FILENAME=$$(basename "$$LLBMC_OUTPUT_DIR") ; \
+		LLBMC_OUTPUT_DIR_EXTENSION=$${LLBMC_OUTPUT_DIR_FILENAME##*.} ; \
 	fi ; \
 	for program in $$EXPERIMENT_SET ; \
 	do \
 		if [ -e "$$LLBMC_OUTPUT_DIR/$$program" ]; then \
-			printf "$$program," >> ${LLBMC_EXPERIMENT_CSV}; \
+			printf "$$program.$$LLBMC_OUTPUT_DIR_EXTENSION," >> ${LLBMC_EXPERIMENT_CSV}; \
                         if [ -e "$$LLBMC_OUTPUT_DIR/$$program.timeout" ] ; then \
                                 echo -n "Yes," >> ${LLBMC_EXPERIMENT_CSV} ; \
                         else \
@@ -540,9 +543,10 @@ ${LLBMC_EXPERIMENT_CSV}.only:
 		rm -f ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp ; \
 		make ${LLBMC_EXPERIMENT_CSV}.header ; \
 		mv ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp ; \
-		for LLBMC_OUTPUT_DIR in "$$LLBMC_OUTPUT_DIR_SET" ; \
+		for LLBMC_OUTPUT_DIR in $$LLBMC_OUTPUT_DIR_SET ; \
 		do \
-			make ${LLBMC_EXPERIMENT_CSV}.body ; \
+			LLBMC_OUTPUT_DIR_FILENAME=$$(basename "$$LLBMC_OUTPUT_DIR") ; \
+			LLBMC_OUTPUT_DIR="$$LLBMC_OUTPUT_DIR" EXPERIMENT_SET="$${LLBMC_OUTPUT_DIR_FILENAME%.*}" make ${LLBMC_EXPERIMENT_CSV}.body ; \
 			cat ${LLBMC_EXPERIMENT_CSV} >> ${LLBMC_EXPERIMENT_CSV}.tmp ; \
 			rm -f ${LLBMC_EXPERIMENT_CSV} ; \
 		done ; \
