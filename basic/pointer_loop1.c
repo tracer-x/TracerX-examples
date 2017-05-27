@@ -1,9 +1,9 @@
 /*
  * Copyright 2016, 2017 National University of Singapore
  *
- * This program is for testing memory bounds check interpolation,
- * Some version failed to report error due to incorrect memory
- * bounds interpolation generated from a subsumed node.
+ * This program is for testing memory bounds check interpolation.
+ * Some versions failed to report error due to incorrect memory bounds
+ * interpolation generated from a subsumed node.
  */
 
 #ifdef LLBMC

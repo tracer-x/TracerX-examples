@@ -37,7 +37,7 @@ openssl.c		2
 openssl_partial_fix.c	1
 pointer_alloc.c		1
 pointer_wp.c		0
-pointer_loop.c		1
+pointer_loop1.c		1
 pointer_recursive.c	0
 pointer_iterative.c	1
 pointer_struct1.c	1
