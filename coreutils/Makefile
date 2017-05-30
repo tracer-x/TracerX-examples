@@ -470,6 +470,7 @@ ${EXPERIMENT_CSV}: core-experiment
 			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
 		fi ; \
 		ulimit -s unlimited ; \
+		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" -smtlib2 ${COREUTILS_NOLINK_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$*.smt2 ; \
 		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${COREUTILS_NOLINK_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
                 if [ $$? = "124" ] ; then \
                         touch "$$LLBMC_OUTPUT_DIR"/$*.timeout ; \

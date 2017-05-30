@@ -220,6 +220,7 @@ standard-clean:
 		else \
 			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
 		fi ; \
+		PATH="${EXTRA_PATH}:$$PATH" timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -smtlib2 $*.bc > "$$LLBMC_OUTPUT_DIR"/$*.smt2 ; \
 		PATH="${EXTRA_PATH}:$$PATH" timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS $*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
 		if [ $$? = "124" ] ; then \
 			touch "$$LLBMC_OUTPUT_DIR"/$*.timeout ; \
