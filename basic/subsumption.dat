@@ -34,8 +34,7 @@ openssl.c		4
 openssl_partial_fix.c	0
 pointer_alloc.c		0
 pointer_wp.c		4
-pointer_loop1.c		6
-pointer_loop2.c		18
+pointer_loop.c		6
 pointer_recursive.c	4
 pointer_iterative.c	1
 pointer_struct1.c	0
@@ -44,6 +43,7 @@ pointer_struct3.c	0
 pointer_struct4.c	0
 pointer_struct5.c	67
 pointer_struct6.c	0
+pointer_symbolic.c	0
 polynomial.c		0
 recursion1.c		0
 recursion2.c		28

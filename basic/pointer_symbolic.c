@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2017 National University of Singapore
+ * Copyright 2017 National University of Singapore
  *
  * This program is for testing memory bounds check interpolation.
  * Some versions failed to report error due to incorrect memory
@@ -12,20 +12,20 @@
 #include <klee/klee.h>
 #endif
 
-#define N 10
-
 int main(int argc, char **argv)
 {
   char s[1000];
   char *p;
-  int flag[N];
+  char a, b, c;
 
 #ifdef LLBMC
-  for (int i = 0; i < N; ++i) {
-    flag[i] = __llbmc_nondef_int();
-  }
+  a = __llbmc_nondef_char();
+  b = __llbmc_nondef_char();
+  c = __llbmc_nondef_char();
 #else
-  klee_make_symbolic(flag, sizeof(int) * N, "flag");
+  klee_make_symbolic(&a, sizeof(char), "a");
+  klee_make_symbolic(&b, sizeof(char), "b");
+  klee_make_symbolic(&c, sizeof(char), "c");
 #endif
 
   int n;
@@ -40,12 +40,20 @@ int main(int argc, char **argv)
 #endif
 
   p = s + n;
-  for (int i = 0; i < N; ++i){
-    if (flag[i]) p += i ;
+  if (a) {
+    p += 1;
+  } else {
+    p += 2;
   }
-
-  // Max increment is N ( N + 1 ) /2
-  p += 955 - n;
+  if (b) {
+    p += 1;
+  }
+  if (c) {
+    p += 2;
+  }
+  
+  // Max increment is 999 - 5 - n, but the following exceeds it
+  p += 995 - n;
 
   // p should be in s
   return *p;
