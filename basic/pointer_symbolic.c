@@ -16,16 +16,14 @@ int main(int argc, char **argv)
 {
   char s[1000];
   char *p;
-  char a, b, c;
+  char a, b;
 
 #ifdef LLBMC
   a = __llbmc_nondef_char();
   b = __llbmc_nondef_char();
-  c = __llbmc_nondef_char();
 #else
   klee_make_symbolic(&a, sizeof(char), "a");
   klee_make_symbolic(&b, sizeof(char), "b");
-  klee_make_symbolic(&c, sizeof(char), "c");
 #endif
 
   int n;
@@ -46,12 +44,9 @@ int main(int argc, char **argv)
   if (b) {
     p += 2;
   }
-  if (b) {
-    p += 3;
-  }
   
-  // Max increment is 999 - 6 - n, but the following exceeds it
-  p += 994 - n;
+  // Max increment is 999 - 3 - n, but the following exceeds it
+  p += 997 - n;
 
   // p should be in s
   return *p;
