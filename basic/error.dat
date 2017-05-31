@@ -48,6 +48,7 @@ pointer_struct4.c	0
 pointer_struct5.c	0
 pointer_struct6.c	0
 pointer_struct7.c	0
+pointer_symbolic.c	1
 polynomial.c		0
 recursion1.c		0
 recursion2.c		0
