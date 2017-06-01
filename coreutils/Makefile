@@ -459,10 +459,12 @@ ${EXPERIMENT_CSV}: core-experiment
 		if [ ! -d "$$LLBMC_OUTPUT_DIR" ]; then \
 			mkdir "$$LLBMC_OUTPUT_DIR" ; \
 		fi ; \
-		if [ -z "${LLBMC_OPTIONS}" ] ; then \
-			LLBMC_OPTIONS="${LLBMC_DEFAULT_OPTIONS}" ; \
-		else \
-			LLBMC_OPTIONS="${LLBMC_OPTIONS}" ; \
+		if [ -z "$$LLBMC_OPTIONS" ] ; then \
+			if [ -z "${LLBMC_OPTIONS}" ] ; then \
+				LLBMC_OPTIONS="${LLBMC_DEFAULT_OPTIONS}" ; \
+			else \
+				LLBMC_OPTIONS="${LLBMC_OPTIONS}" ; \
+			fi ; \
 		fi ; \
 		if [ -z "${EXPERIMENT_TIMEOUT}" ] ; then \
 			LLBMC_TIMEOUT="${LLBMC_DEFAULT_TIMEOUT}" ; \
