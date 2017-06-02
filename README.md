@@ -3,7 +3,9 @@ Simple examples for running with Tracer-X KLEE
 
 Copyright 2015-2017 National University of Singapore. See `LICENSE.md` for license information.
 
-This software includes third-party software, including some sample programs are from LLBMC 2013.1 distribution modified for running with KLEE, GNU Coreutils 6.10, and portions of libPNG. Their license information is included in the `license/LLBMC_LICENSE`, `license/COPYING`, and `license/LIBPNG_LICENSE`.
+This software includes third-party software, including some sample programs are from LLBMC 2013.1 distribution modified for running with KLEE, GNU Coreutils 6.10, ImageMagick 7.0.5-9, and portions of libPNG. Their license information is included in the `license/LLBMC_LICENSE`, `license/COPYING`, `license/IMAGEMAGICK_LICENSE` and `license/LIBPNG_LICENSE`.
+
+LLBMC 2013.1 is Copyright (c) 2010-2013 Stephan Falke, Florian Merz, Carsten Sinz Karlsruhe Institute of Technology (KIT), Germany. All rights reserved.  Coreutils 6.10 is Copyright (C) 1984-2008 Free Software Foundation. Refer to `license/IMAGEMAGICK_NOTICE` for the copyright notice of ImageMagick 7.0.5-9 and `license/LIBPNG_LICENSE` for the copyright notice of libPNG.
 
 Each directory except **include** and **utils** contains a suite of simple examples.
 
@@ -16,6 +18,8 @@ Each directory except **include** and **utils** contains a suite of simple examp
 - **include** - Include files for running with various tools.
 
 - **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
+
+- **imagemagick** - ImageMagick 7.0.5-9
 
 - **utils** - Scripts and other utilities. This contains, among others, `cav17-coreutils.sh` and `cav17-scalability.sh` for reproducing the experimental results of our CAV '17 paper submission.
 
