@@ -298,7 +298,7 @@ ${COREUTILS_NOLINK_DIR}:
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR" ${COREUTILS_COV_MAX_TIME}
-	GCDA_FILES=`find /home/dcsandr/software/klee-examples/coreutils/coreutils-6.10/obj-cov -name "*.gcda"` ; \
+	GCDA_FILES=`find "${COREUTILS_COV_DIR}" -name "*.gcda"` ; \
 	if [ ! -z "$$GCDA_FILES" ] ; then \
 		rm -f $$GCDA_FILES ; \
 	fi
