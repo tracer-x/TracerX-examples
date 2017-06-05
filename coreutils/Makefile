@@ -499,7 +499,7 @@ llbmc-core-experiment:
 # for comparison to LLBMC.
 ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
-		EXPERIMENT_SET=$(subst .tx,,${LESS_TARGETS}) ; \
+		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
 	make ${LLBMC_EXPERIMENT_CSV}.only ; \
 	EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only
@@ -509,7 +509,7 @@ ${LLBMC_EXPERIMENT_CSV}.header:
 
 ${LLBMC_EXPERIMENT_CSV}.body:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
-		EXPERIMENT_SET="$(subst .tx,,${LESS_TARGETS})" ; \
+		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
 		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
