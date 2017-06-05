@@ -33,17 +33,28 @@ TARGETS=animate.tx \
 	montage.tx \
 	stream.tx
 
-DEFAULT_OPTIONS=--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-DD_OPTIONS=--sym-args 0 3 10 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-DIRCOLORS_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
-ECHO_OPTIONS=--sym-args 0 4 300 --sym-files 2 30 -sym-stdin 30 --sym-stdout
-EXPR_OPTIONS=--sym-args 0 1 10 --sym-args 0 3 2 --sym-stdout
-MKNOD_OPTIONS=--sym-args 0 1 10 --sym-args 0 3 2 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-OD_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
-PATHCHK_OPTIONS=--sym-args 0 1 2 --sym-args 0 1 300 --sym-files 1 8 -sym-stdin 8 --sym-stdout
-PRINTF_OPTIONS=--sym-args 0 3 10 --sym-files 2 12 -sym-stdin 12 --sym-stdout
+DEFAULT_OPTIONS=--sym-args 0 1 10 --sym-args 0 1 2 --sym-files 1 8 --sym-stdout
+COMPARE_OPTIONS=--sym-files 2 8 --sym-args 0 1 10 --sym-args 0 1 2 --sym-stdout
+COMPOSITE_OPTIONS=--sym-args 0 1 10 --sym-args 0 1 2 --sym-files 3 8 --sym-stdout
+CONJURE_OPTIONS=--sym-args 0 1 10 --sym-files 1 8 --sym-stdout
+CONVERT_OPTIONS=--sym-args 0 1 10 --sym-args 0 1 2 --sym-file 0 1 8 --sym-args 0 1 10 --sym-args 0 1 2 --sym-file 0 1 2 --sym-stdout
+MAGICK_OPTIONS=--sym-arg 7 --sym-args 0 1 10 --sym-args 0 1 2 --sym-files 1 8 --sym-stdout
+MAGICK_SCRIPT_OPTIONS=--sym-stdin 16 --sym-stdout
+MONTAGE_OPTIONS=--sym-files 1 8 --sym-args 0 1 10 --sym-args 0 1 2 --sym-file 1 8 --sym-stdout
+STREAM_OPTIONS=--sym-args 0 1 10 --sym-args 0 1 2 --sym-files 2 8 --sym-stdout
 
-DEFAULT_EXPERIMENT_SET=comm cut dirname expand factor join split sum uniq
+# Note that we are excluding magick itself and magick-script
+DEFAULT_EXPERIMENT_SET=animate \
+	compare \
+	composite \
+	conjure \
+	convert \
+	display \
+	identify \
+	import \
+	mogrify \
+	montage \
+	stream
 
 DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6 .klee11 .tx11 .tx12 .tx13 .tx14
 
@@ -255,25 +266,25 @@ ${IMAGEMAGICK_COV_DIR}:
 		mkdir e \
 	)
 	@echo =================================================================
-	@echo Running KLEE with STP on $* ...
+	@echo Running KLEE on $* ...
 	@echo =================================================================
 	if [ -z "$$PROGRAM_OPTIONS" ] ; then \
-		if [ $* = "dd" ]; then \
-			PROGRAM_OPTIONS="${DD_OPTIONS}" ; \
-		elif [ $* = "dircolors" ]; then \
-			PROGRAM_OPTIONS="${DIRCOLORS_OPTIONS}" ; \
-		elif [ $* = "echo" ]; then \
-			PROGRAM_OPTIONS="${ECHO_OPTIONS}" ; \
-		elif [ $* = "expr" ]; then \
-			PROGRAM_OPTIONS="${EXPR_OPTIONS}" ; \
-		elif [ $* = "mknod" ]; then \
-			PROGRAM_OPTIONS="${MKNOD_OPTIONS}" ; \
-		elif [ $* = "od" ]; then \
-			PROGRAM_OPTIONS="${OD_OPTIONS}" ; \
-		elif [ $* = "pathchk" ]; then \
-			PROGRAM_OPTIONS="${PATHCHK_OPTIONS}" ; \
-		elif [ $* = "printf" ]; then \
-			PROGRAM_OPTIONS="${PRINTF_OPTIONS}" ; \
+		if [ $* = "compare" ]; then \
+			PROGRAM_OPTIONS="${COMPARE_OPTIONS}" ; \
+		elif [ $* = "composite" ]; then \
+			PROGRAM_OPTIONS="${COMPOSITE_OPTIONS}" ; \
+		elif [ $* = "conjure" ]; then \
+			PROGRAM_OPTIONS="${CONJURE_OPTIONS}" ; \
+		elif [ $* = "convert" ]; then \
+			PROGRAM_OPTIONS="${CONVERT_OPTIONS}" ; \
+		elif [ $* = "magick" ]; then \
+			PROGRAM_OPTIONS="${MAGICK_OPTIONS}" ; \
+		elif [ $* = "magick-script" ]; then \
+			PROGRAM_OPTIONS="${MAGICK_SCRIPT_OPTIONS}" ; \
+		elif [ $* = "montage" ]; then \
+			PROGRAM_OPTIONS="${MONTAGE_OPTIONS}" ; \
+		elif [ $* = "stream" ]; then \
+			PROGRAM_OPTIONS="${STREAM_OPTIONS}" ; \
 		else \
 			PROGRAM_OPTIONS="${DEFAULT_OPTIONS}" ; \
 		fi ; \
