@@ -261,7 +261,7 @@ ${COREUTILS_NOLINK_DIR}:
 		mkdir e \
 	)
 	@echo =================================================================
-	@echo Running KLEE with STP on $* ...
+	@echo Running KLEE with on $* ...
 	@echo =================================================================
 	if [ -z "$$PROGRAM_OPTIONS" ] ; then \
 		if [ $* = "dd" ]; then \
