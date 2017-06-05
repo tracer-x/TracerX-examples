@@ -20,4 +20,5 @@ coreutils/coreutils-6.10/obj-cov
 coreutils/coreutils-6.10/obj-nolink
 coreutils/sandbox
 coreutils/test.env
+imagemagick/ImageMagick-7.0.5-9/configure
 utils/treecmp
