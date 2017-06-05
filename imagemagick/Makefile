@@ -5,10 +5,8 @@
 IMAGEMAGICK_DIR=${CURDIR}/ImageMagick-7.0.5-9
 IMAGEMAGICK_LLVM_DIR=${IMAGEMAGICK_DIR}/obj-llvm
 IMAGEMAGICK_COV_DIR=${IMAGEMAGICK_DIR}/obj-cov
-IMAGEMAGICK_WHOLE_DIR=${IMAGEMAGICK_LLVM_DIR}/utilities/.libs
-IMAGEMAGICK_WHOLE=${IMAGEMAGICK_WHOLE_DIR}/magic-whole.bc
-IMAGEMAGICK_NOLINK_DIR=${IMAGEMAGICK_LLVM_DIR}/utilities/.libs/nolink
-IMAGEMAGICK_NOLINK=${IMAGEMAGICK_WHOLE_DIR}/magic.bc
+IMAGEMAGICK_BITCODE_DIR=${IMAGEMAGICK_LLVM_DIR}/utilities/.libs
+IMAGEMAGICK_BITCODE=${IMAGEMAGICK_BITCODE_DIR}/magic-whole.bc
 
 # The following is for computing coverage from the test files within
 # the start of the execution up to, and not including the specified
@@ -79,16 +77,33 @@ all: ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS}
 
 include ../Makefile.common
 
-build: ${IMAGEMAGICK_WHOLE} ${IMAGEMAGICK_COV_DIR} test.env
+build: ${IMAGEMAGICK_BITCODE} ${IMAGEMAGICK_COV_DIR} test.env
 
 test.env:
 	env -i ${BASH} -c '( source testing-env.sh ; env > test.env )'
 
-${IMAGEMAGICK_WHOLE}: ${IMAGEMAGICK_NOLINK}
+${IMAGEMAGICK_BITCODE}:
+	@echo =================================================================
+	@echo Building ImageMagick without linking
+	@echo =================================================================
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+	rm -rf ${IMAGEMAGICK_LLVM_DIR}	
+	mkdir ${IMAGEMAGICK_LLVM_DIR}
+	( cd ${IMAGEMAGICK_LLVM_DIR}; \
+		export LLVM_COMPILER=clang; \
+		export PATH=${EXTRA_PATH}:$$PATH; \
+		export CC=${WHOLE_PROGRAM_LLVM}/wllvm; \
+		export CXX=${WHOLE_PROGRAM_LLVM}/wllvm++; \
+		unset C_INCLUDE_PATH; \
+		unset CPLUS_INCLUDE_PATH; \
+		../configure CFLAGS="-g" ; \
+		make \
+	)
 	@echo =================================================================
 	@echo Creating whole-program bitcode file for magick
 	@echo =================================================================
-	( cd ${IMAGEMAGICK_WHOLE_DIR} ; \
+	( cd ${IMAGEMAGICK_BITCODE_DIR} ; \
+		${WHOLE_PROGRAM_LLVM}/extract-bc -m magick ; \
 		llvm-link magick.bc ../../MagickCore/.*.o.bc > magick-whole.bc ; \
 		TARGETS_NOEXT="$(subst .tx,,${TARGETS})" ; \
 		for program in $$TARGETS_NOEXT ; do \
@@ -119,38 +134,6 @@ ${IMAGEMAGICK_COV_DIR}:
 				ln -sf magick $$program ; \
 			fi ; \
 		done \
-	)
-
-${IMAGEMAGICK_NOLINK}:
-	@echo =================================================================
-	@echo Building ImageMagick without linking
-	@echo =================================================================
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
-	rm -rf ${IMAGEMAGICK_LLVM_DIR}	
-	mkdir ${IMAGEMAGICK_LLVM_DIR}
-	( cd ${IMAGEMAGICK_LLVM_DIR}; \
-		export LLVM_COMPILER=clang; \
-		export PATH=${EXTRA_PATH}:$$PATH; \
-		export CC=${WHOLE_PROGRAM_LLVM}/wllvm; \
-		export CXX=${WHOLE_PROGRAM_LLVM}/wllvm++; \
-		unset C_INCLUDE_PATH; \
-		unset CPLUS_INCLUDE_PATH; \
-		../configure CFLAGS="-g" ; \
-		make \
-	)
-	@echo =================================================================
-	@echo Creating whole-program bitcode file for magick
-	@echo =================================================================
-	( cd ${IMAGEMAGICK_WHOLE_DIR} ; \
-		${WHOLE_PROGRAM_LLVM}/extract-bc -m magick ; \
-		rm -rf ${IMAGEMAGICK_NOLINK_DIR} ; \
-		mkdir ${IMAGEMAGICK_NOLINK_DIR} ; \
-		( cd ${IMAGEMAGICK_NOLINK_DIR} ; \
-			TARGETS_NOEXT="$(subst .tx,,${TARGETS})" ; \
-			for program in $$TARGETS_NOEXT ; do \
-				ln -sf ${IMAGEMAGICK_WHOLE_DIR}/magick.bc $$program ; \
-			done \
-		) \
 	)
 
 %.klee1 : 
@@ -207,7 +190,7 @@ ${IMAGEMAGICK_NOLINK}:
 	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
 		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="$$KLEE_IMAGEMAGICK_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_LLVM_DIR}/src make $*.klee-out
+	KLEE_IMAGEMAGICK_OPTIONS="$$KLEE_IMAGEMAGICK_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
 
 %.klee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
@@ -216,7 +199,7 @@ ${IMAGEMAGICK_NOLINK}:
 	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
 		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="$$KLEE_IMAGEMAGICK_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_LLVM_DIR}/src make $*.klee-out
+	KLEE_IMAGEMAGICK_OPTIONS="$$KLEE_IMAGEMAGICK_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
 
 %.stpklee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
@@ -225,7 +208,7 @@ ${IMAGEMAGICK_NOLINK}:
 	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
 		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="$$KLEE_IMAGEMAGICK_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_LLVM_DIR}/src make $*.klee-out
+	KLEE_IMAGEMAGICK_OPTIONS="$$KLEE_IMAGEMAGICK_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
 
 # These are for the no-linking runs, without linking with uclibc
 %.tx-nolink:
@@ -235,7 +218,7 @@ ${IMAGEMAGICK_NOLINK}:
 	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
 		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_NOLINK_DIR} make $*.klee-out
+	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
 
 %.klee-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
@@ -244,7 +227,7 @@ ${IMAGEMAGICK_NOLINK}:
 	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
 		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_NOLINK_DIR} make $*.klee-out
+	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
 
 %.stpklee-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
@@ -253,7 +236,7 @@ ${IMAGEMAGICK_NOLINK}:
 	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
 		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_NOLINK_DIR} make $*.klee-out
+	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
 
 %.klee-out: build
 	# The testing sandbox reconstructed here is from
@@ -483,8 +466,8 @@ ${EXPERIMENT_CSV}: core-experiment
 			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
 		fi ; \
 		ulimit -s unlimited ; \
-		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" -smtlib2 ${IMAGEMAGICK_NOLINK_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$*.smt2 ; \
-		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${IMAGEMAGICK_NOLINK_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
+		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" -smtlib2 ${IMAGEMAGICK_BITCODE_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$*.smt2 ; \
+		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${IMAGEMAGICK_BITCODE_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
                 if [ $$? = "124" ] ; then \
                         touch "$$LLBMC_OUTPUT_DIR"/$*.timeout ; \
                 fi \
