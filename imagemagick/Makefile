@@ -419,18 +419,12 @@ ${EXPERIMENT_CSV}: core-experiment
 		mv small-${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV} ; \
 	fi
 
-# This target is used for running coreutils experiment with
-# LLBMC. Arguments in PROGRAM_OPTIONS have lengths matching that of
-# KLEE runs. For example, Klee runs with --sym-args 0 1 10 --sym-args
-# 0 2 2 which defined in DEFAULT_OPTIONS, means coreutils programs are
-# triggered with 2 short options (length 2) and 1 long option (length
-# 10). This arguments example in KLEE run is translated into "xx xx
-# xxxxxxxxxx".
-#
-# Note that we use the bitcode of the main function without linking
-# with the rest of the libraries, including libc. This is because
-# LLBMC cannot handle e.g., variadic functions, which can be found in
-# libraries.
+# This target is used for running the experiment with LLBMC. Arguments
+# in PROGRAM_OPTIONS have lengths matching that of KLEE runs. For
+# example, Klee runs with --sym-args 0 1 10 --sym-args 0 1 2 which
+# defined in DEFAULT_OPTIONS, means the program is invoked with 0 or 1
+# long symbolic argument of length 10 and 0 or 1 short symbolic
+# argument of length 2. This is translated into "xxxxxxxxxx xx".
 #
 # LLBMC uses STP as backend, so we do 'ulimit -s unlimited' as
 # recommended in http://klee.github.io/build-stp/
@@ -438,24 +432,24 @@ ${EXPERIMENT_CSV}: core-experiment
 	make build-nolink
 	( \
 		if [ -z "$$PROGRAM_OPTIONS" ] ; then \
-			if [ $* = "dd" ]; then \
-				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-			elif [ $* = "dircolors" ]; then \
-				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-			elif [ $* = "echo" ]; then \
-				PROGRAM_OPTIONS="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ; \
-			elif [ $* = "expr" ]; then \
-				PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
-			elif [ $* = "mknod" ]; then \
-				PROGRAM_OPTIONS="xxx xxx xxxxxxxxxx" ; \
-			elif [ $* = "od" ]; then \
-				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
-			elif [ $* = "pathchk" ]; then \
-				PROGRAM_OPTIONS="x x" ; \
-			elif [ $* = "printf" ]; then \
-				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
+			if [ $* = "compare" ]; then \
+				PROGRAM_OPTIONS="x x xxxxxxxxxx xx" ; \
+			elif [ $* = "composite" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx xx x x x" ; \
+			elif [ $* = "conjure" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx x" ; \
+			elif [ $* = "convert" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx xx x" ; \
+			elif [ $* = "magick" ]; then \
+				PROGRAM_OPTIONS="xxxxxxx xxxxxxxxxx xx x" ; \
+			elif [ $* = "magick-script" ]; then \
+				PROGRAM_OPTIONS="" ; \
+			elif [ $* = "montage" ]; then \
+				PROGRAM_OPTIONS="x xxxxxxxxxx xx x" ; \
+			elif [ $* = "stream" ]; then \
+				PROGRAM_OPTIONS="xxxxxxxxxx xx x x" ; \
 			else \
-				PROGRAM_OPTIONS="xx xx xxxxxxxxxx" ; \
+				PROGRAM_OPTIONS="xxxxxxxxxx xx x" ; \
 			fi ; \
 		fi ; \
 		if [ -z "$$LLBMC_OUTPUT_DIR" ]; then \
