@@ -416,11 +416,11 @@ ${EXPERIMENT_CSV}: core-experiment
 
 # This target is used for running coreutils experiment with
 # LLBMC. Arguments in PROGRAM_OPTIONS have lengths matching that of
-# KLEE runs. For example, Klee runs with --sym-args 0 1 10 --sym-args
-# 0 2 2 which defined in DEFAULT_OPTIONS, means coreutils programs are
-# triggered with 2 short options (length 2) and 1 long option (length
-# 10). This arguments example in KLEE run is translated into "xx xx
-# xxxxxxxxxx".
+# KLEE runs. For example, KLEE runs with --sym-args 0 1 10 --sym-args
+# 0 2 2 which is defined in DEFAULT_OPTIONS, means that the coreutils
+# program is invoked with 0 or 1 long option with length 10 and 0 or 1
+# short option of length 2. The arguments are translated into the
+# LLBMC program option "xxxxxxxxxx xx xx".
 #
 # Note that we use the bitcode of the main function without linking
 # with the rest of the libraries, including libc. This is because
@@ -450,7 +450,7 @@ ${EXPERIMENT_CSV}: core-experiment
 			elif [ $* = "printf" ]; then \
 				PROGRAM_OPTIONS="xxxxxxxxxx xxxxxxxxxx xxxxxxxxxx" ; \
 			else \
-				PROGRAM_OPTIONS="xx xx xxxxxxxxxx" ; \
+				PROGRAM_OPTIONS="xxxxxxxxxx xx xx" ; \
 			fi ; \
 		fi ; \
 		if [ -z "$$LLBMC_OUTPUT_DIR" ]; then \
