@@ -1,7 +1,7 @@
 Simple examples for running with Tracer-X KLEE
 ----------------------------------------------
 
-Copyright 2015-2017 National University of Singapore. See LICENSE.md for license information.
+Copyright 2015-2017 National University of Singapore
 
 This software includes third-party software, including some sample programs are from LLBMC 2013.1 distribution modified for running with KLEE, GNU Coreutils 6.10, and portions of libPNG. Their license information is included in the `license/LLBMC_LICENSE`, `license/COPYING`, and `license/LIBPNG_LICENSE`.
 
@@ -9,7 +9,7 @@ Each directory except **include** and **utils** contains a suite of simple examp
 
 - **basic**  - Basic examples. 
 
-- **binary-chop** - Examples which test the binary chop algorithm for WCET analysis, including `nsichneu.c` and `statemate` which are also used to test scalability.
+- **binary-chop** - Examples which test the binary chop algorithm for WCET analysis, including nsichneu.c and statemate which are also used to test scalability.
 
 - **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials.
 

@@ -57,7 +57,7 @@ void trace(char *s)
 /* volatile */ int	P3_is_marked = 0;
 /* volatile */ long	P3_marking_member_0[6];
 
-
+void tracerx_check(void *p) { *p; } 
 
 /**void NSicherNeu()**/
 int main()
@@ -4280,7 +4280,8 @@ int main()
 
    dummy_i = 77;
 
-   return *p;
+   tracerx_check(p);
+   return 0;
 
 
 }

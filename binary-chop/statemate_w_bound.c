@@ -180,6 +180,8 @@ char EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state;  /** 2 bits **/
 char BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state;  /** 2 bits **/
 char BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state;  /** 2 bits **/
 
+void tracerx_check(void *p) { *p; } 
+
 char s[1000000];
 char *p=s;
 
@@ -1620,5 +1622,5 @@ int main(void)
   interface();
   FH_DU();
 
-  return *p;
+  tracerx_check(p);
 }
