@@ -3,7 +3,7 @@
 # Copyright 2016, 2017 National University of Singapore
 
 # This is for extra KLEE options
-EXTRA_OPTIONS=-interpolation-stat
+EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2 -special-function-bound-interpolation  -no-bound-check #-debug-subsumption=1 #-exit-on-error  
 
 # This is for the options passed onto the tested program, e.g.,
 # --sym-arg
@@ -45,7 +45,8 @@ KLEE_DEFAULT_OPTIONS=-search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EX
 
 # LLBMC options can be set here; when empty, default options will be
 # used instead.
-LLBMC_OPTIONS=
+LLBMC_OPTIONS=-only-custom-assertions --ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10  
+
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
@@ -207,10 +208,10 @@ clean: standard-clean
 		if [ $$? = 124 ] ; then \
 			echo WARNING: Timed out creating .svg file ; \
 		fi ; \
-	fi
+	fi ; \
 	# Generate line coverage information
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
-		${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME} ; \
+	      	${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME} ; \
 	fi
 
 core-experiment:
@@ -231,7 +232,7 @@ core-experiment:
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #nodes,#instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
@@ -249,6 +250,8 @@ ${EXPERIMENT_CSV}: core-experiment
 				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> $@; \
+				printf ", " >> $@; \
+				grep "KLEE: done: Total reduced symbolic execution tree nodes" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				grep "KLEE: done: total instructions" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/'| tr -d '\n' >> $@; \
 				printf ", " >> $@; \
