@@ -302,6 +302,10 @@ ${COREUTILS_NOLINK_DIR}:
 	if [ ! -z "$$GCDA_FILES" ] ; then \
 		rm -f $$GCDA_FILES ; \
 	fi
+	# Generate line coverage information
+	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
+		${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME} ; \
+	fi
 
 clean:
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \

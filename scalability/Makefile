@@ -209,7 +209,9 @@ clean: standard-clean
 		fi ; \
 	fi
 	# Generate line coverage information
-	${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME}
+	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
+		${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME} ; \
+	fi
 
 core-experiment:
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
