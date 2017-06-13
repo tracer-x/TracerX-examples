@@ -200,6 +200,7 @@ clean: standard-clean
 		KLEE_OPTIONS="${KLEE_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${EXTRA_OPTIONS} $$KLEE_OPTIONS $$KLEE_MORE_OPTIONS $$SOLVER_FLAGS -output-dir=$$OUTPUT_DIR ${CURDIR}/$*.bc $$KLEE_PROGRAM_OPTIONS ; \
+	${KLEE_STATS} $$OUTPUT_DIR ; \
 	echo -n "$$KLEE_PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	rm -f $*.bc; \
 	if [ -e $$OUTPUT_DIR/tree.dot ]; then \
@@ -208,7 +209,7 @@ clean: standard-clean
 			echo WARNING: Timed out creating .svg file ; \
 		fi ; \
 	fi
-	# Generate line coverage information
+# Generate line coverage information
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
 		${CURDIR}/../utils/scalabilitycov.sh "$*" "$$OUTPUT_DIR" ${SCALABILITY_COV_MAX_TIME} ; \
 	fi
@@ -250,7 +251,7 @@ ${EXPERIMENT_CSV}: core-experiment
 				printf "$$program$$ext," >> $@; \
 				cat $$program$$ext/ProgramOptions.txt >> $@ ; \
 				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> $@; \
+				${KLEE_STATS} $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
@@ -274,9 +275,9 @@ ${EXPERIMENT_CSV}: core-experiment
 				printf ", " >> $@; \
 				grep "average instructions of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> $@; \
+				${KLEE_STATS} $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> $@; \
+				${KLEE_STATS} $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
 					grep '^[[:space:]]*[[:digit:]]\+' $$program$$ext/$$program.cov |wc -l |tr -d '\n' >> $@; \

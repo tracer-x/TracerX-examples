@@ -106,9 +106,9 @@ standard-clean:
 # For running KLEE with Z3 and interpolation
 .bc.tx:
 	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$@ make $*.klee-out
-	# The following is to catch any difference in subsumption
-	# number for regression testing purposes
-	@if [ -e subsumption.dat ]; then \
+# The following is to catch any difference in subsumption number for
+# regression testing purposes
+	 @if [ -e subsumption.dat ]; then \
 		REFERENCE_SUBSUMPTION=`grep $*.c subsumption.dat | sed 's/^[a-z0-9_\-]*\.c\t\+//' - ` ; \
 		if [ x$$REFERENCE_SUBSUMPTION != x ] ; then \
 			ACTUAL_SUBSUMPTION=`grep subsumed $@/tree.dot | wc -l` ; \
@@ -118,8 +118,8 @@ standard-clean:
 			fi ; \
 		fi ; \
 	fi
-	# The following is to catch any difference in error report
-	# number for regression testing purposes
+# The following is to catch any difference in error report number for
+# regression testing purposes
 	@if [ -e error.dat ]; then \
 		REFERENCE_ERROR=`grep $*.c error.dat | sed 's/^[a-z0-9_\-]*\.c\t\+//' - ` ; \
 		if [ x$$REFERENCE_ERROR != x ] ; then \
@@ -146,7 +146,15 @@ standard-clean:
 	@LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} $$SOLVER_FLAGS -output-dir=$$OUTPUT_DIR $< ${PROGRAM_OPTIONS}
 	@opt -analyze -dot-cfg $<
 	@mv *.dot $$OUTPUT_DIR
-	# Create SVGs from .dot files
+####################################################################
+# KLEE-STATS Statistics                                            #
+#                                                                  #
+# KLEE displays a low coverage using klee-stats on small examples, #
+# due to additional code added.  The additional code is displayed  #
+# in <klee_output_dir>/assembly.ll.                                #
+####################################################################
+	@${KLEE_STATS} $$OUTPUT_DIR
+# Create SVGs from .dot files
 	@for DOTFILE in $$OUTPUT_DIR/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		timeout ${SVG_CREATION_TIMEOUT}s dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -168,20 +176,12 @@ standard-clean:
 
 .bc.cov:
 	@make $*.klee-out
-	####################################################################
-	# KLEE-STATS Statistics                                            #
-	#                                                                  #
-	# KLEE displays a low coverage using klee-stats on small examples, #
-	# due to additional code added.  The additional code is displayed  #
-	# in <klee_output_dir>/assembly.ll.                                #
-	####################################################################
-	${KLEE_STATS} $$OUTPUT_DIR
-	####################################################################
-	# llvm-cov Statistics for line coverage                            #
-	#                                                                  #
-	# See the generated .stpcov file for the detailed execution count  #
-	# of each line.                                                    #
-	####################################################################
+####################################################################
+# llvm-cov Statistics for line coverage                            #
+#                                                                  #
+# See the generated .stpcov file for the detailed execution count  #
+# of each line.                                                    #
+####################################################################
 	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
 	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
 		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \

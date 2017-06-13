@@ -245,8 +245,8 @@ ${COREUTILS_NOLINK_DIR}:
 	KLEE_COREUTILS_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-out: build
-	# The testing sandbox reconstructed here is from
-	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
+# The testing sandbox reconstructed here is from
+# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
 	@echo =================================================================
 	@echo Creating the sandbox ...
 	@echo =================================================================
@@ -294,8 +294,9 @@ ${COREUTILS_NOLINK_DIR}:
 	fi ; \
 	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_COREUTILS_BASIC_OPTIONS} $$KLEE_COREUTILS_EXTRA_OPTIONS $$SOLVER_FLAGS --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR $$BITCODE_DIR/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
+	${KLEE_STATS} $$OUTPUT_DIR ; \
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
-	# Delete the sandbox
+# Delete the sandbox
 	rm -rf sandbox sandbox.temps
 	# Generate line coverage information
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
@@ -351,7 +352,7 @@ ${EXPERIMENT_CSV}.only:
 				printf "$$program$$ext," >> $@; \
 				cat $$program$$ext/ProgramOptions.txt >> $@; \
 				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> $@; \
+				${KLEE_STATS} $$program$$ext | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				grep "Elapsed:" ${CURDIR}/$$program$$ext/info | cut -d' ' -f2 |  sed 's/:/ /g;' | awk '{print $$3" "$$2" "$$1}' | awk '{print $$1+$$2*60+$$3*3600}' | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
@@ -375,9 +376,9 @@ ${EXPERIMENT_CSV}.only:
 				printf ", " >> $@; \
 				grep "average instructions of subsumed paths" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> $@; \
+				${KLEE_STATS} $$program$$ext | sed '4q;d' | cut -d '|' -f5 | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
-				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> $@; \
+				${KLEE_STATS} $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
 					if [ -e $$program$$ext/LcovLog.txt ]; then \
