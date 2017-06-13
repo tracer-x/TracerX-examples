@@ -231,11 +231,11 @@ core-experiment:
 # This target is used for collecting data from the experiment's result into experiment.csv file.
 ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
-	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov," >> $@
+	echo -n "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov," >> $@
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
-		echo "llvm-cov line coverage," >> $@
+		echo -n "llvm-cov line coverage,LOC" >> $@ ; \
 	fi
-	echo "LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
+	echo "Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
@@ -278,12 +278,14 @@ ${EXPERIMENT_CSV}: core-experiment
 				printf ", " >> $@; \
 				klee-stats $$program$$ext | sed '4q;d' | cut -d '|' -f6 | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
-				grep '^[[:space:]]*[[:digit:]]\+' $$program$$ext/$$program.cov |wc -l |tr -d '\n' >> $@; \
-				printf ", " >> $@; \
-				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
-					cat ${CURDIR}/$$program$$ext/SLocCountLog.txt | tr -d '\n' >> $@; \
+				if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
+					grep '^[[:space:]]*[[:digit:]]\+' $$program$$ext/$$program.cov |wc -l |tr -d '\n' >> $@; \
+					printf ", " >> $@; \
+					if [ -e $$program$$ext/SLocCountLog.txt ]; then \
+						cat ${CURDIR}/$$program$$ext/SLocCountLog.txt | tr -d '\n' >> $@; \
+					fi ; \
+					printf ", " >> $@; \
 				fi ; \
-				printf ", " >> $@; \
 				grep "Time for actual solver calls in subsumption check (ms)" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | tr -d '\n' >> $@; \
 				printf ", " >> $@; \
 				grep "Number of solver calls for subsumption check" ${CURDIR}/$$program$$ext/info | sed -E  's/(.*)=(.*)/\2/' | sed -E  's/(.*)\((.*)/\1/'| tr -d '\n' >> $@; \
@@ -306,9 +308,9 @@ ${EXPERIMENT_CSV}: core-experiment
 	done
 	rm -f small-$@
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
-		cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@
-	else
-		cut --delimiter=, --fields="1,3,5-10,15-17,24-" $@ > small-$@
+		cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@ ; \
+	else \
+		cut --delimiter=, --fields="1,3,5-10,15-17,24-" $@ > small-$@ ; \
 	fi
 
 # This target is used for collecting data from LLBMC experiment into CSV file.
