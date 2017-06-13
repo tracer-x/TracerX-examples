@@ -1,7 +1,7 @@
 Simple examples for running with Tracer-X KLEE
 ----------------------------------------------
 
-Copyright 2015-2017 National University of Singapore
+Copyright 2015-2017 National University of Singapore. See `LICENSE.md` for license information.
 
 This software includes third-party software, including some sample programs are from LLBMC 2013.1 distribution modified for running with KLEE, GNU Coreutils 6.10, and portions of libPNG. Their license information is included in the `license/LLBMC_LICENSE`, `license/COPYING`, and `license/LIBPNG_LICENSE`.
 
@@ -9,7 +9,7 @@ Each directory except **include** and **utils** contains a suite of simple examp
 
 - **basic**  - Basic examples. 
 
-- **binary-chop** - Examples which test the binary chop algorithm for WCET analysis, including nsichneu.c and statemate which are also used to test scalability.
+- **binary-chop** - Examples which test the binary chop algorithm for WCET analysis, including `nsichneu.c` and `statemate.c` which are also used to test scalability.
 
 - **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials.
 
@@ -32,8 +32,8 @@ example taken from [KLEE OSDI paper 2008]
 
 - **taint** - Assortment of examples extracted from known vulnerabilities: some may require KLEE API introduced in [a version of KLEE with taint propagation](https://github.com/feliam/klee-taint.git).
 
-Running
--------
+Configuring
+-----------
 
 To run any of the examples, first you need to execute the provided `configure` script. In particular, please set the following `configure` options:
 - The following options are relevant for all categories of examples:
@@ -43,11 +43,11 @@ To run any of the examples, first you need to execute the provided `configure` s
   --with-z3               The directory of Z3 (defaults to /usr/local/lib/z3)
   --with-stp              The directory of STP (defaults to /usr/local)
 ```
-- The following option is relevant only for running **join** examples
+- The following option is relevant only for running with **join** examples
 ```
   --with-clpr             The directory of CLP(R) (defaults to /usr/local)
 ```
-- The following options are relevant only for running **coreutils** examples
+- The following options are relevant only for running with **coreutils** examples
 ```
   --with-wllvm            The source directory of whole-program-llvm (defaults
                           to /usr/local/lib/whole-program-llvm)
@@ -63,10 +63,10 @@ To run any of the examples, first you need to execute the provided `configure` s
                           the specified directory (defaults to /usr/local).
 ```
 
-Running examples other than *join* and *coreutils*
---------------------------------------------------
+Running with example programs other than *join*, *coreutils*, and *scalability*
+-------------------------------------------------------------------------------
 
-Instruction on running the examples in the `join` and `coreutils` directories can be found later in this document. Please first run the `configure` script as instructed above. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
+Instruction on running with the examples in the `join`, `coreutils`, and `scalability` directories can be found later in this document. Please first run the `configure` script as instructed above. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
 
 The `Makefile` in each directory will create KLEE output directories `<example-name>.tx` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for all of the generated tests.
 
@@ -77,7 +77,7 @@ Sample usages:
 
   If the file `subsumption.dat` exists, this would also perform a regression test on the number of subsumptions compared to reference data in `subsumption.dat`.
 
-- For running addition_safe1.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
+- For running with addition_safe1.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
 
   `make addition_safe1.txcov`
 
@@ -91,7 +91,7 @@ Sample usages:
 
   `make addition_safe1.klee`
 
-- And for in addition to running Z3 solver without interpolation but additionally generating coverage statistics, run instead:
+- And for in addition to running with Z3 solver and without interpolation but additionally generating coverage statistics, run instead:
 
   `make addition_safe1.kleecov`
 
@@ -115,8 +115,8 @@ Sample usages:
 
   `make clean`
 
-Running *join* examples
------------------------
+Running with *join* examples
+----------------------------
 
 The examples in the `join` subdirectory requires Tracer-X KLEE to be compiled with CLP(R) 1.2l support. The `Makefile` tests can be run in the following way:
 
@@ -130,35 +130,31 @@ The examples in the `join` subdirectory requires Tracer-X KLEE to be compiled wi
 
 - There are other programs such as `count.c` and `sum.c` in the `join` directory. Please consult `join/Makefile`, which contains `test-*` targets to run them.
 
-Running *coreutils* examples
-----------------------------
+Running with *coreutils* or *scalability* examples
+--------------------------------------------------
 
-- *Prerequisites:* 
-   1. `whole-program-llvm`. This can be obtained by cloning it from GitHub, i.e.:
-     
-      `git clone https://github.com/travitch/whole-program-llvm.git`
+1. Run the `configure` script as instructed above.
+2. For *coreutils*, build it as follows:
+   - *Prerequisites:* 
+     1. `whole-program-llvm`. This can be obtained by cloning it from GitHub, i.e.: `git clone https://github.com/travitch/whole-program-llvm.git`
+     2. You may/may not need an older version of GNU texinfo. The build does not work with texinfo 5.2, but known to work with 4.13. Texinfo 4.13 can be found [here](http://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz).
+   - *Steps:*
+     1. `cd coreutils`
+     2. Run `make build`. This builds Coreutils 6.10 twice: one with for producing whole-program bitcode in `coreutils/coreutils-6.10/obj-llvm/src`, and another with instrumentation for measuring coverage with `llvm-cov` in `coreutils/coreutils-6.10/obj-cov/src`.
+3. Set open file limits to 65536 in the following way: `ulimit -n 65536`. The number 65536 seems to work. Please note that this may not work depending on whether the number exceeds your hard limit. You can check the hard limit via `ulimit -H -n`.
+4. `cd coreutils` or `cd scalability`
+5. Run `make` in any of the following ways:
+    - Just `make` - Runs the test-case generation on all programs: in case of *coreutils*, this will build Coreutils 6.10 if this is not done already.
+    - `make <program_name>.tx` - Runs the test-case generation on `<program_name>`: it will build Coreutils 6.10 if this is not done already. Here, `<program_name>` is one of the Coreutils programs whose executable file is found as `coreutils/coreutils-6.10/obj-llvm/src/<program_name>`. The output will be the result of Tracer-X KLEE run on the program with Z3 solver backend and interpolation, and its coverage information .The test cases are saved in `<program_name>.tx` directory.
+    - `make <program_name>.klee` - Runs the test-case generation on `<program_name>` similar to `make <program_name>.tx`, however, Tracer-X KLEE will be invoked with `-solver-backend=z3` and `-no-interpolation` to disable interpolation. This makes the run equivalent to running KLEE with `-solver-backend=z3`. The test cases are saved in `<program_name>.klee` directory.
+    - `make <program_name>.stpklee` - Runs the test-case generation on `<program_name>` similar to `make <program_name>.klee`, however, Tracer-X KLEE will be invoked with `-solver-backend=stp` which disables interpolation and uses STP, resulting in standard KLEE run using STP. The test cases are saved in `<program_name>.stpklee` directory.
+    - `make <program_name>.llbmc` - Runs LLBMC on `<program_name>`.
+    - `make experiment.csv` or `make llbmc-experiment.csv`.
+        * These are for executing with the example programs using KLEE, Tracer-X KLEE, and LLBMC, and collecting data for presentation. The targets will produce `experiment.csv` and `llbmc-experiment.csv` comma-separated values files, respectively, depending on which one was invoked. `experiment.csv` target will produce both `experiment.csv` and `small-experiment.csv`, which is the version with less data columns.
+        * For **coreutils** benchmark, `llbmc-experiment.csv` target will also produce `experiment.csv` (and `small-experiment.csv`) for the data for Tracer-X and KLEE (Z3 and STP) runs. This is because LLBMC can only be run on a smaller subset of Coreutils 6.10 programs, and on bitcode generated from the source of the `main` function only without linking with external files and libraries (libc). As such, for a more fair comparison, Tracer-X and KLEE must also be executed on the same bitcode.
+        * The experiments are run under different kinds of settings which can be seen in %.klee1, %.klee2, %.tx1, %.tx2, %.tx3, %.tx4, %.tx5, and %.tx6 targets defined in the `coreutils/Makefile` and `scalability/Makefile`, on the selected coreutils programs specified using the `EXPERIMENT_SET` variable in `coreutils/Makefile` and `scalability/Makefile`.
 
-   2. You may/may not need an older version of GNU texinfo. The build does not work with texinfo 5.2, but known to work with 4.13. Texinfo 4.13 can be found [here](http://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz).
+Note that by default, line coverage computation is performed using `llvm-cov`. To prevent, this, set the `make` variable `ENABLE_COVERAGE=OFF`, for example: `make ENABLE_COVERAGE=OFF Regexp.tx`.
 
-- Run the `configure` script as instructed above, then:
-   1. Set open file limits to 65536 in the following way: `ulimit -n 65536`. The number 65536 seems to work. Please note that this may not work depending on whether the number exceeds your hard limit. You can check the hard limit via `ulimit -H -n`.
-   2. `cd coreutils`
-   3. Run `make` in any of these ways:
-       - `make build` - To build Coreutils 6.10 twice: one with for producing whole-program bitcode in `coreutils/coreutils-6.10/obj-llvm/src`, and another with instrumentation for measuring coverage with `llvm-cov` in `coreutils/coreutils-6.10/obj-cov/src`.
-       - Just `make` - Runs the test-case generation on all programs: it will build Coreutils 6.10 if this is not done already.
-       - `make <program_name>.tx` - Runs the test-case generation on `<program_name>`: it will build Coreutils 6.10 if this is not done already. Here, `<program_name>` is one of the Coreutils programs whose executable file is found as `coreutils/coreutils-6.10/obj-llvm/src/<program_name>`. The output will be the result of Tracer-X KLEE run on the program with Z3 solver backend and interpolation, and its coverage information.
-       - `make <program_name>.klee` - Runs the test-case generation on `<program_name>` similar to `make <program_name>.tx`, however, Tracer-X KLEE will be invoked with `-solver-backend=z3` and `-no-interpolation` to disable interpolation. This makes the run equivalent to running KLEE with `-solver-backend=z3`.
-       - `make <program_name>.stpklee` - Runs the test-case generation on `<program_name>` similar to `make <program_name>.klee`, however, Tracer-X KLEE will be invoked with `-solver-backend=stp` which disables interpolation and uses STP, resulting in standard KLEE run using STP.
 
-- Note that the test cases generated by Tracer-X KLEE with interpolation, without interpolation, and with STP will be in `coreutils/<program_name>.tx`, `coreutils/<program_name>.klee`, and `coreutils/<program_name>.stpklee`, respectively.
 
-Running experiments
--------------------
-
-`experiment.csv` and `llbmc-experiment.csv` makefile targets are for **coreutils** and **scalability** examples. They are for executing on the benchmark with KLEE, Tracer-X KLEE, and LLBMC, and collecting data for presentation. The targets will produce `experiment.csv` and `llbmc-experiment.csv` comma-separated values files, respectively, depending on which one was invoked. `experiment.csv` target will produce both `experiment.csv` and `small-experiment.csv`, the version with less data columns, which can be more presentable. For **coreutils** benchmark, `llbmc-experiment.csv` target will also produce `experiment.csv` (and `small-experiment.csv`) for the data of Tracer-X and KLEE (Z3 and STP) runs. This is because LLBMC can only be run on a smaller subset of Coreutils 6.10 programs, and on bitcode generated from the source of the `main` function only without linking with external files and libraries (libc). As such, for more fair comparison, Tracer-X and KLEE must also be executed on the bitcode.
-
-- Needless to say, one needs to first run the `configure` script as instructed above.
-
-- For Coreutils 6.10 program, please go to coreutils directory (`cd coreutils`) and run `make experiment.csv`. The experiment will run under different kinds of settings which can be seen in %.klee1, %.klee2, %.tx1, %.tx2, %.tx3, %.tx4, %.tx5, and %.tx6 targets on selected coreutils programs specified via the `EXPERIMENT_SET` program in `coreutils/Makefile`. This will also create `experiment.csv` and `small-experiment.csv` comma-separated values file containing the experiment data.
-
-- To run target `experiment.csv` for the scalability examples, please go to the `scalability` directory (`cd scalability`) and run `make experiment.csv`. As is the case with coreutils, this will also create `experiment.csv` and `small-experiment.csv` comma-separated values file containing the experiment data.
