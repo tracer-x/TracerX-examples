@@ -9,7 +9,7 @@ Each directory except **include** and **utils** contains a suite of simple examp
 
 - **basic**  - Basic examples. 
 
-- **binary-chop** - Examples which test the binary chop algorithm for WCET analysis, including nsichneu.c and statemate which are also used to test scalability.
+- **binary-chop** - Examples which test the binary chop algorithm for WCET analysis, including `nsichneu.c` and `statemate.c` which are also used to test scalability.
 
 - **scalability** - Examples that tests scalability, including `Regexp.c`, an example from KLEE tutorial at http://klee.github.io/tutorials.
 
