@@ -32,8 +32,8 @@ example taken from [KLEE OSDI paper 2008]
 
 - **taint** - Assortment of examples extracted from known vulnerabilities: some may require KLEE API introduced in [a version of KLEE with taint propagation](https://github.com/feliam/klee-taint.git).
 
-Running
--------
+Configuring
+-----------
 
 To run any of the examples, first you need to execute the provided `configure` script. In particular, please set the following `configure` options:
 - The following options are relevant for all categories of examples:
@@ -43,11 +43,11 @@ To run any of the examples, first you need to execute the provided `configure` s
   --with-z3               The directory of Z3 (defaults to /usr/local/lib/z3)
   --with-stp              The directory of STP (defaults to /usr/local)
 ```
-- The following option is relevant only for running **join** examples
+- The following option is relevant only for running with **join** examples
 ```
   --with-clpr             The directory of CLP(R) (defaults to /usr/local)
 ```
-- The following options are relevant only for running **coreutils** examples
+- The following options are relevant only for running with **coreutils** examples
 ```
   --with-wllvm            The source directory of whole-program-llvm (defaults
                           to /usr/local/lib/whole-program-llvm)
@@ -63,10 +63,10 @@ To run any of the examples, first you need to execute the provided `configure` s
                           the specified directory (defaults to /usr/local).
 ```
 
-Running examples other than *join* and *coreutils*
---------------------------------------------------
+Running with example programs other than *join* and *coreutils*
+---------------------------------------------------------------
 
-Instruction on running the examples in the `join` and `coreutils` directories can be found later in this document. Please first run the `configure` script as instructed above. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
+Instruction on running with the examples in the `join` and `coreutils` directories can be found later in this document. Please first run the `configure` script as instructed above. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
 
 The `Makefile` in each directory will create KLEE output directories `<example-name>.tx` which also contains the `.dot` files, and also `<example-name>.inputs` files that show the input values for all of the generated tests.
 
@@ -77,7 +77,7 @@ Sample usages:
 
   If the file `subsumption.dat` exists, this would also perform a regression test on the number of subsumptions compared to reference data in `subsumption.dat`.
 
-- For running addition_safe1.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
+- For running with addition_safe1.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
 
   `make addition_safe1.txcov`
 
@@ -91,7 +91,7 @@ Sample usages:
 
   `make addition_safe1.klee`
 
-- And for in addition to running Z3 solver without interpolation but additionally generating coverage statistics, run instead:
+- And for in addition to running with Z3 solver and without interpolation but additionally generating coverage statistics, run instead:
 
   `make addition_safe1.kleecov`
 
@@ -115,8 +115,8 @@ Sample usages:
 
   `make clean`
 
-Running *join* examples
------------------------
+Running with *join* examples
+----------------------------
 
 The examples in the `join` subdirectory requires Tracer-X KLEE to be compiled with CLP(R) 1.2l support. The `Makefile` tests can be run in the following way:
 
@@ -130,8 +130,8 @@ The examples in the `join` subdirectory requires Tracer-X KLEE to be compiled wi
 
 - There are other programs such as `count.c` and `sum.c` in the `join` directory. Please consult `join/Makefile`, which contains `test-*` targets to run them.
 
-Running *coreutils* examples
-----------------------------
+Running with *coreutils* examples
+---------------------------------
 
 - *Prerequisites:* 
    1. `whole-program-llvm`. This can be obtained by cloning it from GitHub, i.e.:
