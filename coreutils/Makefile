@@ -300,10 +300,10 @@ ${COREUTILS_NOLINK_DIR}:
 	# Generate line coverage information
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
 		${CURDIR}/../utils/coreutilscov.sh "$*" "$$OUTPUT_DIR" ${COREUTILS_COV_MAX_TIME}
-	fi
-	GCDA_FILES=`find "${COREUTILS_COV_DIR}" -name "*.gcda"` ; \
-	if [ ! -z "$$GCDA_FILES" ] ; then \
-		rm -f $$GCDA_FILES ; \
+		GCDA_FILES=`find "${COREUTILS_COV_DIR}" -name "*.gcda"` ; \
+		if [ ! -z "$$GCDA_FILES" ] ; then \
+			rm -f $$GCDA_FILES ; \
+		fi
 	fi
 
 clean:
@@ -332,11 +332,11 @@ core-experiment:
 
 ${EXPERIMENT_CSV}.only:
 	( cd ../utils ; CC=${CC} make treecmp ) 
+	echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov," >> $@
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
-		echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,llvm-cov line coverage,LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
-	else
-		echo "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov,LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
+		echo "llvm-cov line coverage," >> $@
 	fi
+	echo "LOC,Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
 	if [ -z "$$EXPERIMENT_SET" ]  ; then \
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
@@ -383,8 +383,8 @@ ${EXPERIMENT_CSV}.only:
 					if [ -e $$program$$ext/LcovLog.txt ]; then \
 						cat $$program$$ext/LcovLog.txt | tr -d '\n' >> $@; \
 					fi ; \
-				fi
 				printf ", " >> $@; \
+				fi
 				if [ -e $$program$$ext/SLocCountLog.txt ]; then \
 					cat ${CURDIR}/$$program$$ext/SLocCountLog.txt | tr -d '\n' >> $@; \
 				fi ; \
