@@ -196,7 +196,7 @@ ${COREUTILS_NOLINK_DIR}:
 	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
 		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_COREUTILS_OPTIONS="$$KLEE_COREUTILS_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY} -interpolation-stat" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
+	KLEE_COREUTILS_OPTIONS="$$KLEE_COREUTILS_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_LLVM_DIR}/src make $*.klee-out
 
 %.klee:
 	if [ -z "$$OUTPUT_DIR" ] ; then \
@@ -224,7 +224,7 @@ ${COREUTILS_NOLINK_DIR}:
 	if [ -z "$$KLEE_COREUTILS_OPTIONS" ] ; then \
 		KLEE_COREUTILS_OPTIONS="${KLEE_COREUTILS_DEFAULT_OPTIONS}" ; \
 	fi ; \
-	KLEE_COREUTILS_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -interpolation-stat" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
+	KLEE_COREUTILS_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${COREUTILS_NOLINK_DIR} make $*.klee-out
 
 %.klee-nolink:
 	if [ -z "$$OUTPUT_DIR" ] ; then \

@@ -4,7 +4,7 @@
 
 # We enable execution tree (tree.dot) output as the examples
 # in this directory are small.
-EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2
+EXTRA_OPTIONS=-output-tree -write-pcs -use-query-log=all:pc,all:smt2
 
 # We silence int to pointer conversion warning
 EXTRA_CFLAGS=-Wno-int-conversion

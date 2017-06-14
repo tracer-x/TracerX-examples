@@ -6,7 +6,7 @@
       s: squeeze multiple output characters of string2 into one character
 
 clang -emit-llvm -c -g tr_nosyscall.c -o tr_nosyscall.bc
-time ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc -interpolation-stat --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
+time ~/git/tracerx/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 
 
 clang -emit-llvm -c -g tr_nosyscall.c -o tr_nosyscall.bc
 time ~/git/original/klee/Release+Asserts/bin/klee -libc=uclibc --posix-runtime -only-output-states-covering-new -allow-external-sym-calls ./tr_nosyscall.bc --sym-arg 1 --sym-arg 1 --sym-arg 1 --sym-files 2 2000 --max-fail 1 

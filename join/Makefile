@@ -4,7 +4,7 @@
 
 # We enable execution tree (tree.dot) output as the examples
 # in this directory are small.
-EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2 -clpr-log
+EXTRA_OPTIONS=-output-tree -write-pcs -use-query-log=all:pc,all:smt2 -clpr-log
 
 # This is for the options passed onto the tested program, e.g.,
 # --sym-arg

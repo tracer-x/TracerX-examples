@@ -4,7 +4,7 @@
 
 # We enable execution tree (tree.dot) output as the examples
 # in this directory are small.
-EXTRA_OPTIONS=-output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2
+EXTRA_OPTIONS=-output-tree -write-pcs -use-query-log=all:pc,all:smt2
 
 TARGETS=$(patsubst %.c,%.tx,$(wildcard *.c))
 
