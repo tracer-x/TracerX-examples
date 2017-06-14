@@ -80,9 +80,6 @@ IR_TARGETS=$(subst .tx,.ll,${TARGETS})
 KLEE_TARGETS=$(subst .tx,.klee,${TARGETS})
 STPKLEE_TARGETS=$(subst .tx,.stpklee,${TARGETS})
 EXECUTABLE_TARGETS=$(subst .tx,,${TARGETS})
-TXCOV_TARGETS=$(subst .tx,.txcov,${TARGETS})
-KLEECOV_TARGETS=$(subst .tx,.kleecov,${TARGETS})
-STPKLEECOV_TARGETS=$(subst .tx,.stpkleecov,${TARGETS})
 
 all: all-ir ${INPUT_TARGETS}
 
@@ -91,7 +88,7 @@ all-ir: ${IR_TARGETS}
 all-replay: ${TXCOV_TARGETS}
 
 standard-clean:
-	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda *.cov *.stpcov core ${EXECUTABLE_TARGETS} 
+	rm -f klee-last *.bc *.ll *~ *.inputs *.gcno *.gcda core ${EXECUTABLE_TARGETS} 
 	rm -rf klee-out-* ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS} ${TXCOV_TARGETS} ${KLEECOV_TARGETS} ${STPKLEECOV_TARGETS} ${EXTRA_REMOVAL}
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
 		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
@@ -101,7 +98,7 @@ standard-clean:
 # To prevent the removal of *.tx subdirectories
 .PRECIOUS: %.csv %.tx %.klee %.stpklee
 
-.SUFFIXES: .tx .klee .stpklee .klee-out .inputs .bc .ll .cov .txcov .kleecov .stpkleecov
+.SUFFIXES: .tx .klee .stpklee .klee-out .inputs .bc .ll
 
 # For running KLEE with Z3 and interpolation
 .bc.tx:
@@ -162,40 +159,35 @@ standard-clean:
 			echo WARNING: Timed out creating .svg file ; \
 		fi ; \
 	done
-
-# Execute the following targets instead to also get coverage
-# information, e.g., make even.txcov
-.bc.txcov:
-	SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$*.tx COV_FILE=$*.txcov make $*.cov
-
-.bc.kleecov:
-	SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$*.klee COV_FILE=$*.kleecov make $*.cov
-
-.bc.stpkleecov:
-	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$*.stpklee COV_FILE=$*.stpkleecov make $*.cov
-
-.bc.cov:
-	@make $*.klee-out
 ####################################################################
-# llvm-cov Statistics for line coverage                            #
+# llvm-cov Statistics for line coverage: Enable with               #
+# ENABLE_COVERAGE=ON.                                              #
 #                                                                  #
-# See the generated .stpcov file for the detailed execution count  #
+# See the generated info.cov file for the detailed execution count #
 # of each line.                                                    #
 ####################################################################
-	${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $*
-	for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-		( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
-	done
-	touch $$COV_FILE
-	LOC_TOTAL=0 ; \
-	LINE_COVERAGE=0 ; \
-	if [ -e $*.gcda ] ; then \
-		llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$COV_FILE ; \
-		LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$COV_FILE |wc -l` ; \
-		LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$COV_FILE |wc -l` ; \
-		LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
-	fi ; \
-	echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL
+	@if [ "${ENABLE_COVERAGE}" = "ON" ] ; then \
+		KLEE_RUNTIME_DLL=${KLEE_HOME}/lib/libkleeRuntest.so.1.0 ; \
+	        if [ ! -e $$KLEE_RUNTIME_DLL ] ; then \
+		        echo "ERROR: KLEE runtime library libkleeRuntest.so.1.0 is not found: You may need to run ldconfig -n ${KLEE_HOME}/lib" ; \
+			exit 1 ; \
+	        fi ; \
+		COV_FILE="$$OUTPUT_DIR/info.cov" ; \
+		${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $* ; \
+		for KTEST in $$OUTPUT_DIR/*.ktest ; do \
+			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
+		done ; \
+		touch $$COV_FILE ; \
+		LOC_TOTAL=0 ; \
+		LINE_COVERAGE=0 ; \
+		if [ -e $*.gcda ] ; then \
+			llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$COV_FILE ; \
+			LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$COV_FILE |wc -l` ; \
+			LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$COV_FILE |wc -l` ; \
+			LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \
+		fi ; \
+		echo Line coverage = $$LINE_COVERAGE of $$LOC_TOTAL ; \
+	fi
 
 # This target is used for running experiment with LLBMC. LLBMC uses
 # STP as backend, so we do 'ulimit -s unlimited' as recommended in
