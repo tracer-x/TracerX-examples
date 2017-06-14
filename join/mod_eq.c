@@ -5,7 +5,7 @@
  * 
  * make clean
  * clang -emit-llvm -g -c mod_eq.c
- * time /home/felicia/git/tracerx/klee/Release+Asserts/bin/klee -max-time=10 -output-tree -interpolation-stat -write-pcs -use-query-log=all:pc,all:smt2 -allow-external-sym-calls -search=dfs -select-solver=stp -output-dir=mod_eq.stpklee mod_eq.bc -max-fail 1
+ * time /home/felicia/git/tracerx/klee/Release+Asserts/bin/klee -max-time=10 -output-tree -write-pcs -use-query-log=all:pc,all:smt2 -allow-external-sym-calls -search=dfs -select-solver=stp -output-dir=mod_eq.stpklee mod_eq.bc -max-fail 1
  */
 
 #include <klee/klee.h>
