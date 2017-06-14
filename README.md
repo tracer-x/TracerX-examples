@@ -75,33 +75,25 @@ Sample usages:
 
   `make addition_safe1.tx`
 
-  If the file `subsumption.dat` exists, this would also perform a regression test on the number of subsumptions compared to reference data in `subsumption.dat`.
-
-- For running with addition_safe1.c with KLEE using Z3 solver and interpolation, and with additional coverage statistics, instead run:
-
-  `make addition_safe1.txcov`
+  Optionally, add `ENABLE_COVERAGE=ON` to the `make` command to enable coverage computation. If the file `subsumption.dat` exists, this would also perform a regression test on the number of subsumptions compared to reference data in `subsumption.dat`.
 
 - To run all examples with KLEE using Z3 solver and interpolation:
 
   `make`
 
-  This is the same as executing `make <example_name>.tx` for all examples.
+  This is the same as executing `make <example_name>.tx` for all examples. Optionally, add `ENABLE_COVERAGE=ON` to the `make` command to enable coverage computation.
 
 - To run a single example, e.g., addition_safe1.c in the basic directory using Z3 solver but without interpolation:
 
   `make addition_safe1.klee`
 
-- And for in addition to running with Z3 solver and without interpolation but additionally generating coverage statistics, run instead:
-
-  `make addition_safe1.kleecov`
+  Optionally, add `ENABLE_COVERAGE=ON` to the `make` command to enable coverage computation.
 
 - To run a single example, e.g., addition_safe1.c in the basic directory using STP solver and without interpolation:
 
   `make addition_safe1.stpklee`
 
-- And for additionally generating coverage statistics using STP solver backend and without interpolation, run instead:
-
-  `make addition_safe1.stpcov`
+  Optionally, add `ENABLE_COVERAGE=ON` to the `make` command to enable coverage computation.
 
 - You can also execute LLBMC to analyze `addition_safe1.c` after properly configuring this repository using `--with-llbmc`. The execution can be done as in the following example:
 
@@ -154,7 +146,7 @@ Running with *coreutils* or *scalability* examples
         * For **coreutils** benchmark, `llbmc-experiment.csv` target will also produce `experiment.csv` (and `small-experiment.csv`) for the data for Tracer-X and KLEE (Z3 and STP) runs. This is because LLBMC can only be run on a smaller subset of Coreutils 6.10 programs, and on bitcode generated from the source of the `main` function only without linking with external files and libraries (libc). As such, for a more fair comparison, Tracer-X and KLEE must also be executed on the same bitcode.
         * The experiments are run under different kinds of settings which can be seen in %.klee1, %.klee2, %.tx1, %.tx2, %.tx3, %.tx4, %.tx5, and %.tx6 targets defined in the `coreutils/Makefile` and `scalability/Makefile`, on the selected coreutils programs specified using the `EXPERIMENT_SET` variable in `coreutils/Makefile` and `scalability/Makefile`.
 
-Note that by default, line coverage computation is performed using `llvm-cov`. To prevent, this, set the `make` variable `ENABLE_COVERAGE=OFF`, for example: `make ENABLE_COVERAGE=OFF Regexp.tx`.
+Note that by default, line coverage computation is performed using `llvm-cov`. To prevent, this, add `ENABLE_COVERAGE=OFF` to the `make` command, for example: `make ENABLE_COVERAGE=OFF Regexp.tx`.
 
 
 
