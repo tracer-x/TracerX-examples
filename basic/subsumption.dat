@@ -28,6 +28,8 @@ domination1.c		2
 domination2.c		4
 double-free.c		0
 even.c			0
+huge_increment		4
+huge_increment_inverted	4
 instCountTest		0
 interproc.c		4
 local.c			4
