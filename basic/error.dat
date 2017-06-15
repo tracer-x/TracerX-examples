@@ -36,7 +36,6 @@ missing_error.c		1
 openssl.c		2
 openssl_partial_fix.c	1
 pointer_alloc.c		1
-pointer_wp.c		0
 pointer_loop.c		1
 pointer_recursive.c	0
 pointer_iterative.c	1
@@ -48,6 +47,9 @@ pointer_struct5.c	0
 pointer_struct6.c	0
 pointer_struct7.c	0
 pointer_symbolic.c	1
+pointer_wp1.c		0
+pointer_wp2.c		1
+pointer_wp3.c		1
 polynomial.c		0
 recursion1.c		0
 recursion2.c		0
