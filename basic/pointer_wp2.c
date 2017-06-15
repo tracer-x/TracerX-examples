@@ -1,8 +1,12 @@
 /*
  * Copyright 2016, 2017 National University of Singapore
  *
- * This program is for testing memory bounds check interpolation: it
- * should have interpolations not just at/near the end of the traces.
+ * This program is for testing memory bounds check interpolation: It
+ * should discover an error because some memory bounds are not
+ * satisfied in subsumption check.
+ * 
+ * The error report should disappear with the use of the option
+ * -special-function-bound-interpolation.
  */
 #ifdef LLBMC
 #include <llbmc.h>
@@ -12,7 +16,7 @@
 
 int main(int argc, char **argv)
 {
-  char s[14];
+  char s[10];
   int p1, p2, p3;
   char *p;
 
@@ -29,19 +33,19 @@ int main(int argc, char **argv)
   p = s;
 
   if (p1) {
-    p += 3;
-  } else {
     p += 2;
+  } else {
+    p += 1;
   }
   if (p2) {
-    p += 3;
-  } else {
     p += 2;
+  } else {
+    p += 1;
   }
   if (p3) {
-    p += 3;
-  } else {
     p += 2;
+  } else {
+    p += 7;
   }
 
   // p should be in s
