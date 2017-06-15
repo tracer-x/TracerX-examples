@@ -15,5 +15,3 @@
 #include <klee/klee.h>
 #endif
 
-
-

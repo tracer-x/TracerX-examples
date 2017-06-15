@@ -31,11 +31,11 @@ int main()
   P3_is_marked = __llbmc_nondef_int();
 #else
    klee_make_symbolic(P1_marking_member_0, 3 * sizeof(long), "P1_marking_member_0");
-   //klee_make_symbolic(&P1_is_marked, sizeof(int), "P1_is_marked");
+   klee_make_symbolic(&P1_is_marked, sizeof(int), "P1_is_marked");
    klee_make_symbolic(P2_marking_member_0, 5 * sizeof(long), "P2_marking_member_0");
-   //klee_make_symbolic(&P2_is_marked, sizeof(int), "P2_is_marked");
+   klee_make_symbolic(&P2_is_marked, sizeof(int), "P2_is_marked");
    klee_make_symbolic(P3_marking_member_0, 6 * sizeof(long), "P3_marking_member_0");
-   //klee_make_symbolic(&P3_is_marked, sizeof(int), "P3_is_marked");
+   klee_make_symbolic(&P3_is_marked, sizeof(int), "P3_is_marked");
 #endif
 
    while (dummy_i > 0) {
