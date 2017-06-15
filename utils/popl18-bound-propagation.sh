@@ -19,7 +19,7 @@ blue='\e[1;34m%s\e[0m\n'
 magenta='\e[1;35m%s\e[0m\n'
 cyan='\e[1;36m%s\e[0m\n'
 
-export EXPERIMENT_SET="cnt"  # statemate_w_bound cnt_w_bound Regexp7_w_bound
+export EXPERIMENT_SET="Regexp7"  # nsichneu_small statemate cnt Regexp7 nsichneu
 export EXPERIMENT_TYPE_SET=".tx1"
 export ENABLE_COVERAGE=OFF
 
