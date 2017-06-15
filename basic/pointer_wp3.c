@@ -1,8 +1,9 @@
 /*
  * Copyright 2016, 2017 National University of Singapore
  *
- * This program is for testing memory bounds check interpolation: it
- * should have subsumptions not just at/near the end of the traces.
+ * This program is for testing memory bounds check interpolation.
+ * Tracer-X KLEE should report error either
+ * -special-function-bound-interpolation is used or not.
  */
 #ifdef LLBMC
 #include <llbmc.h>
