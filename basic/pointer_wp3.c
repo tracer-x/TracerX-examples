@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2017 National University of Singapore
+ * Copyright 2017 National University of Singapore
  *
  * This program is for testing memory bounds check interpolation.
  * Tracer-X KLEE should report error either

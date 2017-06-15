@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2017 National University of Singapore
+ * Copyright 2017 National University of Singapore
  *
  * This program is for testing memory bounds check interpolation: It
  * should discover an error because some memory bounds are not
