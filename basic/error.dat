@@ -26,6 +26,8 @@ branch.c		0
 bubble_assert.c		0
 double-free.c		1
 even.c			0
+huge_increment		1
+huge_increment_inverted	1
 instCountTest		0
 interproc.c		0
 local.c			0

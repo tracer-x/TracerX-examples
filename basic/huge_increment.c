@@ -1,5 +1,8 @@
 /*
- * Perfect case: No infeasible paths
+ * In this example, a huge increment at one block causes the WCET to exceed the bound.
+ * Only one path exceeds the bound. Compared to huge_increment_inverted.c, the observation
+ * is that analyzing the tree from left to right or from right to left can make differences
+ * in number of subsumptios and also total instructions traversed.
  */
 #ifdef LLBMC
 #include <llbmc.h>
@@ -28,21 +31,20 @@ int main() {
   p = s;
 
   if (a == 0)
-     p+=2;
-  else
      p+=1;
+  else
+     p+=2;
   if (b == 0)
-     p+=4;
-  else
      p+=3;
-  if (c == 0)
-     p+=94;
   else
+     p+=4;
+  if (c == 0)
      p+=5;
+  else
+     p+=94;
 
   // p should be in s
   return *p;
 } 
-
 
 
