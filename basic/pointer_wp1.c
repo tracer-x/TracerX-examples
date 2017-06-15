@@ -2,7 +2,7 @@
  * Copyright 2016, 2017 National University of Singapore
  *
  * This program is for testing memory bounds check interpolation: it
- * should have interpolations not just at/near the end of the traces.
+ * should have subsumptions not just at/near the end of the traces.
  */
 #ifdef LLBMC
 #include <llbmc.h>
