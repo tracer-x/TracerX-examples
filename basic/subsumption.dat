@@ -18,10 +18,14 @@ arraysimple2.c		0
 arraysimple3.c		0
 arraysimple4.c		2
 arraysimple5.c		11
+boundCheck5		0
+boundCheck5_rand	8
+boundCheck40		78
 branch.c		0
 bubble_assert.c		6
 double-free.c		0
 even.c			0
+instCountTest		0
 interproc.c		0
 local.c			0
 loop_safe1.c		0
