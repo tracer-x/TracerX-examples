@@ -27,7 +27,7 @@ clean: standard-clean
 test-use-clpr: join1.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -use-clpr=dummy2.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -37,7 +37,7 @@ test-use-clpr: join1.bc
 test-join: join2.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -48,7 +48,7 @@ test-nosub1: join3.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
 	mv -f /tmp/clpr-* $@/clpr.log
 	mv -f $@.log $@/klee.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -60,7 +60,7 @@ test-nosub2: join4.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
 	mv -f /tmp/clpr-* $@/clpr.log
 	mv -f $@.log $@/klee.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -72,7 +72,7 @@ test-sub: join5.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=dummy1.clpr -output-dir=$@ $< 2> $@.log
 	mv -f /tmp/clpr-* $@/clpr.log
 	mv -f $@.log $@/klee.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -83,7 +83,7 @@ test-sub: join5.bc
 test-count: count.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=count.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -93,7 +93,7 @@ test-count: count.bc
 test-sum: sum.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=sum.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -102,17 +102,17 @@ test-sum: sum.bc
 test-bubble9: bubble9.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=bubble_max.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
 	done
 
 test-png_sig_cmp: png_sig_cmp.bc
-	# In the future we need to add -use-clpr= option here
+# In the future we need to add -use-clpr= option here
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -121,7 +121,7 @@ test-png_sig_cmp: png_sig_cmp.bc
 test-set_fields: set_fields.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=set_fields.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
@@ -130,7 +130,7 @@ test-set_fields: set_fields.bc
 test-fib: fib.bc
 	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} -solver-backend=z3 -use-clpr=fib.clpr -output-dir=$@ $<
 	mv -f /tmp/clpr-* $@/clpr.log
-	# Create SVGs from *.dot files
+# Create SVGs from *.dot files
 	for DOTFILE in $@/*.dot ; do \
 		SVGFILE=`echo -n $$DOTFILE | sed -e s/\.dot/\.svg/ -` ; \
 		dot -Tsvg $$DOTFILE -o $$SVGFILE ; \
