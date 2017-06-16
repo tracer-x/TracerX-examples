@@ -19,15 +19,20 @@ blue='\e[1;34m%s\e[0m\n'
 magenta='\e[1;35m%s\e[0m\n'
 cyan='\e[1;36m%s\e[0m\n'
 
-export EXPERIMENT_SET="Regexp7"  # nsichneu_small statemate cnt Regexp7 nsichneu
+mv result.csv result_old.csv
+
+export EXPERIMENT_SET="nsichneu  cnt Regexp7 Regexp8 Regexp9 Regexp10 Regexp15 statemate"  # nsichneu_small nsichneu statemate cnt Regexp7 Regexp8
 export EXPERIMENT_TYPE_SET=".tx1"
 export ENABLE_COVERAGE=OFF
 
 # Adding the target in benchmarks
 export BENCHMARKS=$(echo $EXPERIMENT_SET | tr " " "\n")
 
+echo "Round,Benchmark,Upper Bound,Tested Bound,Lower Bound,Is Safe,Precision,Analysis Time (sec),Instruction Count" >> result.csv
+
 for BENCHMARK in $BENCHMARKS
 do
+	export ROUND=1
 	export UPPER_BOUND=1000
 	export CURRENT_BOUND=$UPPER_BOUND
 	export LOWER_BOUND=1
@@ -37,7 +42,11 @@ do
 		echo "UPPER BOUND: "$UPPER_BOUND
 	        echo "CURRENT BOUND: "$CURRENT_BOUND
 	        echo "LOWER BOUND: "$LOWER_BOUND
+		OLD_UPPER_BOUND=$UPPER_BOUND
+		OLD_CURRENT_BOUND=$CURRENT_BOUND
+		OLD_LOWER_BOUND=$LOWER_BOUND
 		echo "Precision: " 
+		PRECISION=$(bc -l <<< "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2))")
 		echo "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2));scale=2" | bc -l
 		cat src/"$BENCHMARK".pre > "$BENCHMARK".c 
 		echo "char _bound[$CURRENT_BOUND];"  >> "$BENCHMARK".c  
@@ -45,8 +54,10 @@ do
 		make "$BENCHMARK".tx 2> output.txt > output.txt 
 		printf "Instructions Count: "
 		klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f3  | tr -d '\n' | tr -d ' ' 
+		INSTRUCTION_COUNT=$(klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f3  | tr -d '\n' | tr -d ' ' )
 		printf "\nAnalysis time: "
 		klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' | tr -d ' ' 
+		ANALYSIS_TIME=$(klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f4  | tr -d '\n' | tr -d ' ' )
 		if ! grep -qF "ERROR:" "$BENCHMARK".tx/messages.txt; then
 		    printf "\n$green\n" "Bound is safe"	
 		    echo
@@ -65,6 +76,7 @@ do
 		    else
   		        CURRENT_BOUND=$[($UPPER_BOUND + $LOWER_BOUND) / 2]
 		    fi
+		    IS_SAFE="Y"
 		else
 		    COUNTER_EXAMPLE=$(grep 'Timing of Path:[0-9][0-9]*' output.txt | tail -1)
 		    printf "\nCounter Example Time:"
@@ -73,10 +85,14 @@ do
 		    echo	
   		    LOWER_BOUND=$[${COUNTER_EXAMPLE:15} + 1]
   		    CURRENT_BOUND=$[($UPPER_BOUND + $LOWER_BOUND) / 2]
+		    IS_SAFE="N"
 		fi	
+		echo "$ROUND,$BENCHMARK,$OLD_UPPER_BOUND,$OLD_CURRENT_BOUND,$OLD_LOWER_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT" >> result.csv
+		ROUND=$[$ROUND+1]
 		rm -R "$BENCHMARK".tx
 		rm output.txt
 	done
+	echo ",,,,,,,," >> result.csv
 done
 
 
