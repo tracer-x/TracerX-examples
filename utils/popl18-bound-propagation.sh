@@ -21,7 +21,7 @@ cyan='\e[1;36m%s\e[0m\n'
 
 mv result.csv result_old.csv
 
-export EXPERIMENT_SET="expint"  # nsichneu_small nsichneu  cnt Regexp7 Regexp8 Regexp9 Regexp10 Regexp15 statemate ud
+export EXPERIMENT_SET="adpcm"  # nsichneu_small nsichneu  cnt expint Regexp7 Regexp8 Regexp9 Regexp10 Regexp15 statemate ud 
 export EXPERIMENT_TYPE_SET=".tx1"
 export ENABLE_COVERAGE=OFF
 
@@ -69,6 +69,7 @@ do
 		        echo "LOWER BOUND: "$LOWER_BOUND
 			echo "Precision: " 
 			echo "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2));scale=2" | bc -l
+			echo "$ROUND,$BENCHMARK,$OLD_UPPER_BOUND,$OLD_CURRENT_BOUND,$OLD_LOWER_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT" >> result.csv
 			rm -R "$BENCHMARK".tx
 			rm "$BENCHMARK".c
 			rm output.txt
