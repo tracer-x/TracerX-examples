@@ -1,10 +1,13 @@
 /*
- * Copyright 2016, 2017 National University of Singapore
+ * Portions Copyright 2017 National University of Singapore
+ *
+ * This program is a modified version of statemate.c from (Malardalen
+ * website URL: http://www.mrtc.mdh.se/projects/wcet/wcet_bench/statemate).
  *
  * This program is for testing "total instructions" stats of KLEE. The
- * first basic block is quite longer than the other two. The "total 
- * instructions" should be counting the longer basic block only once which 
- * does.
+ * first basic block is quite long compared to the other two basic blocks.
+ * The "total instructions" should be counting the longer basic block only 
+ * once which does.
  */
 #include <klee/klee.h>
 

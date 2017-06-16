@@ -1,9 +1,10 @@
 /*
- * Copyright 2016, 2017 National University of Singapore
+ * Copyright 2017 National University of Singapore
  *
  * This program is for testing memory bounds check interpolation: it
- * should have no interpolations, since KLEE can check that the target is safe 
- * with internal huristics. 
+ * should have subsumptions not just at/near the end of the traces.
+ * Tracer-X, LLBMC, and KLEE were able to complete the analysis of this
+ * program within 1 second.
  */
 #ifdef LLBMC
 #include <llbmc.h>
@@ -11,10 +12,12 @@
 #include <klee/klee.h>
 #endif
 
-void tracerx_check(char *p) { *p; } 
 
-char _bound[6];
+
+char _bound[31];
 char *wcet;
+
+void tracerx_check(char *p) { printf("Timing of Path:%d\n",(int)p-(int)(&(_bound))); *p;}
 
 int main(int argc, char **argv)
 {
@@ -39,36 +42,35 @@ int main(int argc, char **argv)
   if (p1) {
     wcet += 1;
   } else {
-    wcet += 1;
+    wcet += 2;
   }
   if (p2) {
-    wcet += 1;
+    wcet += 3;
   } else {
-    wcet += 1;
+    wcet += 4;
   }
   if (p3) {
-    wcet += 1;
+    wcet += 5;
   } else {
-    wcet += 1;
+    wcet += 6;
   }
   if (p4) {
-    wcet += 1;
+    wcet += 7;
   } else {
-    wcet += 1;
+    wcet += 8;
   }
   if (p5) {
-    wcet += 1;
+    wcet += 9;
   } else {
-    wcet += 1;
+    wcet += 10;
   }
 
   // wcet should be in _bound
 #ifdef LLBMC
-    __llbmc_assert(wcet < _bound+15);
+    __llbmc_assert(wcet < _bound+100);
 #else
   tracerx_check(wcet);
 #endif
-  return *wcet;
 
 
 }

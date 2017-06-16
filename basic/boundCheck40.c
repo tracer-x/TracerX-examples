@@ -1,11 +1,11 @@
 /*
- * Copyright 2016, 2017 National University of Singapore
+ * Copyright 2017 National University of Singapore
  *
  * This program is for testing memory bounds check interpolation: it
  * should have subsumptions not just at/near the end of the traces.
  * TRACER-X can analyze but LLBMC and KLEE can't analyze this program.
- * This program was prepared to test that LLBMC doesn't have bound
- * propagation.
+ * in 3600 seconds. This program was prepared to test that LLBMC doesn't 
+ * have memory bound propagation as is implemented in Tracer-X.
  */
 #ifdef LLBMC
 #include <llbmc.h>

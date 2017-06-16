@@ -18,8 +18,7 @@ arraysimple2.c		0
 arraysimple3.c		0
 arraysimple4.c		2
 arraysimple5.c		11
-boundCheck5		0
-boundCheck5_rand	8
+boundCheck5		8
 boundCheck40		78
 branch.c		0
 bubble_assert.c		6
