@@ -7,7 +7,7 @@
  * This program is for testing "total instructions" stats of KLEE. The
  * first basic block is quite long compared to the other two basic blocks.
  * The "total instructions" should be counting the longer basic block only 
- * once which does.
+ * once which it does.
  */
 #include <klee/klee.h>
 
