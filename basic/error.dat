@@ -23,6 +23,7 @@ branch.c		0
 bubble_assert.c		0
 double-free.c		1
 even.c			0
+instCountTest		0
 interproc.c		0
 local.c			0
 loop_safe1.c		0
@@ -50,6 +51,8 @@ pointer_symbolic.c	1
 pointer_wp1.c		0
 pointer_wp2.c		1
 pointer_wp3.c		1
+pointer_wp4.c		0
+pointer_wp5.c		0
 polynomial.c		0
 recursion1.c		0
 recursion2.c		0
