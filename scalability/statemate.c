@@ -244,28 +244,35 @@ void init(void)
    BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = 0;
    BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = 0;
 
+/*
+ * The following variables are not made symbolic, since these variables
+ * are important in some paths to become infeasible. These variables are
+ * initialized in the init() function. Symbolizing these vars will result
+ * in those infeasible paths to become feasible and the symbolic execution
+ * tree to be changed.
+ */
 #ifdef LLBMC
-  tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy =
-      __llbmc_nondef_unsigned_long();
-  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL =
-      __llbmc_nondef_unsigned_long();
-  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL = __llbmc_nondef_unsigned_long();
-  NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state = __llbmc_nondef_char();
-  ZENTRAL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
-  MEC_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
-  KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
-  B_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  A_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  INITIALISIERT_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  OEFFNEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
-  FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state = __llbmc_nondef_char();
-  EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state = __llbmc_nondef_char();
-  BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
-  BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
+/*  tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy =*/
+/*      __llbmc_nondef_unsigned_long();*/
+/*  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL =*/
+/*      __llbmc_nondef_unsigned_long();*/
+/*  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL = __llbmc_nondef_unsigned_long();*/
+/*  NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state = __llbmc_nondef_char();*/
+/*  ZENTRAL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();*/
+/*  MEC_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();*/
+/*  KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();*/
+/*  B_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  A_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  INITIALISIERT_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  OEFFNEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
+/*  FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state = __llbmc_nondef_char();*/
+/*  EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state = __llbmc_nondef_char();*/
+/*  BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();*/
+/*  BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();*/
 #else
 /*   klee_make_symbolic(&tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy, sizeof(tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy), "tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy"); */
 /*   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL), "m_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL");*/
@@ -1332,6 +1339,12 @@ int main(void)
 
   init();
 
+/*
+ * The variables which are not made symbolic have effect on the variable 
+ * `stable` and as a result affecting the number of loop iterations. Our
+ * experiments show that symbolizing these variables may cause the loop
+ * to become unbounded.
+ */
 #ifdef LLBMC
   sc_FH_TUERMODUL_CTRL_2375_2 = __llbmc_nondef_unsigned_long();
   sc_FH_TUERMODUL_CTRL_2352_1 = __llbmc_nondef_unsigned_long();
@@ -1390,32 +1403,32 @@ int main(void)
   FH_TUERMODUL__COM_OPEN = __llbmc_nondef_char();
   FH_TUERMODUL__COM_CLOSE = __llbmc_nondef_char();
   FH_DU__KL_50 = __llbmc_nondef_char();
-  FH_DU__S_FH_FTZU = __llbmc_nondef_char();
-  FH_DU__S_FH_FTAUF = __llbmc_nondef_char();
+/*  FH_DU__S_FH_FTZU = __llbmc_nondef_char();*/
+/*  FH_DU__S_FH_FTAUF = __llbmc_nondef_char();*/
   FH_DU__FT = __llbmc_nondef_char();
   FH_DU__EKS_LEISTE_AKTIV = __llbmc_nondef_char();
   FH_DU__EKS_LEISTE_AKTIV_old = __llbmc_nondef_char();
-  FH_DU__S_FH_TMBFAUFCAN = __llbmc_nondef_char();
+/*  FH_DU__S_FH_TMBFAUFCAN = __llbmc_nondef_char();*/
   FH_DU__S_FH_TMBFAUFCAN_copy = __llbmc_nondef_char();
   FH_DU__S_FH_TMBFAUFCAN_old = __llbmc_nondef_char();
-  FH_DU__S_FH_TMBFZUCAN = __llbmc_nondef_char();
+/*  FH_DU__S_FH_TMBFZUCAN = __llbmc_nondef_char();*/
   FH_DU__S_FH_TMBFZUCAN_copy = __llbmc_nondef_char();
   FH_DU__S_FH_TMBFZUCAN_old = __llbmc_nondef_char();
   FH_DU__S_FH_TMBFZUDISC = __llbmc_nondef_char();
   FH_DU__S_FH_TMBFZUDISC_old = __llbmc_nondef_char();
   FH_DU__S_FH_TMBFAUFDISC = __llbmc_nondef_char();
   FH_DU__S_FH_TMBFAUFDISC_old = __llbmc_nondef_char();
-  FH_DU__S_FH_ZUDISC = __llbmc_nondef_char();
-  FH_DU__S_FH_AUFDISC = __llbmc_nondef_char();
+/*  FH_DU__S_FH_ZUDISC = __llbmc_nondef_char();*/
+/*  FH_DU__S_FH_AUFDISC = __llbmc_nondef_char();*/
   FH_DU__DOOR_ID = __llbmc_nondef_char();
   FH_DU__BLOCK = __llbmc_nondef_char();
   FH_DU__BLOCK_copy = __llbmc_nondef_char();
   FH_DU__BLOCK_old = __llbmc_nondef_char();
   FH_DU__MFHZ = __llbmc_nondef_char();
-  FH_DU__MFHZ_copy = __llbmc_nondef_char();
+/*  FH_DU__MFHZ_copy = __llbmc_nondef_char();*/
   FH_DU__MFHZ_old = __llbmc_nondef_char();
   FH_DU__MFHA = __llbmc_nondef_char();
-  FH_DU__MFHA_copy = __llbmc_nondef_char();
+/*  FH_DU__MFHA_copy = __llbmc_nondef_char();*/
   FH_DU__MFHA_old = __llbmc_nondef_char();
 #else
   klee_make_symbolic(&sc_FH_TUERMODUL_CTRL_2375_2, sizeof(sc_FH_TUERMODUL_CTRL_2375_2), "sc_FH_TUERMODUL_CTRL_2375_2");
