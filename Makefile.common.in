@@ -140,8 +140,12 @@ standard-clean:
 	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$@ make $*.klee-out
 
 .bc.klee-out:
-	@LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} $$SOLVER_FLAGS -output-dir=$$OUTPUT_DIR $< ${PROGRAM_OPTIONS}
-	@opt -analyze -dot-cfg $<
+	@LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} $$SOLVER_FLAGS -output-dir=$$OUTPUT_DIR $< ${PROGRAM_OPTIONS} ; \
+	SUBJECT_FILENAME="$*" OUTPUT_DIR="$$OUTPUT_DIR" make ENABLE_COVERAGE="${ENABLE_COVERAGE}" klee-post
+
+# This target does the post-processing after the run of KLEE
+klee-post:
+	@opt -analyze -dot-cfg $$SUBJECT_FILENAME.bc
 	@mv *.dot $$OUTPUT_DIR
 ####################################################################
 # KLEE-STATS Statistics                                            #
@@ -173,15 +177,15 @@ standard-clean:
 			exit 1 ; \
 	        fi ; \
 		COV_FILE="$$OUTPUT_DIR/info.cov" ; \
-		${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $*.c -o $* ; \
+		${CC} ${CFLAGS} -fprofile-arcs -ftest-coverage ${LDFLAGS} $$SUBJECT_FILENAME.c -o $$SUBJECT_FILENAME ; \
 		for KTEST in $$OUTPUT_DIR/*.ktest ; do \
-			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $* $$KTEST ) ; \
+			( LD_LIBRARY_PATH=${KLEE_HOME}/lib KTEST_FILE=$$KTEST KLEE_REPLAY_TIMEOUT=${DEFAULT_KLEE_REPLAY_TIMEOUT} ${KLEE_REPLAY} $$SUBJECT_FILENAME $$KTEST ) ; \
 		done ; \
 		touch $$COV_FILE ; \
 		LOC_TOTAL=0 ; \
 		LINE_COVERAGE=0 ; \
-		if [ -e $*.gcda ] ; then \
-			llvm-cov -gcno=$*.gcno -gcda=$*.gcda >> $$COV_FILE ; \
+		if [ -e $$SUBJECT_FILENAME.gcda ] ; then \
+			llvm-cov -gcno=$$SUBJECT_FILENAME.gcno -gcda=$$SUBJECT_FILENAME.gcda >> $$COV_FILE ; \
 			LINE_COVERAGE=`grep '^[[:space:]]*[[:digit:]]\+' $$COV_FILE |wc -l` ; \
 			LINE_NON_COVERAGE=`grep '^[[:space:]]*#####:' $$COV_FILE |wc -l` ; \
 			LOC_TOTAL=`expr $$LINE_COVERAGE + $$LINE_NON_COVERAGE` ; \

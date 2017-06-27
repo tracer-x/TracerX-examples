@@ -59,6 +59,7 @@ polynomial.c		0
 recursion1.c		0
 recursion2.c		0
 regexp_iterative.c	3
+regexp_mark.c		1
 regexp_nonrecursive1.c	0
 regexp_nonrecursive2.c	0
 regexp_nonrecursive3.c	0
