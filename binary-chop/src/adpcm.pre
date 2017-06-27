@@ -1,0 +1,69 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with KLEE harnessing added */
+
+/* $Id: adpcm.c,v 1.7 2005/06/15 07:27:31 ael01 Exp $ */
+/*************************************************************************/
+/*                                                                       */
+/*   SNU-RT Benchmark Suite for Worst Case Timing Analysis               */
+/*   =====================================================               */
+/*                              Collected and Modified by S.-S. Lim      */
+/*                                           sslim@archi.snu.ac.kr       */
+/*                                         Real-Time Research Group      */
+/*                                        Seoul National University      */
+/*                                                                       */
+/*                                                                       */
+/*        < Features > - restrictions for our experimental environment   */
+/*                                                                       */
+/*          1. Completely structured.                                    */
+/*               - There are no unconditional jumps.                     */
+/*               - There are no exit from loop bodies.                   */
+/*                 (There are no 'break' or 'return' in loop bodies)     */
+/*          2. No 'switch' statements.                                   */
+/*          3. No 'do..while' statements.                                */
+/*          4. Expressions are restricted.                               */
+/*               - There are no multiple expressions joined by 'or',     */
+/*                'and' operations.                                      */
+/*          5. No library calls.                                         */
+/*               - All the functions needed are implemented in the       */
+/*                 source file.                                          */
+/*          6. Printouts removed (Jan G)                                 */
+/*                                                                       */
+/*                                                                       */
+/*                                                                       */
+/*************************************************************************/
+/*                                                                       */
+/*  FILE: adpcm.c                                                        */
+/*  SOURCE : C Algorithms for Real-Time DSP by P. M. Embree              */
+/*                                                                       */
+/*  DESCRIPTION :                                                        */
+/*                                                                       */
+/*     CCITT G.722 ADPCM (Adaptive Differential Pulse Code Modulation)   */
+/*     algorithm.                                                        */
+/*     16khz sample rate data is stored in the array test_data[SIZE].    */
+/*     Results are stored in the array compressed[SIZE] and result[SIZE].*/
+/*     Execution time is determined by the constant SIZE (default value  */
+/*     is 2000).                                                         */
+/*                                                                       */
+/*  REMARK :                                                             */
+/*                                                                       */
+/*  EXECUTION TIME :                                                     */
+/*                                                                       */
+/*                                                                       */
+/*************************************************************************/
+#ifdef LLBMC
+#include <llbmc.h>
+#else
+#include <klee/klee.h>
+#endif
+
+/* To be able to run with printouts 
+#include <stdio.h> */
+
+/* common sampling rate for sound cards on IBM/PC */
+#define SAMPLE_RATE 11025
+
+#define PI 3141
+#define SIZE 3
+#define IN_END 4
+
+

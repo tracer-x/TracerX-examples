@@ -267,25 +267,25 @@ void init(void)
   BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
   BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
 #else
-   klee_make_symbolic(&tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy, sizeof(tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy), "tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy"); 
-   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL), "m_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL");
-   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL), "tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL");
-   klee_make_symbolic(&NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state, sizeof(NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state), "NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state");
-   klee_make_symbolic(&ZENTRAL_KINDERSICHERUNG_CTRL_next_state, sizeof(ZENTRAL_KINDERSICHERUNG_CTRL_next_state), "ZENTRAL_KINDERSICHERUNG_CTRL_next_state");
-   klee_make_symbolic(&MEC_KINDERSICHERUNG_CTRL_next_state, sizeof(MEC_KINDERSICHERUNG_CTRL_next_state), "MEC_KINDERSICHERUNG_CTRL_next_state");
-   klee_make_symbolic(&KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state, sizeof(KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state), "KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state");
-   klee_make_symbolic(&B_FH_TUERMODUL_CTRL_next_state, sizeof(B_FH_TUERMODUL_CTRL_next_state), "B_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&A_FH_TUERMODUL_CTRL_next_state, sizeof(A_FH_TUERMODUL_CTRL_next_state), "A_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state, sizeof(WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state), "WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&INITIALISIERT_FH_TUERMODUL_CTRL_next_state, sizeof(INITIALISIERT_FH_TUERMODUL_CTRL_next_state), "INITIALISIERT_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&OEFFNEN_FH_TUERMODUL_CTRL_next_state, sizeof(OEFFNEN_FH_TUERMODUL_CTRL_next_state), "OEFFNEN_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");
-   klee_make_symbolic(&FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state, sizeof(FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state), "FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state");
-   klee_make_symbolic(&EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state, sizeof(EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state), "EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state");
-   klee_make_symbolic(&BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state), "BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state");
-   klee_make_symbolic(&BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state), "BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state");
+/*   klee_make_symbolic(&tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy, sizeof(tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy), "tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy"); */
+/*   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL), "m_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL");*/
+/*   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL), "tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL");*/
+/*   klee_make_symbolic(&NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state, sizeof(NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state), "NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state");*/
+/*   klee_make_symbolic(&ZENTRAL_KINDERSICHERUNG_CTRL_next_state, sizeof(ZENTRAL_KINDERSICHERUNG_CTRL_next_state), "ZENTRAL_KINDERSICHERUNG_CTRL_next_state");*/
+/*   klee_make_symbolic(&MEC_KINDERSICHERUNG_CTRL_next_state, sizeof(MEC_KINDERSICHERUNG_CTRL_next_state), "MEC_KINDERSICHERUNG_CTRL_next_state");*/
+/*   klee_make_symbolic(&KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state, sizeof(KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state), "KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state");*/
+/*   klee_make_symbolic(&B_FH_TUERMODUL_CTRL_next_state, sizeof(B_FH_TUERMODUL_CTRL_next_state), "B_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&A_FH_TUERMODUL_CTRL_next_state, sizeof(A_FH_TUERMODUL_CTRL_next_state), "A_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state, sizeof(WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state), "WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&INITIALISIERT_FH_TUERMODUL_CTRL_next_state, sizeof(INITIALISIERT_FH_TUERMODUL_CTRL_next_state), "INITIALISIERT_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&OEFFNEN_FH_TUERMODUL_CTRL_next_state, sizeof(OEFFNEN_FH_TUERMODUL_CTRL_next_state), "OEFFNEN_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");*/
+/*   klee_make_symbolic(&FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state, sizeof(FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state), "FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state");*/
+/*   klee_make_symbolic(&EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state, sizeof(EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state), "EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state");*/
+/*   klee_make_symbolic(&BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state), "BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state");*/
+/*   klee_make_symbolic(&BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state), "BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state");*/
 #endif
 
 }/** init **/
@@ -1475,32 +1475,32 @@ int main(void)
   klee_make_symbolic(&FH_TUERMODUL__COM_OPEN, sizeof(FH_TUERMODUL__COM_OPEN), "FH_TUERMODUL__COM_OPEN");
   klee_make_symbolic(&FH_TUERMODUL__COM_CLOSE, sizeof(FH_TUERMODUL__COM_CLOSE), "FH_TUERMODUL__COM_CLOSE");
   klee_make_symbolic(&FH_DU__KL_50, sizeof(FH_DU__KL_50), "FH_DU__KL_50");
-  klee_make_symbolic(&FH_DU__S_FH_FTZU, sizeof(FH_DU__S_FH_FTZU), "FH_DU__S_FH_FTZU");
-  klee_make_symbolic(&FH_DU__S_FH_FTAUF, sizeof(FH_DU__S_FH_FTAUF), "FH_DU__S_FH_FTAUF");
+/*  klee_make_symbolic(&FH_DU__S_FH_FTZU, sizeof(FH_DU__S_FH_FTZU), "FH_DU__S_FH_FTZU");*/
+/*  klee_make_symbolic(&FH_DU__S_FH_FTAUF, sizeof(FH_DU__S_FH_FTAUF), "FH_DU__S_FH_FTAUF");*/
   klee_make_symbolic(&FH_DU__FT, sizeof(FH_DU__FT), "FH_DU__FT");
   klee_make_symbolic(&FH_DU__EKS_LEISTE_AKTIV, sizeof(FH_DU__EKS_LEISTE_AKTIV), "FH_DU__EKS_LEISTE_AKTIV");
   klee_make_symbolic(&FH_DU__EKS_LEISTE_AKTIV_old, sizeof(FH_DU__EKS_LEISTE_AKTIV_old), "FH_DU__EKS_LEISTE_AKTIV_old");
-  klee_make_symbolic(&FH_DU__S_FH_TMBFAUFCAN, sizeof(FH_DU__S_FH_TMBFAUFCAN), "FH_DU__S_FH_TMBFAUFCAN");
+/*  klee_make_symbolic(&FH_DU__S_FH_TMBFAUFCAN, sizeof(FH_DU__S_FH_TMBFAUFCAN), "FH_DU__S_FH_TMBFAUFCAN");*/
   klee_make_symbolic(&FH_DU__S_FH_TMBFAUFCAN_copy, sizeof(FH_DU__S_FH_TMBFAUFCAN_copy), "FH_DU__S_FH_TMBFAUFCAN_copy");
   klee_make_symbolic(&FH_DU__S_FH_TMBFAUFCAN_old, sizeof(FH_DU__S_FH_TMBFAUFCAN_old), "FH_DU__S_FH_TMBFAUFCAN_old");
-  klee_make_symbolic(&FH_DU__S_FH_TMBFZUCAN, sizeof(FH_DU__S_FH_TMBFZUCAN), "FH_DU__S_FH_TMBFZUCAN");
+/*  klee_make_symbolic(&FH_DU__S_FH_TMBFZUCAN, sizeof(FH_DU__S_FH_TMBFZUCAN), "FH_DU__S_FH_TMBFZUCAN");*/
   klee_make_symbolic(&FH_DU__S_FH_TMBFZUCAN_copy, sizeof(FH_DU__S_FH_TMBFZUCAN_copy), "FH_DU__S_FH_TMBFZUCAN_copy");
   klee_make_symbolic(&FH_DU__S_FH_TMBFZUCAN_old, sizeof(FH_DU__S_FH_TMBFZUCAN_old), "FH_DU__S_FH_TMBFZUCAN_old");
   klee_make_symbolic(&FH_DU__S_FH_TMBFZUDISC, sizeof(FH_DU__S_FH_TMBFZUDISC), "FH_DU__S_FH_TMBFZUDISC");
   klee_make_symbolic(&FH_DU__S_FH_TMBFZUDISC_old, sizeof(FH_DU__S_FH_TMBFZUDISC_old), "FH_DU__S_FH_TMBFZUDISC_old");
   klee_make_symbolic(&FH_DU__S_FH_TMBFAUFDISC, sizeof(FH_DU__S_FH_TMBFAUFDISC), "FH_DU__S_FH_TMBFAUFDISC");
   klee_make_symbolic(&FH_DU__S_FH_TMBFAUFDISC_old, sizeof(FH_DU__S_FH_TMBFAUFDISC_old), "FH_DU__S_FH_TMBFAUFDISC_old");
-  klee_make_symbolic(&FH_DU__S_FH_ZUDISC, sizeof(FH_DU__S_FH_ZUDISC), "FH_DU__S_FH_ZUDISC");
-  klee_make_symbolic(&FH_DU__S_FH_AUFDISC, sizeof(FH_DU__S_FH_AUFDISC), "FH_DU__S_FH_AUFDISC");
+/*  klee_make_symbolic(&FH_DU__S_FH_ZUDISC, sizeof(FH_DU__S_FH_ZUDISC), "FH_DU__S_FH_ZUDISC");*/
+/*  klee_make_symbolic(&FH_DU__S_FH_AUFDISC, sizeof(FH_DU__S_FH_AUFDISC), "FH_DU__S_FH_AUFDISC");*/
   klee_make_symbolic(&FH_DU__DOOR_ID, sizeof(FH_DU__DOOR_ID), "FH_DU__DOOR_ID");
   klee_make_symbolic(&FH_DU__BLOCK, sizeof(FH_DU__BLOCK), "FH_DU__BLOCK");
   klee_make_symbolic(&FH_DU__BLOCK_copy, sizeof(FH_DU__BLOCK_copy), "FH_DU__BLOCK_copy");
   klee_make_symbolic(&FH_DU__BLOCK_old, sizeof(FH_DU__BLOCK_old), "FH_DU__BLOCK_old");
   klee_make_symbolic(&FH_DU__MFHZ, sizeof(FH_DU__MFHZ), "FH_DU__MFHZ");
-  klee_make_symbolic(&FH_DU__MFHZ_copy, sizeof(FH_DU__MFHZ_copy), "FH_DU__MFHZ_copy");
+/*  klee_make_symbolic(&FH_DU__MFHZ_copy, sizeof(FH_DU__MFHZ_copy), "FH_DU__MFHZ_copy");*/
   klee_make_symbolic(&FH_DU__MFHZ_old, sizeof(FH_DU__MFHZ_old), "FH_DU__MFHZ_old");
   klee_make_symbolic(&FH_DU__MFHA, sizeof(FH_DU__MFHA), "FH_DU__MFHA");
-  klee_make_symbolic(&FH_DU__MFHA_copy, sizeof(FH_DU__MFHA_copy), "FH_DU__MFHA_copy");
+/*  klee_make_symbolic(&FH_DU__MFHA_copy, sizeof(FH_DU__MFHA_copy), "FH_DU__MFHA_copy");*/
   klee_make_symbolic(&FH_DU__MFHA_old, sizeof(FH_DU__MFHA_old), "FH_DU__MFHA_old");
 #endif
 
