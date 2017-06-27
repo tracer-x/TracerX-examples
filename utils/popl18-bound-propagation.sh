@@ -21,14 +21,14 @@ cyan='\e[1;36m%s\e[0m\n'
 
 mv result.csv result_old.csv
 
-export EXPERIMENT_SET="adpcm"  # nsichneu_small nsichneu  cnt expint Regexp7 Regexp8 Regexp9 Regexp10 Regexp15 statemate ud 
+export EXPERIMENT_SET="adpcm statemate nsichneu  cnt expint Regexp7 Regexp8 Regexp9 Regexp10 Regexp15"  # adpcm statemate nsichneu_small nsichneu  cnt expint Regexp7 Regexp8 Regexp9 Regexp10 Regexp15  ud 
 export EXPERIMENT_TYPE_SET=".tx1"
 export ENABLE_COVERAGE=OFF
 
 # Adding the target in benchmarks
 export BENCHMARKS=$(echo $EXPERIMENT_SET | tr " " "\n")
 
-echo "Round,Benchmark,Upper Bound,Tested Bound,Lower Bound,Is Safe,Precision,Analysis Time (sec),Instruction Count" >> result.csv
+echo "Round,Benchmark,Upper Bound,Tested Bound,Lower Bound,Is Safe,Precision,Analysis Time (sec),Instruction Count,Completed Paths,Subsumed Paths" >> result.csv
 
 for BENCHMARK in $BENCHMARKS
 do
@@ -46,8 +46,8 @@ do
 		OLD_CURRENT_BOUND=$CURRENT_BOUND
 		OLD_LOWER_BOUND=$LOWER_BOUND
 		echo "Precision: " 
-		PRECISION=$(bc -l <<< "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2))")
-		echo "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2));scale=2" | bc -l
+		PRECISION=$(bc -l <<< "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2))" | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')
+		echo $PRECISION
 		cat src/"$BENCHMARK".pre > "$BENCHMARK".c 
 		echo "char _bound[$CURRENT_BOUND];"  >> "$BENCHMARK".c  
 		cat src/"$BENCHMARK".post >> "$BENCHMARK".c   
@@ -62,14 +62,20 @@ do
 		    printf "\n$green\n" "Bound is safe"	
 		    echo
 		    UPPER_BOUND=$[$CURRENT_BOUND]
+		    COMPLETED_PATHS_TEMP=$(grep 'KLEE: done:     program exit paths = [0-9][0-9]*' output.txt | tail -1)
+		    COMPLETED_PATHS=${COMPLETED_PATHS_TEMP:37}
+		    SUBSUMED_PATHS_TEMP=$(grep 'KLEE: done:     subsumed paths = [0-9][0-9]*' output.txt | tail -1)
+		    SUBSUMED_PATHS=${SUBSUMED_PATHS_TEMP:33}
 		    if  [ $(echo " ($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2) <= 0.01" | bc -l) -eq 1 ] || [ "$UPPER_BOUND" -eq 1 ] ; then
 	  		echo
 		       	echo "Analysis has finished:"
 		        echo "UPPER BOUND: "$UPPER_BOUND
 		        echo "LOWER BOUND: "$LOWER_BOUND
 			echo "Precision: " 
-			echo "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2));scale=2" | bc -l
-			echo "$ROUND,$BENCHMARK,$OLD_UPPER_BOUND,$OLD_CURRENT_BOUND,$OLD_LOWER_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT" >> result.csv
+			echo $PRECISION
+			echo "$ROUND,$BENCHMARK,$OLD_UPPER_BOUND,$OLD_CURRENT_BOUND,$OLD_LOWER_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT,$COMPLETED_PATHS,$SUBSUMED_PATHS" >> result.csv
+			PRECISION=$(bc -l <<< "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2))" | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')
+			echo "-,$BENCHMARK,$UPPER_BOUND,-,$LOWER_BOUND,$IS_SAFE,$PRECISION,-,-" >> result.csv
 			rm -R "$BENCHMARK".tx
 			rm "$BENCHMARK".c
 			rm output.txt
@@ -79,6 +85,8 @@ do
 		    fi
 		    IS_SAFE="Y"
 		else
+		    COMPLETED_PATHS='-'
+		    SUBSUMED_PATHS='-'
 		    COUNTER_EXAMPLE=$(grep 'Timing of Path:[0-9][0-9]*' output.txt | tail -1)
 		    printf "\nCounter Example Time:"
 		    echo $[${COUNTER_EXAMPLE:15}]
@@ -88,10 +96,12 @@ do
   		    CURRENT_BOUND=$[($UPPER_BOUND + $LOWER_BOUND) / 2]
 		    IS_SAFE="N"
 		fi	
-		echo "$ROUND,$BENCHMARK,$OLD_UPPER_BOUND,$OLD_CURRENT_BOUND,$OLD_LOWER_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT" >> result.csv
+
+		echo "$ROUND,$BENCHMARK,$OLD_UPPER_BOUND,$OLD_CURRENT_BOUND,$OLD_LOWER_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT,$COMPLETED_PATHS,$SUBSUMED_PATHS" >> result.csv
 		ROUND=$[$ROUND+1]
 		rm -R "$BENCHMARK".tx
 		rm output.txt
+
 	done
 	echo ",,,,,,,," >> result.csv
 done

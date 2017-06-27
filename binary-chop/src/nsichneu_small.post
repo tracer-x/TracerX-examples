@@ -70,7 +70,6 @@ int main()
          } /* end of if (Transition condition) */
       }
 
-<<<<<<< HEAD
       /* Permutation for Place P1 : 0, 2, 1 */
       /* Transition T1 */
       if ( (P1_is_marked >= 3) &&
@@ -104,8 +103,6 @@ int main()
       }
    }
 
-=======
->>>>>>> 06e8348... adding more benchmarks to binary-chop
    dummy_i = 77;
    wcet++;
    tracerx_check(wcet);
