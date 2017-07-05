@@ -17,7 +17,7 @@ arraysimple1.c		0
 arraysimple2.c		0
 arraysimple3.c		0
 arraysimple4.c		2
-arraysimple5.c		11
+arraysimple5.c		17
 branch.c		0
 bubble_assert.c		6
 double-free.c		0
@@ -51,11 +51,11 @@ pointer_wp5.c		78
 polynomial.c		0
 recursion1.c		0
 recursion2.c		28
-regexp_iterative.c	166
-regexp_mark.c		26
-regexp_nonrecursive1.c	4
+regexp_iterative.c	174
+regexp_mark.c		14
+regexp_nonrecursive1.c	2
 regexp_nonrecursive3.c	3
-regexp_small.c		8
+regexp_small.c		6
 regexp_tiny.c		2
 sp.c			0
 testmem.c		23
