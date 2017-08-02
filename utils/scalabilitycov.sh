@@ -33,7 +33,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source $SCRIPT_DIR/../environ.sh
 
-export CFLAGS="-g -I$KLEE_HOME/include $EXTRA_CFLAGS"
+export CFLAGS="-g -I$KLEE_HOME/include -I$KLEE_HOME/../include $EXTRA_CFLAGS"
 
 export LDFLAGS="-L$KLEE_HOME/lib $EXTRA_LDFLAGS -lkleeRuntest"
 
