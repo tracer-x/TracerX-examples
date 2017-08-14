@@ -1,16 +1,13 @@
 /*
-Copyright 2015, 2017 National University of Singapore 
-cd
-cd nus/kleetest
-llvm-gcc --emit-llvm -c -g interproc.c
-llvm-gcc -S --emit-llvm interproc.c
-opt -analyze -dot-cfg interproc.o
-klee -write-pcs -use-query-log=all:pc,all:smt2 -search=dfs interproc.o
-ktest-tool --write-ints klee-last/test000001.ktest
-ktest-tool --write-ints klee-last/test000002.ktest
-ktest-tool --write-ints klee-last/test000003.ktest
-
-*/
+ * Copyright 2015, 2017 National University of Singapore
+ *
+ * Due to the branching in add1() and add2(), add3() gets called in
+ * different symbolic execution paths. With depth-first path
+ * exploration strategy, the points immediately after the branching in
+ * the second call of add3() is subsumed by the interpolants generated
+ * in the first call, and the points immediately after the fourth call
+ * of add3() is subsumed by the interpolants in the third call.
+ */
 #ifdef LLBMC
 #include <llbmc.h>
 #else
