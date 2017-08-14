@@ -1,19 +1,8 @@
 /*
-Copyright 2015, 2016 National University of Singapore
-
-Assertion can be violated here.
-
-cd
-cd nus/kleetest
-llvm-gcc --emit-llvm -c -g addition.c
-llvm-gcc -S --emit-llvm addition.c
-opt -analyze -dot-cfg addition.o
-klee -write-pcs -use-query-log=all:pc,all:smt2 -search=dfs addition.o
-ktest-tool --write-ints klee-last/test000001.ktest
-ktest-tool --write-ints klee-last/test000002.ktest
-ktest-tool --write-ints klee-last/test000003.ktest
-
-*/
+ * Copyright 2015-2017 National University of Singapore
+ *
+ * Assertion can be violated here.
+ */
 #ifdef LLBMC
 #include <llbmc.h>
 #else
@@ -21,11 +10,11 @@ ktest-tool --write-ints klee-last/test000003.ktest
 #include <assert.h>
 #endif
 
-int add(int p1, int p2, int p3, int x) {
+int add(char p1, char p2, char p3, int x) {
 #ifdef LLBMC
   __llbmc_assume(x <= 0);
 #else
-  klee_assume (x <= 0);
+  klee_assume(x <= 0);
 #endif
 
   if (p1 > 8)
@@ -47,12 +36,13 @@ int add(int p1, int p2, int p3, int x) {
 } 
 
 int main() {
-  int p1, p2, p3, x;
+  char p1, p2, p3;
+  int x;
 
 #ifdef LLBMC
-  p1 = __llbmc_nondef_int();
-  p2 = __llbmc_nondef_int();
-  p3 = __llbmc_nondef_int();
+  p1 = __llbmc_nondef_char();
+  p2 = __llbmc_nondef_char();
+  p3 = __llbmc_nondef_char();
   x = __llbmc_nondef_int();
 #else
   klee_make_symbolic(&p1, sizeof(p1), "p1");
