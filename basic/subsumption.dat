@@ -21,6 +21,8 @@ arraysimple5.c		14
 branch.c		0
 bubble_assert.c		6
 constant_dep.c		0
+domination1.c		2
+domination2.c		4
 double-free.c		0
 even.c			0
 instCountTest		0
