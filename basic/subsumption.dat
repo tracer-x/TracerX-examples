@@ -36,6 +36,7 @@ malloc3.c		14
 memory-access.c		3
 openssl.c		4
 openssl_partial_fix.c	0
+overmark.c		1
 pointer_alloc.c		0
 pointer_loop.c		6
 pointer_recursive.c	4

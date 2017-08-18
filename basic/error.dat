@@ -39,6 +39,7 @@ memory-access.c		1
 missing_error.c		1
 openssl.c		2
 openssl_partial_fix.c	1
+overmark.c		0
 pointer_alloc.c		1
 pointer_loop.c		1
 pointer_recursive.c	0
