@@ -173,7 +173,7 @@ ${COREUTILS_NOLINK_DIR}:
 	KLEE_COREUTILS_OPTIONS="--search=dfs -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tx11 :
-	KLEE_COREUTILS_OPTIONS="--search=dfs -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_COREUTILS_OPTIONS="--search=dfs -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx12 :
 	KLEE_COREUTILS_OPTIONS="--search=dfs -max-subsumption-failure=3 -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
