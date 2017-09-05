@@ -62,6 +62,7 @@ regexp_nonrecursive3.c	3
 regexp_small.c		6
 regexp_tiny.c		2
 sp.c			2
+switch.c		0
 testmem.c		23
 use_after_free.c	0
 validation.c		18
