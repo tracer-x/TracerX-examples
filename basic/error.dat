@@ -35,6 +35,9 @@ loop_unsafe1.c		1
 malloc1.c		1
 malloc2.c		0
 malloc3.c		0
+masked_error1.c		2
+masked_error2.c		2
+masked_error3.c		2
 memory-access.c		1
 missing_error.c		1
 openssl.c		2
