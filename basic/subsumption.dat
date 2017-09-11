@@ -69,3 +69,4 @@ switch.c		0
 testmem.c		23
 use_after_free.c	0
 validation.c		18
+veritesting_plus_small.c	34
