@@ -30,7 +30,7 @@ interproc.c		4
 local.c			4
 loop_safe1.c		0
 loop_safe2.c		9
-loop_unsafe1.c		5
+loop_unsafe1.c		6
 malloc1.c		0
 malloc3.c		14
 masked_error1.c		0
@@ -48,7 +48,7 @@ pointer_struct1.c	0
 pointer_struct2.c	0
 pointer_struct3.c	2
 pointer_struct4.c	0
-pointer_struct6.c	109
+pointer_struct6.c	127
 pointer_symbolic.c	0
 pointer_wp1.c		4
 pointer_wp2.c		2
@@ -58,8 +58,8 @@ pointer_wp5.c		78
 polynomial.c		0
 recursion1.c		0
 recursion2.c		28
-regexp_iterative.c	150
-regexp_mark.c		16
+regexp_iterative.c	166
+regexp_mark.c		15
 regexp_nonrecursive1.c	4
 regexp_nonrecursive3.c	3
 regexp_small.c		6
@@ -69,3 +69,4 @@ switch.c		0
 testmem.c		23
 use_after_free.c	0
 validation.c		18
+veritesting_plus_small.c	56
