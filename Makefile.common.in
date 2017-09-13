@@ -140,7 +140,11 @@ standard-clean:
 	SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$@ make $*.klee-out
 
 .bc.klee-out:
-	@LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} $$SOLVER_FLAGS -output-dir=$$OUTPUT_DIR $< ${PROGRAM_OPTIONS} ; \
+	@COVERAGE_OPTIONS="" ; \
+	if [ "${ENABLE_COVERAGE}" = "ON" ] ; then \
+		COVERAGE_OPTIONS="-subsumed-test" ; \
+	fi ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_FLAGS} $$SOLVER_FLAGS $$COVERAGE_OPTIONS -output-dir=$$OUTPUT_DIR $< ${PROGRAM_OPTIONS} ; \
 	SUBJECT_FILENAME="$*" OUTPUT_DIR="$$OUTPUT_DIR" make ENABLE_COVERAGE="${ENABLE_COVERAGE}" klee-post
 
 # This target does the post-processing after the run of KLEE

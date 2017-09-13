@@ -2,8 +2,10 @@
 #
 # Copyright 2016, 2017 National University of Singapore
 
-# This is for extra KLEE options
-EXTRA_OPTIONS=
+# This is for extra KLEE options. Adding -subsumed-test here will
+# generate tests for the subsumed paths, important for coverage
+# computation.
+EXTRA_OPTIONS=-subsumed-test
 
 # This is for the options passed onto the tested program, e.g.,
 # --sym-arg
