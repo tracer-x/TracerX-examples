@@ -406,7 +406,7 @@ ${EXPERIMENT_CSV}.only:
 		done ; \
 	done
 	rm -f small-$@
-	cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@
+	cut --delimiter=, --fields="1,3,5-10,15-18" $@ > small-$@
 
 # This target is used for collecting data from experimental results
 # into experiment.csv and smaller small-experiment.csv with less
