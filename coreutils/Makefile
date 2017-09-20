@@ -412,9 +412,9 @@ ${EXPERIMENT_CSV}.only:
 	done
 	rm -f small-$@
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
-		cut --delimiter=, --fields="1,3,5-10,15-18,25-" $@ > small-$@ ; \
+		cut --delimiter=, --fields="1,3,5-10,15-18" $@ > small-$@ ; \
 	else \
-		cut --delimiter=, --fields="1,3,5-10,15-17,24-" $@ > small-$@ ; \
+		cut --delimiter=, --fields="1,3,5-10,15,16" $@ > small-$@ ; \
 	fi
 
 # This target is used for collecting data from experimental results
