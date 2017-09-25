@@ -236,7 +236,7 @@ ${EXPERIMENT_CSV}: core-experiment
 	( cd ../utils ; CC=${CC} make treecmp ) 
 	echo -n "Directory,Program Options,klee-stats Time (s),KLEE info Elapsed (s), #instructions,#error,#completed paths,#error paths,#subsumed paths,#program exit paths,Average branching depth of completed paths,Average branching depth of subsumption paths,Average instructions of completed paths, Average instructions of subsumed paths,Icov,Bcov," >> $@
 	if [ "${ENABLE_COVERAGE}" != "OFF" ] ; then \
-		echo -n "llvm-cov line coverage,LOC" >> $@ ; \
+		echo -n "llvm-cov line coverage,LOC," >> $@ ; \
 	fi
 	echo "Time for actual solver calls in subsumption check (ms),Number of solver calls for subsumption check,Number of solver calls for subsumption check that resulted in subsumption failure,Average table entries per subsumption checkpoint,Average solver calls per subsumption check,Number of subsumption checks,KLEE paths saved,Tracer-X and not KLEE paths,KLEE and not Tracer-X paths,KLEE paths before last Tracer-X path (-1 if unreached)" >> $@
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
