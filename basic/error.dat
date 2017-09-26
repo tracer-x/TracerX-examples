@@ -64,6 +64,7 @@ pointer_wp2.c		1
 pointer_wp3.c		1
 pointer_wp4.c		0
 pointer_wp5.c		0
+pointer_wp6.c		0
 polynomial.c		0
 queens.c		1
 recursion1.c		0
