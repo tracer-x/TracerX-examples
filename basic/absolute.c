@@ -30,8 +30,13 @@ int main() {
   klee_make_symbolic(&x, sizeof(x), "x");
 #endif
 
+#ifdef LLBMC
+  __llbmc_assume(-1 <= x);
+  __llbmc_assume(x <= 1);
+#else
   klee_assume(-1 <= x);
   klee_assume(x <= 1);
+#endif
 
   if (x < 0)
     x = -x;
