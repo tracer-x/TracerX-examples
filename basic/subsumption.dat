@@ -1,4 +1,5 @@
 # Program		Subsumptions
+absolute.c		0
 addition.c		2
 addition_safe10.c	0
 addition_safe1.c	4
