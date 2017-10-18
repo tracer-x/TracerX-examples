@@ -98,16 +98,6 @@ int main(int argc, char **argv)
   if (p17) {} else p += 1;
   if (p18) {} else p += 1;
   if (p19) {} else p += 1;
-  if (p20) {} else p += 1;
-  if (p21) {} else p += 1;
-  if (p22) {} else p += 1;
-  if (p23) {} else p += 1;
-  if (p24) {} else p += 1;
-  if (p25) {} else p += 1;
-  if (p26) {} else p += 1;
-  if (p27) {} else p += 1;
-  if (p28) {} else p += 1;
-  if (p29) {} else p += 1;
 
   return *p;
 }
