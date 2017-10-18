@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-  char a[112];
+  char a[1000];
   char *p = a;
   char p0;
   char p1;
@@ -108,36 +108,36 @@ int main(int argc, char **argv)
   klee_make_symbolic(&p29, sizeof(p29), "p29");
 #endif
 
-  if (p0) {} else p += 1;
-  if (p1) {} else p += 1;
-  if (p2) {} else p += 1;
-  if (p3) {} else p += 1;
-  if (p4) {} else p += 1;
-  if (p5) {} else p += 1;
-  if (p6) {} else p += 1;
-  if (p7) {} else p += 1;
-  if (p8) {} else p += 1;
-  if (p9) {} else p += 1;
-  if (p10) {} else p += 1;
-  if (p11) {} else p += 1;
-  if (p12) {} else p += 1;
-  if (p13) {} else p += 1;
-  if (p14) {} else p += 1;
-  if (p15) {} else p += 1;
-  if (p16) {} else p += 1;
-  if (p17) {} else p += 1;
-  if (p18) {} else p += 1;
-  if (p19) {} else p += 1;
-  if (p20) {} else p += 1;
-  if (p21) {} else p += 1;
-  if (p22) {} else p += 1;
-  if (p23) {} else p += 1;
-  if (p24) {} else p += 1;
-  if (p25) {} else p += 1;
-  if (p26) {} else p += 1;
-  if (p27) {} else p += 1;
-  if (p28) {} else p += 1;
-  if (p29) {} else p += 1;
+  if (p0) p += 3; else p += 5;
+  if (p1) p += 3; else p += 5;
+  if (p2) p += 3; else p += 5;
+  if (p3) p += 3; else p += 5;
+  if (p4) p += 3; else p += 5;
+  if (p5) p += 3; else p += 5;
+  if (p6) p += 3; else p += 5;
+  if (p7) p += 3; else p += 5;
+  if (p8) p += 3; else p += 5;
+  if (p9) p += 3; else p += 5;
+  if (p10) p += 3; else p += 5;
+  if (p11) p += 3; else p += 5;
+  if (p12) p += 3; else p += 5;
+  if (p13) p += 3; else p += 5;
+  if (p14) p += 3; else p += 5;
+  if (p15) p += 3; else p += 5;
+  if (p16) p += 3; else p += 5;
+  if (p17) p += 3; else p += 5;
+  if (p18) p += 3; else p += 5;
+  if (p19) p += 3; else p += 5;
+  if (p20) p += 3; else p += 5;
+  if (p21) p += 3; else p += 5;
+  if (p22) p += 3; else p += 5;
+  if (p23) p += 3; else p += 5;
+  if (p24) p += 3; else p += 5;
+  if (p25) p += 3; else p += 5;
+  if (p26) p += 3; else p += 5;
+  if (p27) p += 3; else p += 5;
+  if (p28) p += 3; else p += 5;
+  if (p29) p += 3; else p += 5;
 
   return *p;
 }
