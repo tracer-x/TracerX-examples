@@ -1,7 +1,11 @@
 /*
  * Copyright 2017 National University of Singapore
  *
- * This program is for testing memory bounds check interpolation.
+ * This program is for testing memory bounds check interpolation: it
+ * should have subsumptions not just at/near the end of the traces.
+ * TRACER-X can analyze but LLBMC and KLEE can't analyze this program
+ * in 3600 seconds. This program was prepared to test that LLBMC doesn't 
+ * have memory bound propagation as is implemented in Tracer-X.
  */
 #ifdef LLBMC
 #include <llbmc.h>
@@ -9,96 +13,98 @@
 #include <klee/klee.h>
 #endif
 
+void tracerx_check(char *p) { *p; } 
+
+char _bound[1651];
+char *wcet;
+
 int main(int argc, char **argv)
 {
-  char a[1000];
-  char *p = a;
-  char p0;
-  char p1;
-  char p2;
-  char p3;
-  char p4;
-  char p5;
-  char p6;
-  char p7;
-  char p8;
-  char p9;
-  char p10;
-  char p11;
-  char p12;
-  char p13;
-  char p14;
-  char p15;
-  char p16;
-  char p17;
-  char p18;
-  char p19;
+  wcet = _bound;
+
+  int p1, p2, p3, p4, p5, p6, p7, p8, p9, p10;
+  char *p;
 
 #ifdef LLBMC
-  p0 = __llbmc_nondef_char();
-  p1 = __llbmc_nondef_char();
-  p2 = __llbmc_nondef_char();
-  p3 = __llbmc_nondef_char();
-  p4 = __llbmc_nondef_char();
-  p5 = __llbmc_nondef_char();
-  p6 = __llbmc_nondef_char();
-  p7 = __llbmc_nondef_char();
-  p8 = __llbmc_nondef_char();
-  p9 = __llbmc_nondef_char();
-  p10 = __llbmc_nondef_char();
-  p11 = __llbmc_nondef_char();
-  p12 = __llbmc_nondef_char();
-  p13 = __llbmc_nondef_char();
-  p14 = __llbmc_nondef_char();
-  p15 = __llbmc_nondef_char();
-  p16 = __llbmc_nondef_char();
-  p17 = __llbmc_nondef_char();
-  p18 = __llbmc_nondef_char();
-  p19 = __llbmc_nondef_char();
+  p1 = __llbmc_nondef_int();
+  p2 = __llbmc_nondef_int();
+  p3 = __llbmc_nondef_int();
+  p4 = __llbmc_nondef_int();
+  p5 = __llbmc_nondef_int();
+  p6 = __llbmc_nondef_int();
+  p7 = __llbmc_nondef_int();
+  p8 = __llbmc_nondef_int();
+  p9 = __llbmc_nondef_int();
+  p10 = __llbmc_nondef_int();
 #else
-  klee_make_symbolic(&p0, sizeof(p0), "p0");
-  klee_make_symbolic(&p1, sizeof(p1), "p1");
-  klee_make_symbolic(&p2, sizeof(p2), "p2");
-  klee_make_symbolic(&p3, sizeof(p3), "p3");
-  klee_make_symbolic(&p4, sizeof(p4), "p4");
-  klee_make_symbolic(&p5, sizeof(p5), "p5");
-  klee_make_symbolic(&p6, sizeof(p6), "p6");
-  klee_make_symbolic(&p7, sizeof(p7), "p7");
-  klee_make_symbolic(&p8, sizeof(p8), "p8");
-  klee_make_symbolic(&p9, sizeof(p9), "p9");
-  klee_make_symbolic(&p10, sizeof(p10), "p10");
-  klee_make_symbolic(&p11, sizeof(p11), "p11");
-  klee_make_symbolic(&p12, sizeof(p12), "p12");
-  klee_make_symbolic(&p13, sizeof(p13), "p13");
-  klee_make_symbolic(&p14, sizeof(p14), "p14");
-  klee_make_symbolic(&p15, sizeof(p15), "p15");
-  klee_make_symbolic(&p16, sizeof(p16), "p16");
-  klee_make_symbolic(&p17, sizeof(p17), "p17");
-  klee_make_symbolic(&p18, sizeof(p18), "p18");
-  klee_make_symbolic(&p19, sizeof(p19), "p19");
+  klee_make_symbolic(&p1, sizeof(int), "p1");
+  klee_make_symbolic(&p2, sizeof(int), "p2");
+  klee_make_symbolic(&p3, sizeof(int), "p3");
+  klee_make_symbolic(&p4, sizeof(int), "p4");
+  klee_make_symbolic(&p5, sizeof(int), "p5");
+  klee_make_symbolic(&p6, sizeof(int), "p6");
+  klee_make_symbolic(&p7, sizeof(int), "p7");
+  klee_make_symbolic(&p8, sizeof(int), "p8");
+  klee_make_symbolic(&p9, sizeof(int), "p9");
+  klee_make_symbolic(&p10, sizeof(int), "p10");
 #endif
 
-  if (p0) p += 3; else p += 5;
-  if (p1) p += 3; else p += 5;
-  if (p2) p += 3; else p += 5;
-  if (p3) p += 3; else p += 5;
-  if (p4) p += 3; else p += 5;
-  if (p5) p += 3; else p += 5;
-  if (p6) p += 3; else p += 5;
-  if (p7) p += 3; else p += 5;
-  if (p8) p += 3; else p += 5;
-  if (p9) p += 3; else p += 5;
-  if (p10) p += 3; else p += 5;
-  if (p11) p += 3; else p += 5;
-  if (p12) p += 3; else p += 5;
-  if (p13) p += 3; else p += 5;
-  if (p14) p += 3; else p += 5;
-  if (p15) p += 3; else p += 5;
-  if (p16) p += 3; else p += 5;
-  if (p17) p += 3; else p += 5;
-  if (p18) p += 3; else p += 5;
-  if (p19) p += 3; else p += 5;
-
-  return *p;
+  if (p1) {
+    wcet += 1;
+  } else {
+    wcet += 2;
+  }
+  if (p2) {
+    wcet += 3;
+  } else {
+    wcet += 4;
+  }
+  if (p3) {
+    wcet += 5;
+  } else {
+    wcet += 6;
+  }
+  if (p4) {
+    wcet += 7;
+  } else {
+    wcet += 8;
+  }
+  if (p5) {
+    wcet += 9;
+  } else {
+    wcet += 10;
+  }
+  if (p6) {
+    wcet += 11;
+  } else {
+    wcet += 12;
+  }
+  if (p7) {
+    wcet += 13;
+  } else {
+    wcet += 14;
+  }
+  if (p8) {
+    wcet += 15;
+  } else {
+    wcet += 16;
+  }
+  if (p9) {
+    wcet += 17;
+  } else {
+    wcet += 18;
+  }
+  if (p10) {
+    wcet += 19;
+  } else {
+    wcet += 20;
+  }
+  
+  // wcet should be in _bound
+#ifdef LLBMC
+    __llbmc_assert(wcet < _bound+1650);
+#else
+  tracerx_check(wcet);
+#endif
 }
 
