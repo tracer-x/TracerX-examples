@@ -83,9 +83,9 @@ export PROGRAM_OPTIONS="--sym-args 0 1 10 --sym-args 0 2 5 --sym-files 1 8 -sym-
 (\
     cd $COREUTILS_DIR ; \
     make basename.klee1 ; \
-    mv basename.klee1 basename.klee103 ; \
+    mv basename.klee1 basename.klee104 ; \
     make basename.tx1 ; \
-    mv basename.tx1 basename.tx103 \
+    mv basename.tx1 basename.tx104 \
 )
 export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/basename.llbmc104
 export PROGRAM_OPTIONS="xxxxxxxxxx xxxxx xxxxx"
