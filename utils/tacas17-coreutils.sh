@@ -15,6 +15,7 @@ unset C_INCLUDE_PATH
 unset CPLUS_INCLUDE_PATH
 
 cd $COREUTILS_DIR
+make clean
 
 ###################################################################
 # cut
