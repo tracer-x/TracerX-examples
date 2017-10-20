@@ -248,55 +248,48 @@ void init(void)
    BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = 0;
    BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = 0;
 
-/*
- * The following variables are not made symbolic, since these variables
- * are important in some paths to become infeasible. These variables are
- * initialized in the init() function. Symbolizing these vars will result
- * in those infeasible paths to become feasible and the symbolic execution
- * tree to be changed.
- */
 #ifdef LLBMC
-/*  tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy =*/
-/*      __llbmc_nondef_unsigned_long();*/
-/*  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL =*/
-/*      __llbmc_nondef_unsigned_long();*/
-/*  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL = __llbmc_nondef_unsigned_long();*/
-/*  NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state = __llbmc_nondef_char();*/
-/*  ZENTRAL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();*/
-/*  MEC_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();*/
-/*  KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();*/
-/*  B_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  A_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  INITIALISIERT_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  OEFFNEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();*/
-/*  FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state = __llbmc_nondef_char();*/
-/*  EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state = __llbmc_nondef_char();*/
-/*  BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();*/
-/*  BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();*/
+  tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy =
+      __llbmc_nondef_unsigned_long();
+  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL =
+      __llbmc_nondef_unsigned_long();
+  tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL = __llbmc_nondef_unsigned_long();
+  NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state = __llbmc_nondef_char();
+  ZENTRAL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
+  MEC_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
+  KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state = __llbmc_nondef_char();
+  B_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  A_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  INITIALISIERT_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  OEFFNEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  SCHLIESSEN_FH_TUERMODUL_CTRL_next_state = __llbmc_nondef_char();
+  FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state = __llbmc_nondef_char();
+  EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state = __llbmc_nondef_char();
+  BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
+  BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state = __llbmc_nondef_char();
 #else
-/*   klee_make_symbolic(&tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy, sizeof(tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy), "tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy"); */
-/*   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL), "m_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL");*/
-/*   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL), "tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL");*/
-/*   klee_make_symbolic(&NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state, sizeof(NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state), "NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state");*/
-/*   klee_make_symbolic(&ZENTRAL_KINDERSICHERUNG_CTRL_next_state, sizeof(ZENTRAL_KINDERSICHERUNG_CTRL_next_state), "ZENTRAL_KINDERSICHERUNG_CTRL_next_state");*/
-/*   klee_make_symbolic(&MEC_KINDERSICHERUNG_CTRL_next_state, sizeof(MEC_KINDERSICHERUNG_CTRL_next_state), "MEC_KINDERSICHERUNG_CTRL_next_state");*/
-/*   klee_make_symbolic(&KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state, sizeof(KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state), "KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state");*/
-/*   klee_make_symbolic(&B_FH_TUERMODUL_CTRL_next_state, sizeof(B_FH_TUERMODUL_CTRL_next_state), "B_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&A_FH_TUERMODUL_CTRL_next_state, sizeof(A_FH_TUERMODUL_CTRL_next_state), "A_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state, sizeof(WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state), "WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&INITIALISIERT_FH_TUERMODUL_CTRL_next_state, sizeof(INITIALISIERT_FH_TUERMODUL_CTRL_next_state), "INITIALISIERT_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&OEFFNEN_FH_TUERMODUL_CTRL_next_state, sizeof(OEFFNEN_FH_TUERMODUL_CTRL_next_state), "OEFFNEN_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");*/
-/*   klee_make_symbolic(&FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state, sizeof(FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state), "FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state");*/
-/*   klee_make_symbolic(&EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state, sizeof(EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state), "EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state");*/
-/*   klee_make_symbolic(&BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state), "BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state");*/
-/*   klee_make_symbolic(&BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state), "BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state");*/
+   klee_make_symbolic(&tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy, sizeof(tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy), "tm_entered_EINSCHALTSTROM_MESSEN_BLOCK_ERKENNUNG_CTRLch_BLOCK_ERKENNUNG_CTRL__N_copy"); 
+   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL), "m_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRLexited_BEREIT_FH_TUERMODUL_CTRL");
+   klee_make_symbolic(&tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL, sizeof(tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL), "tm_entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL");
+   klee_make_symbolic(&NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state, sizeof(NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state), "NICHT_INITIALISIERT_NICHT_INITIALISIERT_next_state");
+   klee_make_symbolic(&ZENTRAL_KINDERSICHERUNG_CTRL_next_state, sizeof(ZENTRAL_KINDERSICHERUNG_CTRL_next_state), "ZENTRAL_KINDERSICHERUNG_CTRL_next_state");
+   klee_make_symbolic(&MEC_KINDERSICHERUNG_CTRL_next_state, sizeof(MEC_KINDERSICHERUNG_CTRL_next_state), "MEC_KINDERSICHERUNG_CTRL_next_state");
+   klee_make_symbolic(&KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state, sizeof(KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state), "KINDERSICHERUNG_CTRL_KINDERSICHERUNG_CTRL_next_state");
+   klee_make_symbolic(&B_FH_TUERMODUL_CTRL_next_state, sizeof(B_FH_TUERMODUL_CTRL_next_state), "B_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&A_FH_TUERMODUL_CTRL_next_state, sizeof(A_FH_TUERMODUL_CTRL_next_state), "A_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state, sizeof(WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state), "WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&INITIALISIERT_FH_TUERMODUL_CTRL_next_state, sizeof(INITIALISIERT_FH_TUERMODUL_CTRL_next_state), "INITIALISIERT_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "TIPP_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "MANUELL_SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&OEFFNEN_FH_TUERMODUL_CTRL_next_state, sizeof(OEFFNEN_FH_TUERMODUL_CTRL_next_state), "OEFFNEN_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&SCHLIESSEN_FH_TUERMODUL_CTRL_next_state, sizeof(SCHLIESSEN_FH_TUERMODUL_CTRL_next_state), "SCHLIESSEN_FH_TUERMODUL_CTRL_next_state");
+   klee_make_symbolic(&FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state, sizeof(FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state), "FH_STEUERUNG_DUMMY_FH_STEUERUNG_DUMMY_next_state");
+   klee_make_symbolic(&EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state, sizeof(EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state), "EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state");
+   klee_make_symbolic(&BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state), "BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state");
+   klee_make_symbolic(&BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state, sizeof(BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state), "BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state");
 #endif
 
 }/** init **/
@@ -1343,12 +1336,6 @@ int main(void)
 
   init();
 
-/*
- * The variables which are not made symbolic have effect on the variable 
- * `stable` and as a result affecting the number of loop iterations. Our
- * experiments show that symbolizing these variables may cause the loop
- * to become unbounded.
- */
 #ifdef LLBMC
   sc_FH_TUERMODUL_CTRL_2375_2 = __llbmc_nondef_unsigned_long();
   sc_FH_TUERMODUL_CTRL_2352_1 = __llbmc_nondef_unsigned_long();
