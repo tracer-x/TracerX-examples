@@ -17,6 +17,7 @@ export EXPERIMENT_TYPE_SET=".klee1 .tx1"
 
 ( \
     cd $SCALABILITY_DIR ; \
+    make clean ; \
     make experiment.csv ; \
     make llbmc-experiment.csv ; \
 )
