@@ -45,10 +45,6 @@ EXPERIMENT_MEMORY=13000
 # Here we use -only-output-states-covering-new by default to save disk space.
 KLEE_DEFAULT_OPTIONS=-search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new
 
-# LLBMC options can be set here; when empty, default options will be
-# used instead.
-LLBMC_OPTIONS=
-
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
 TR_TARGETS=tr.tr0 tr_nosyscall.tr0 tr_small.tr0
