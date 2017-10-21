@@ -97,42 +97,6 @@ make basename.llbmc
 # pathchk
 ###################################################################
 
-export PROGRAM_OPTIONS="-sym-arg 13 --sym-stdout"
-(\
-    cd $COREUTILS_DIR ; \
-    make pathchk.klee1 ; \
-    mv pathchk.klee1 pathchk.klee101 ; \
-    make pathchk.tx1 ; \
-    mv pathchk.tx1 pathchk.tx101 \
-)
-export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc101
-export PROGRAM_OPTIONS="xxxxxxxxxxxxx"
-make pathchk.llbmc
-
-export PROGRAM_OPTIONS="-sym-arg 14 --sym-stdout"
-(\
-    cd $COREUTILS_DIR ; \
-    make pathchk.klee1 ; \
-    mv pathchk.klee1 pathchk.klee102 ; \
-    make pathchk.tx1 ; \
-    mv pathchk.tx1 pathchk.tx102 \
-)
-export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc102
-export PROGRAM_OPTIONS="xxxxxxxxxxxxxx"
-make pathchk.llbmc
-
-export PROGRAM_OPTIONS="-sym-arg 15 --sym-stdout"
-(\
-    cd $COREUTILS_DIR ; \
-    make pathchk.klee1 ; \
-    mv pathchk.klee1 pathchk.klee103 ; \
-    make pathchk.tx1 ; \
-    mv pathchk.tx1 pathchk.tx103 \
-)
-export LLBMC_OUTPUT_DIR=$COREUTILS_DIR/pathchk.llbmc103
-export PROGRAM_OPTIONS="xxxxxxxxxxxxxxx"
-make pathchk.llbmc
-
 export PROGRAM_OPTIONS="-sym-arg 16 --sym-stdout"
 (\
     cd $COREUTILS_DIR ; \
@@ -173,7 +137,7 @@ make pathchk.llbmc
 # LLBMC table
 ###################################################################
 
-export OUTPUT_DIR_SET="$COREUTILS_DIR/cut.llbmc102 $COREUTILS_DIR/basename.llbmc102 $COREUTILS_DIR/basename.llbmc103 $COREUTILS_DIR/basename.llbmc104 $COREUTILS_DIR/pathchk.llbmc101 $COREUTILS_DIR/pathchk.llbmc102 $COREUTILS_DIR/pathchk.llbmc103 $COREUTILS_DIR/pathchk.llbmc104 $COREUTILS_DIR/pathchk.llbmc105 $COREUTILS_DIR/pathchk.llbmc106"
+export OUTPUT_DIR_SET="$COREUTILS_DIR/cut.llbmc102 $COREUTILS_DIR/basename.llbmc102 $COREUTILS_DIR/basename.llbmc103 $COREUTILS_DIR/basename.llbmc104 $COREUTILS_DIR/pathchk.llbmc104 $COREUTILS_DIR/pathchk.llbmc105 $COREUTILS_DIR/pathchk.llbmc106"
 make llbmc-experiment.csv.only
 	      
 cd $SCRIPT_DIR
