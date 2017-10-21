@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Scalability experiments for TACAS '18 submission.
+# The result for scalability experiment for statemate-old.c
+# wlll be in scalability/LLBMC_STATEMATE_OLD directory.
 #
 # Copyright 2017 National University of Singapore
 
@@ -20,4 +22,7 @@ export EXPERIMENT_TYPE_SET=".klee1 .tx1"
     make clean ; \
     make experiment.csv ; \
     make llbmc-experiment.csv ; \
+    LLBMC_OUTPUT_DIR=$SCALABILITY_DIR/LLBMC_STATEMATE_OLD \
+    LLBMC_OPTIONS="--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=60 -max-function-call-depth=10" \
+    make statemate-old.llbmc
 )
