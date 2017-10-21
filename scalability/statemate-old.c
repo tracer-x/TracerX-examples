@@ -3,7 +3,7 @@
  * floating-point constant has beend replaced with equivalent
  * comparison with int constant. */
 
-/* This is the "hard" version with more symbolic variables such that
+/* This is the old version with more symbolic variables such that
    the main loop is no longer bounded in the number of
    iterations. Hence, it is not suitable for WCET reasoning. */
 
