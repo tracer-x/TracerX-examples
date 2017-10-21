@@ -70,7 +70,7 @@ LLBMC_DEFAULT_TIMEOUT=3600
 # not complete.
 #
 # Then you can try to increase the values.
-LLBMC_DEFAULT_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10
+LLBMC_DEFAULT_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10 --no-overflow-checks
 
 CC=@CC@
 AS=${CC} -S
