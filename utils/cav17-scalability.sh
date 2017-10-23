@@ -13,7 +13,7 @@ unset CPLUS_INCLUDE_PATH
 
 ( \
     cd $SCALABILITY_DIR ; \
-    export EXPERIMENT_SET="bubble_assert3 bubble_assert6 bubble_assert9 bubble_assert12 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-7-6 insertsort5 insertsort7 insertsort9 insertsort11 statemate nsichneu" ; \
+    export EXPERIMENT_SET="bubble_assert3 bubble_assert6 bubble_assert9 bubble_assert12 Regexp-7-3 Regexp-7-4 Regexp-7-5 Regexp-7-6 insertsort5 insertsort7 insertsort9 insertsort11 statemate-old nsichneu" ; \
     export EXPERIMENT_TYPE_SET=".klee1 .tx1" ; \
     make experiment.csv ; \
 )
