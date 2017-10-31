@@ -32,6 +32,5 @@ int RandomInteger(void);
 int Seed;
 matrix Array;
 int Postotal, Negtotal, Poscnt, Negcnt;
-
-
+int wcet;
 

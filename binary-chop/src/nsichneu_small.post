@@ -1,10 +1,7 @@
-char *wcet;
-void tracerx_check(char *p) { printf("Timing of Path:%d\n",(int)p-(int)(&(_bound))); *p;}
-
 /**void NSicherNeu()**/
 int main()
 {
-   wcet=_bound;
+   wcet=0;
    int dummy_i;
 /*   dummy_i = 17; Takes too much time */
    dummy_i = 2;

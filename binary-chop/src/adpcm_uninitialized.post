@@ -453,13 +453,13 @@ void reset()
     dec_nbh = dec_ah1 = dec_ah2 = dec_ph1 = dec_ph2 = dec_rh1 = dec_rh2 = 0;
     wcet += 6;
 
-    for(i = 0 ; i < 6 ; i++) {
+    /*for(i = 0 ; i < 6 ; i++) {
         delay_dltx[i] = 0;
         delay_dhx[i] = 0;
         dec_del_dltx[i] = 0;
         dec_del_dhx[i] = 0;
         wcet += 4;
-    }
+    }*/
 
     for(i = 0 ; i < 6 ; i++) {
         delay_bpl[i] = 0;
@@ -471,11 +471,11 @@ void reset()
 
     for(i = 0 ; i < 23 ; i++) {tqmf[i] = 0;wcet += 1;}
 
-    for(i = 0 ; i < 11 ; i++) {
+    /*for(i = 0 ; i < 11 ; i++) {
         accumc[i] = 0;
         accumd[i] = 0;
         wcet += 2;
-    }
+    }*/
     return;
 }
 

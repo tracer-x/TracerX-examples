@@ -96,3 +96,95 @@ int ludcmp(int nmax, int n);
 /*  } */
 
 int wcet;
+void tracerx_check() { printf("Timing of Path:%d\n",wcet); klee_assert(wcet < 584);}
+
+int main()
+{
+  wcet = 0;
+  int      i, j, nmax = 50, n = 5, chkerr;
+  long int /* eps, */ w;
+
+  /* eps = 1.0e-6; */
+
+  /* Init loop */
+  /* for(i = 0; i <= n; i++) */
+  /*   { */
+  /*     w = 0.0;              /\* data to fill in cells *\/ */
+  /*     for(j = 0; j <= n; j++) */
+  /*       { */
+  /*         a[i][j] = (i + 1) + (j + 1); */
+  /*         if(i == j)            /\* only once per loop pass *\/ */
+  /*           a[i][j] *= 2.0; */
+  /*         w += a[i][j]; */
+  /*       } */
+  /*     b[i] = w; */
+  /*   } */
+
+#ifdef LLBMC
+  for (int i = 0; i < 50; ++i) {
+    b[i] = __llbmc_nondef_long_int();
+    x[i] = __llbmc_nondef_long_int();
+    for (int j = 0; j < 50; ++j) {
+      a[i][j] = __llbmc_nondef_long_int();
+    }
+  }
+#else
+  klee_make_symbolic(a, 50 * 50 * sizeof(long int), "a");
+  klee_make_symbolic(b, 50 * sizeof(long int), "b");
+  klee_make_symbolic(x, 50 * sizeof(long int), "x");
+#endif
+
+  /*  chkerr = ludcmp(nmax, n, eps); */
+  chkerr = ludcmp(nmax,n);
+  tracerx_check(wcet);
+}
+
+int ludcmp(int nmax, int n)
+{
+  int i, j, k;
+  long w, y[100];
+
+  /* if(n > 99 || eps <= 0.0) return(999); */
+  /*for(i = 0; i < n; i++)w
+    {
+      for(j = i+1; j <= n; j++) 
+        {
+          w = a[j][i];
+	  wcet++;
+          if(i != 0){            
+            for(k = 0; k < i; k++){
+              w -= a[j][k] * a[k][i];wcet++;
+	    }
+	  }
+	  klee_assume(a[i][i]>0);
+          a[j][i] = w / a[i][i];
+	  wcet++;
+        }
+      for(j = i+1; j <= n; j++) 
+        {
+          w = a[i+1][j];wcet++;
+          for(k = 0; k <= i; k++){ 
+            w -= a[i+1][k] * a[k][j];wcet++;
+          }a[i+1][j] = w;wcet++;
+        }
+    }
+  y[0] = b[0];wcet++;
+  for(i = 1; i <= n; i++)       
+    {
+      w = b[i];wcet++;
+      for(j = 0; j < i; j++){    
+        w -= a[i][j] * y[j];wcet++;
+      }y[i] = w;wcet++;
+    }
+  x[n] = y[n] / a[n][n];wcet++;
+  for(i = n-1; i >= 0; i--)     
+    {
+      w = y[i];wcet++;
+      for(j = i+1; j <= n; j++){ 
+        w -= a[i][j] * x[j];wcet++;
+      }
+      x[i] = w / a[i][i] ;wcet++;
+    }*/
+  return(0);
+}
+

@@ -180,4 +180,4 @@ char EINKLEMMSCHUTZ_CTRL_EINKLEMMSCHUTZ_CTRL_next_state;  /** 2 bits **/
 char BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state;  /** 2 bits **/
 char BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state;  /** 2 bits **/
 
-
+int wcet;

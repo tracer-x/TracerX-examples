@@ -57,4 +57,5 @@ void trace(char *s)
 /* volatile */ int	P3_is_marked = 0;
 /* volatile */ long	P3_marking_member_0[6];
 
+int wcet;
 

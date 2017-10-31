@@ -1,10 +1,6 @@
-char *wcet;
-
-void tracerx_check(char *p) { printf("Timing of Path:%d\n",(int)p-(int)(&(_bound))); *p;}
-
 int main(void)
 {
-  wcet = _bound;
+  wcet = 0;
   // with  expint(50,21) as argument, runs the short path
   // in expint.   expint(50,1)  gives the longest execution time
 
@@ -23,7 +19,7 @@ int main(void)
 #endif
 
   expint(50,x);
-  tracerx_check(wcet);
+  tracerx_check();
   return 0;
 }
 

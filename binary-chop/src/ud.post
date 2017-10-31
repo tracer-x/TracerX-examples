@@ -1,10 +1,7 @@
 
-char* wcet;
-void tracerx_check(char *p) { printf("Timing of Path:%d\n",(int)p-(int)(&(_bound))); *p;}
-
 int main()
 {
-  wcet = _bound;
+  wcet = 0;
   int      i, j, nmax = 50, n = 5, chkerr;
   long int /* eps, */ w;
 
