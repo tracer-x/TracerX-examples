@@ -39,6 +39,7 @@ masked_error1.c		0
 masked_error2.c		0
 masked_error3.c		0
 memory-access.c		3
+missing_pc.c		6
 openssl.c		4
 openssl_partial_fix.c	0
 overmark.c		2
