@@ -1,16 +1,12 @@
-char *wcet;
-
-void tracerx_check(char *p) { printf("Timing of Path:%d\n",(int)p-(int)(&(_bound))); *p;}
-
 // The main function
 int main (void)
 {
-   wcet=_bound;
+   wcet=0;
    InitSeed();
    //printf("\n   *** MATRIX SUM AND COUNT BENCHMARK TEST ***\n\n");
    //printf("RESULTS OF THE TEST:\n");
    Test(Array);
-   tracerx_check(wcet);
+   tracerx_check();
    return 1;
 }
 

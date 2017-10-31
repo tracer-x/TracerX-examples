@@ -26,9 +26,6 @@ mv resultWP.csv resultWP_old.csv
 export EXPERIMENT_SET=" ndes   tcas fly_by_wire nsichneu expint cnt   adpcm  statemate"  
 export UPPER_BOUND_SET=(400000 5000 20000       50000    50000  30000 500000 50000)
 
-export EXPERIMENT_SET=""  
-export UPPER_BOUND_SET=() 
- 
 export EXPERIMENT_TYPE_SET=".tx1"
 export ENABLE_COVERAGE=OFF
 cat src/MakefileWP > Makefile 
@@ -146,6 +143,7 @@ echo "Round,Benchmark,Known Lower/Upper Bound,Tested Bound,Result,Precision,Anal
 i=0
 for BENCHMARK in $BENCHMARKS 
 do
+	export ROUND=1
 	export UPPER_BOUND=${UPPER_BOUND_SET[i++]}	
 	export CURRENT_BOUND=$UPPER_BOUND
 	export LOWER_BOUND=1
