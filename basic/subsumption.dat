@@ -29,7 +29,7 @@ domination2.c		4
 double-free.c		0
 even.c			0
 instCountTest		0
-interproc.c		3
+interproc.c		4
 local.c			4
 loop_safe1.c		0
 loop_safe2.c		0
@@ -40,7 +40,7 @@ masked_error1.c		0
 masked_error2.c		0
 masked_error3.c		0
 memory-access.c		3
-missing_pc.c		5
+missing_pc.c		6
 openssl.c		4
 openssl_partial_fix.c	0
 overmark.c		2
@@ -64,7 +64,7 @@ polynomial.c		0
 queens.c		36
 recursion1.c		0
 recursion2.c		28
-regexp_iterative.c	70
+regexp_iterative.c	66
 regexp_mark.c		12
 regexp_nonrecursive1.c	2
 regexp_nonrecursive3.c	3
