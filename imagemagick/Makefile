@@ -285,7 +285,7 @@ ${IMAGEMAGICK_COV_DIR}:
 		KLEE_IMAGEMAGICK_EXTRA_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
 	fi ; \
 	PROGRAM_OPTIONS="$$PROGRAM_OPTIONS -max-fail 1" ; \
-	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_IMAGEMAGICK_BASIC_OPTIONS} $$KLEE_IMAGEMAGICK_EXTRA_OPTIONS $$SOLVER_FLAGS --subsumed-test --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR $$BITCODE_DIR/$*.bc $$PROGRAM_OPTIONS -max-fail 1 ; \
+	LD_LIBRARY_PATH=${EXTRA_LD_LIBRARY_PATH} time ${KLEE} ${KLEE_IMAGEMAGICK_BASIC_OPTIONS} $$KLEE_IMAGEMAGICK_EXTRA_OPTIONS $$SOLVER_FLAGS --subsumed-test --environ=${CURDIR}/test.env --run-in=sandbox -output-dir=$$OUTPUT_DIR $$BITCODE_DIR/$* $$PROGRAM_OPTIONS -max-fail 1 ; \
 	echo -n "$$PROGRAM_OPTIONS" > $$OUTPUT_DIR/ProgramOptions.txt ; \
 	# Delete the sandbox
 	rm -rf sandbox sandbox.temps
@@ -458,8 +458,8 @@ ${EXPERIMENT_CSV}: core-experiment
 			LLBMC_TIMEOUT="${EXPERIMENT_TIMEOUT}" ; \
 		fi ; \
 		ulimit -s unlimited ; \
-		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" -smtlib2 ${IMAGEMAGICK_BITCODE_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$*.smt2 ; \
-		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${IMAGEMAGICK_BITCODE_DIR}/$*.bc > "$$LLBMC_OUTPUT_DIR"/$* ; \
+		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" -smtlib2 ${IMAGEMAGICK_BITCODE_DIR}/$* > "$$LLBMC_OUTPUT_DIR"/$*.smt2 ; \
+		PATH=${EXTRA_PATH}:$$PATH timeout $$LLBMC_TIMEOUT llbmc $$LLBMC_OPTIONS -arguments="$$PROGRAM_OPTIONS" ${IMAGEMAGICK_BITCODE_DIR}/$* > "$$LLBMC_OUTPUT_DIR"/$* ; \
                 if [ $$? = "124" ] ; then \
                         touch "$$LLBMC_OUTPUT_DIR"/$*.timeout ; \
                 fi \
