@@ -6,7 +6,20 @@ IMAGEMAGICK_DIR=${CURDIR}/ImageMagick-7.0.5-9
 IMAGEMAGICK_LLVM_DIR=${IMAGEMAGICK_DIR}/obj-llvm
 IMAGEMAGICK_COV_DIR=${IMAGEMAGICK_DIR}/obj-cov
 IMAGEMAGICK_BITCODE_DIR=${IMAGEMAGICK_LLVM_DIR}/utilities/.libs
-IMAGEMAGICK_BITCODE=${IMAGEMAGICK_BITCODE_DIR}/magic-whole.bc
+IMAGEMAGICK_BITCODE=magick-whole.bc
+IMAGEMAGICK_TARGET=${IMAGEMAGICK_BITCODE_DIR}/${IMAGEMAGICK_BITCODE}
+# Note that we are excluding magick itself and magick-script
+IMAGEMAGICK_UTILS=animate \
+	compare \
+	composite \
+	conjure \
+	convert \
+	display \
+	identify \
+	import \
+	mogrify \
+	montage \
+	stream
 
 # The following is for computing coverage from the test files within
 # the start of the execution up to, and not including the specified
@@ -19,19 +32,7 @@ LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-ite
 
 BASH=/bin/bash
 
-TARGETS=animate.tx \
-	compare.tx \
-	composite.tx \
-	conjure.tx \
-	convert.tx \
-	display.tx \
-	identify.tx \
-	import.tx \
-	magick.tx \
-	magick-script.tx \
-	mogrify.tx \
-	montage.tx \
-	stream.tx
+TARGETS=$(patsubst %,%.tx,${IMAGEMAGICK_UTILS})
 
 DEFAULT_OPTIONS=--sym-args 0 1 10 --sym-args 0 1 2 --sym-files 1 8 --sym-stdout
 COMPARE_OPTIONS=--sym-files 2 8 --sym-args 0 1 10 --sym-args 0 1 2 --sym-stdout
@@ -44,17 +45,7 @@ MONTAGE_OPTIONS=--sym-files 1 8 --sym-args 0 1 10 --sym-args 0 1 2 --sym-file 1 
 STREAM_OPTIONS=--sym-args 0 1 10 --sym-args 0 1 2 --sym-files 2 8 --sym-stdout
 
 # Note that we are excluding magick itself and magick-script
-DEFAULT_EXPERIMENT_SET=animate \
-	compare \
-	composite \
-	conjure \
-	convert \
-	display \
-	identify \
-	import \
-	mogrify \
-	montage \
-	stream
+DEFAULT_EXPERIMENT_SET=${IMAGEMAGICK_UTILS}
 
 DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6 .klee11 .tx11 .tx12 .tx13 .tx14
 
@@ -88,17 +79,17 @@ all: ${TARGETS} ${KLEE_TARGETS} ${STPKLEE_TARGETS}
 
 include ../Makefile.common
 
-build: ${IMAGEMAGICK_BITCODE} ${IMAGEMAGICK_COV_DIR} test.env
+build: ${IMAGEMAGICK_TARGET} ${IMAGEMAGICK_COV_DIR} test.env
 
 test.env:
 	env -i ${BASH} -c '( source testing-env.sh ; env > test.env )'
 
-${IMAGEMAGICK_BITCODE}:
+${IMAGEMAGICK_TARGET}:
 	@echo =================================================================
 	@echo Building ImageMagick without linking
 	@echo =================================================================
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
-	rm -rf ${IMAGEMAGICK_LLVM_DIR}	
+	rm -rf ${IMAGEMAGICK_LLVM_DIR}
 	mkdir ${IMAGEMAGICK_LLVM_DIR}
 	( cd ${IMAGEMAGICK_LLVM_DIR}; \
 		export LLVM_COMPILER=clang; \
@@ -115,10 +106,9 @@ ${IMAGEMAGICK_BITCODE}:
 	@echo =================================================================
 	( cd ${IMAGEMAGICK_BITCODE_DIR} ; \
 		${WHOLE_PROGRAM_LLVM}/extract-bc -m magick ; \
-		llvm-link magick.bc ../../MagickCore/.*.o.bc > magick-whole.bc ; \
-		TARGETS_NOEXT="$(subst .tx,,${TARGETS})" ; \
-		for program in $$TARGETS_NOEXT ; do \
-			ln -sf magick-whole.bc $$program ; \
+		llvm-link magick.bc ../../MagickCore/.*.o.bc > ${IMAGEMAGICK_BITCODE} ; \
+		for PROGRAM in ${IMAGEMAGICK_UTILS} ; do \
+			ln -sf ${IMAGEMAGICK_BITCODE} $$PROGRAM ; \
 		done \
 	)
 
@@ -139,11 +129,8 @@ ${IMAGEMAGICK_COV_DIR}:
 		make \
 	)
 	( cd ${IMAGEMAGICK_COV_DIR}/utilities/.libs ; \
-		TARGETS_NOEXT="$(subst .tx,,${TARGETS})" ; \
-		for program in $$TARGETS_NOEXT ; do \
-			if [ $$program != "magick" ] ; then \
-				ln -sf magick $$program ; \
-			fi ; \
+		for PROGRAM in ${IMAGEMAGICK_UTILS} ; do \
+			ln -sf magick $$PROGRAM ; \
 		done \
 	)
 
