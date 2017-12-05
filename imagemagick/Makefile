@@ -487,7 +487,7 @@ ${LLBMC_EXPERIMENT_CSV}.body:
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
 			awk '/[DONE]/{i++}i==5' "$$LLBMC_OUTPUT_DIR/$$program" | tr -d  "sec [DONE] Result:=\n" >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf ", " >> ${LLBMC_EXPERIMENT_CSV}; \
-			grep "Error detected." "$LLBMC_OUTPUT_DIR/$$program" | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV}; \
+			grep "Error detected." "$$LLBMC_OUTPUT_DIR/$$program" | tr -d  "\n"  >> ${LLBMC_EXPERIMENT_CSV}; \
 			printf "\n" >> ${LLBMC_EXPERIMENT_CSV}; \
 		fi ; \
 	done
@@ -511,5 +511,5 @@ ${LLBMC_EXPERIMENT_CSV}.only:
 		make ${LLBMC_EXPERIMENT_CSV}.body ; \
 		cat ${LLBMC_EXPERIMENT_CSV} >> ${LLBMC_EXPERIMENT_CSV}.tmp ; \
 		rm -f ${LLBMC_EXPERIMENT_CSV} ; \
-		mv ${LLBMC_EXPERIMENT_CSV}.tmp ${LLBMC_EXPERIMENT_CSV}
+		mv ${LLBMC_EXPERIMENT_CSV}.tmp ${LLBMC_EXPERIMENT_CSV} ; \
 	fi
