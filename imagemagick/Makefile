@@ -106,7 +106,7 @@ ${IMAGEMAGICK_TARGET}:
 	@echo =================================================================
 	( cd ${IMAGEMAGICK_BITCODE_DIR} ; \
 		${WHOLE_PROGRAM_LLVM}/extract-bc -m magick ; \
-		llvm-link magick.bc ../../MagickCore/.*.o.bc > ${IMAGEMAGICK_BITCODE} ; \
+		llvm-link magick.bc ../../MagickCore/.*.o.bc ../../coders/.*.o.bc > ${IMAGEMAGICK_BITCODE} ; \
 		for PROGRAM in ${IMAGEMAGICK_UTILS} ; do \
 			ln -sf ${IMAGEMAGICK_BITCODE} $$PROGRAM ; \
 		done \
