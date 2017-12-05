@@ -86,7 +86,7 @@ test.env:
 
 ${IMAGEMAGICK_TARGET}:
 	@echo =================================================================
-	@echo Building ImageMagick without linking
+	@echo Building ImageMagick
 	@echo =================================================================
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
 	rm -rf ${IMAGEMAGICK_LLVM_DIR}
@@ -208,34 +208,6 @@ ${IMAGEMAGICK_COV_DIR}:
 	fi ; \
 	KLEE_IMAGEMAGICK_OPTIONS="$$KLEE_IMAGEMAGICK_OPTIONS --libc=uclibc --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
 
-# These are for the no-linking runs, without linking with uclibc
-%.tx-nolink:
-	if [ -z "$$OUTPUT_DIR" ] ; then \
-		OUTPUT_DIR=${CURDIR}/$@ ; \
-	fi ; \
-	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
-		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
-	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
-
-%.klee-nolink:
-	if [ -z "$$OUTPUT_DIR" ] ; then \
-		OUTPUT_DIR=${CURDIR}/$@ ; \
-	fi ; \
-	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
-		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
-	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=z3 -no-interpolation" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
-
-%.stpklee-nolink:
-	if [ -z "$$OUTPUT_DIR" ] ; then \
-		OUTPUT_DIR=${CURDIR}/$@ ; \
-	fi ; \
-	if [ -z "$$KLEE_IMAGEMAGICK_OPTIONS" ] ; then \
-		KLEE_IMAGEMAGICK_OPTIONS="${KLEE_IMAGEMAGICK_DEFAULT_OPTIONS}" ; \
-	fi ; \
-	KLEE_IMAGEMAGICK_OPTIONS="--search=dfs --max-time=${EXPERIMENT_TIMEOUT} --max-memory=${EXPERIMENT_MEMORY}" SOLVER_FLAGS="-solver-backend=stp" OUTPUT_DIR=$$OUTPUT_DIR BITCODE_DIR=${IMAGEMAGICK_BITCODE_DIR} make $*.klee-out
-
 %.klee-out: build
 	# The testing sandbox reconstructed here is from
 	# http://www.doc.ic.ac.uk/~cristic/klee/klee-cu-sandbox.html
@@ -299,7 +271,7 @@ clean:
 	if [ -z "$$LLBMC_OUTPUT_DIR" ] ; then \
 		LLBMC_OUTPUT_DIR="${CURDIR}/LLBMC_OUTPUT" ; \
 	fi ; \
-	rm -rf *.klee* *.tx* *.stpklee* *.klee-nolink *.tx-nolink *.stpklee-nolink *.klee-out *.llbmc* ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
+	rm -rf *.klee* *.tx* *.stpklee* *.klee-out *.llbmc* ${EXPERIMENT_CSV} small-${EXPERIMENT_CSV} ${EXPERIMENT_CSV}.only small-${EXPERIMENT_CSV}.only ${LLBMC_EXPERIMENT_CSV} ${LLBMC_EXPERIMENT_CSV}.tmp $$LLBMC_OUTPUT_DIR sandbox sandbox.temps test.env
 
 realclean: clean
 	rm -rf ${IMAGEMAGICK_LLVM_DIR} ${IMAGEMAGICK_COV_DIR}
@@ -416,7 +388,6 @@ ${EXPERIMENT_CSV}: core-experiment
 # LLBMC uses STP as backend, so we do 'ulimit -s unlimited' as
 # recommended in http://klee.github.io/build-stp/
 %.llbmc :
-	make build-nolink
 	( \
 		if [ -z "$$PROGRAM_OPTIONS" ] ; then \
 			if [ $* = "compare" ]; then \
@@ -471,9 +442,6 @@ llbmc-core-experiment:
 	fi ; \
 	for program in $$EXPERIMENT_SET ; do \
 		( \
-			make $$program.tx-nolink ; \
-			make $$program.klee-nolink ; \
-			make $$program.stpklee-nolink ; \
 			make $$program.llbmc \
 		) ; \
 	done
@@ -487,8 +455,7 @@ ${LLBMC_EXPERIMENT_CSV}: llbmc-core-experiment
 	if [ -z "$$EXPERIMENT_SET" ] ; then \
 		EXPERIMENT_SET=$(subst .tx,,${TARGETS}) ; \
 	fi ; \
-	make ${LLBMC_EXPERIMENT_CSV}.only ; \
-	EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only
+	make ${LLBMC_EXPERIMENT_CSV}.only
 
 ${LLBMC_EXPERIMENT_CSV}.header:
 	echo "Program,Timed out,Time for performing transformations on LLVM IR,Time for performing logical encoding,Time for performing formula transformations,Time for running SMT solver (STP with MiniSat), Total time,Error status" >> ${LLBMC_EXPERIMENT_CSV}
@@ -546,6 +513,5 @@ ${LLBMC_EXPERIMENT_CSV}.only:
 		make ${LLBMC_EXPERIMENT_CSV}.body ; \
 		cat ${LLBMC_EXPERIMENT_CSV} >> ${LLBMC_EXPERIMENT_CSV}.tmp ; \
 		rm -f ${LLBMC_EXPERIMENT_CSV} ; \
-		mv ${LLBMC_EXPERIMENT_CSV}.tmp ${LLBMC_EXPERIMENT_CSV} ; \
-		EXPERIMENT_SET="$$EXPERIMENT_SET" EXPERIMENT_TYPE_SET=".tx-nolink .klee-nolink .stpkee-nolink" make ${EXPERIMENT_CSV}.only ; \
+		mv ${LLBMC_EXPERIMENT_CSV}.tmp ${LLBMC_EXPERIMENT_CSV}
 	fi
