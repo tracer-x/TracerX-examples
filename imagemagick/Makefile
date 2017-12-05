@@ -51,7 +51,7 @@ DEFAULT_EXPERIMENT_TYPE_SET=.klee1 .klee2 .tx1 .tx2 .tx3 .tx4 .tx5 .tx6 .klee11 
 
 EXPERIMENT_CSV=experiment.csv
 
-EXPERIMENT_TIMEOUT=3600
+EXPERIMENT_TIMEOUT=10
 
 EXPERIMENT_MEMORY=13000
 
@@ -441,12 +441,10 @@ llbmc-core-experiment:
 		EXPERIMENT_SET="${DEFAULT_EXPERIMENT_SET}" ; \
 	fi ; \
 	for program in $$EXPERIMENT_SET ; do \
-		( \
-			make $$program.llbmc \
-		) ; \
+		make $$program.llbmc ; \
 	done
 
-# This target is used for collecting data from coreutils LLBMC
+# This target is used for collecting data from ImageMagick LLBMC
 # experiment into ${LLBMC_EXPERIMENT_CSV} file.  It will create both
 # ${LLBMC_EXPERIMENT_CSV} and ${EXPERIMENT_CSV}, the second containing
 # data of Tracer-X and KLEE runs on the main function bitcode only,
