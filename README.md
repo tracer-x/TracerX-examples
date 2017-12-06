@@ -3,7 +3,9 @@ Simple examples for running with Tracer-X KLEE
 
 Copyright 2015-2017 National University of Singapore. See `LICENSE.md` for license information.
 
-This software includes third-party software, including some sample programs are from LLBMC 2013.1 distribution modified for running with KLEE, GNU Coreutils 6.10, and portions of libPNG. Their license information is included in the `license/LLBMC_LICENSE`, `license/COPYING`, and `license/LIBPNG_LICENSE`.
+This software includes third-party software, including some sample programs are from LLBMC 2013.1 distribution modified for running with KLEE, GNU Coreutils 6.10, ImageMagick 7.0.5-9, and portions of libPNG. Their license information is included in the `license/LLBMC_LICENSE`, `license/COPYING`, `license/IMAGEMAGICK_LICENSE` and `license/LIBPNG_LICENSE`.
+
+LLBMC 2013.1 is Copyright (c) 2010-2013 Stephan Falke, Florian Merz, Carsten Sinz Karlsruhe Institute of Technology (KIT), Germany. All rights reserved.  Coreutils 6.10 is Copyright (C) 1984-2008 Free Software Foundation. Refer to `license/IMAGEMAGICK_NOTICE` for the copyright notice of ImageMagick 7.0.5-9 and `license/LIBPNG_LICENSE` for the copyright notice of libPNG.
 
 Each directory except **include** and **utils** contains a suite of simple examples.
 
@@ -16,6 +18,8 @@ Each directory except **include** and **utils** contains a suite of simple examp
 - **include** - Include files for running with various tools.
 
 - **coreutils** - Examples of 89 stand-alone programs in the GNU Coreutils-6.10 utility suite. In this version, KLEE was able to find some bugs and they are reported in the [OSDI Paper](https://www.doc.ic.ac.uk/~cristic/papers/klee-osdi-08.pdf). The `coreutils` directory contains `coreutils-6.10` subdirectory of GNU Coreutils 6.10.
+
+- **imagemagick** - ImageMagick 7.0.5-9
 
 - **utils** - Scripts and other utilities. This contains, among others, `cav17-coreutils.sh` and `cav17-scalability.sh` for reproducing the experimental results of our CAV '17 paper submission.
 
@@ -63,8 +67,8 @@ To run any of the examples, first you need to execute the provided `configure` s
                           the specified directory (defaults to /usr/local).
 ```
 
-Running with example programs other than *join*, *coreutils*, and *scalability*
--------------------------------------------------------------------------------
+Running with example programs other than *join*, *coreutils*, *imagemagick* and *scalability*
+---------------------------------------------------------------------------------------------
 
 Instruction on running with the examples in the `join`, `coreutils`, and `scalability` directories can be found later in this document. Please first run the `configure` script as instructed above. Then to run the the example(s) in a particular directory, say `basic`, change your current directory to the `basic` directory.
 
@@ -122,29 +126,29 @@ The examples in the `join` subdirectory requires Tracer-X KLEE to be compiled wi
 
 - There are other programs such as `count.c` and `sum.c` in the `join` directory. Please consult `join/Makefile`, which contains `test-*` targets to run them.
 
-Running with *coreutils* or *scalability* examples
---------------------------------------------------
+Running with *coreutils*, *imagemagick* or *scalability* examples
+-----------------------------------------------------------------
 
 1. Run the `configure` script as instructed above.
-2. For *coreutils*, build it as follows:
+2. For *coreutils* or *imagemagick*, build it as follows:
    - *Prerequisites:* 
-     1. `whole-program-llvm`. This can be obtained by cloning it from GitHub, i.e.: `git clone https://github.com/travitch/whole-program-llvm.git`
+     1. `whole-program-llvm`. This can be obtained by cloning it from GitHub, i.e.: `git clone https://github.com/travitch/whole-program-llvm.git` or installing it using PIP: `sudo pip install wllvm`.
      2. You may/may not need an older version of GNU texinfo. The build does not work with texinfo 5.2, but known to work with 4.13. Texinfo 4.13 can be found [here](http://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz).
    - *Steps:*
-     1. `cd coreutils`
-     2. Run `make build`. This builds Coreutils 6.10 twice: one with for producing whole-program bitcode in `coreutils/coreutils-6.10/obj-llvm/src`, and another with instrumentation for measuring coverage with `llvm-cov` in `coreutils/coreutils-6.10/obj-cov/src`.
+     1. `cd coreutils` for *coreutils* or `cd imagemagick` for *imagemagick*
+     2. Run `make build`. This builds Coreutils 6.10 of ImageMagick 7.0.5-9 twice: one with for producing whole-program bitcode in `coreutils/coreutils-6.10/obj-llvm/src` (the only bitcode is `imagemagick/ImageMagick-7.0.5-9/obj-llvm/utilities/.libs/magick-whole.bc` for ImageMagick), and another with instrumentation for measuring coverage with `llvm-cov` in `coreutils/coreutils-6.10/obj-cov/src` (`imagemagick/ImageMagick-7.0.5-9/obj-cov/utilities/.libs` for ImageMagick).
 3. Set open file limits to 65536 in the following way: `ulimit -n 65536`. The number 65536 seems to work. Please note that this may not work depending on whether the number exceeds your hard limit. You can check the hard limit via `ulimit -H -n`.
-4. `cd coreutils` or `cd scalability`
+4. `cd coreutils`, `cd imagemagick`, or `cd scalability`
 5. Run `make` in any of the following ways:
-    - Just `make` - Runs the test-case generation on all programs: in case of *coreutils*, this will build Coreutils 6.10 if this is not done already.
-    - `make <program_name>.tx` - Runs the test-case generation on `<program_name>`: it will build Coreutils 6.10 if this is not done already. Here, `<program_name>` is one of the Coreutils programs whose executable file is found as `coreutils/coreutils-6.10/obj-llvm/src/<program_name>`. The output will be the result of Tracer-X KLEE run on the program with Z3 solver backend and interpolation, and its coverage information .The test cases are saved in `<program_name>.tx` directory.
+    - Just `make` - Runs the test-case generation on all programs: in case of *coreutils* or *imagemagick*, this will build Coreutils 6.10 or respectively ImageMagick 7.0.5-9 if this is not done already.
+    - `make <program_name>.tx` - Runs the test-case generation on `<program_name>`: it will build Coreutils 6.10 or ImageMagick 7.0.5-9 if this is not done already. Here, `<program_name>` is one of the programs whose executable file is found as `coreutils/coreutils-6.10/obj-cov/src/<program_name>` for Coreutils, or `imagemagick/ImageMagick-7.0.5-9/obj-cov/utilities/.libs` for ImageMagick. The output will be the result of Tracer-X KLEE run on the program with Z3 solver backend and interpolation, and its coverage information .The test cases are saved in `<program_name>.tx` directory.
     - `make <program_name>.klee` - Runs the test-case generation on `<program_name>` similar to `make <program_name>.tx`, however, Tracer-X KLEE will be invoked with `-solver-backend=z3` and `-no-interpolation` to disable interpolation. This makes the run equivalent to running KLEE with `-solver-backend=z3`. The test cases are saved in `<program_name>.klee` directory.
     - `make <program_name>.stpklee` - Runs the test-case generation on `<program_name>` similar to `make <program_name>.klee`, however, Tracer-X KLEE will be invoked with `-solver-backend=stp` which disables interpolation and uses STP, resulting in standard KLEE run using STP. The test cases are saved in `<program_name>.stpklee` directory.
     - `make <program_name>.llbmc` - Runs LLBMC on `<program_name>`.
     - `make experiment.csv` or `make llbmc-experiment.csv`.
         * These are for executing with the example programs using KLEE, Tracer-X KLEE, and LLBMC, and collecting data for presentation. The targets will produce `experiment.csv` and `llbmc-experiment.csv` comma-separated values files, respectively, depending on which one was invoked. `experiment.csv` target will produce both `experiment.csv` and `small-experiment.csv`, which is the version with less data columns.
-        * For **coreutils** benchmark, `llbmc-experiment.csv` target will also produce `experiment.csv` (and `small-experiment.csv`) for the data for Tracer-X and KLEE (Z3 and STP) runs. This is because LLBMC can only be run on a smaller subset of Coreutils 6.10 programs, and on bitcode generated from the source of the `main` function only without linking with external files and libraries (libc). As such, for a more fair comparison, Tracer-X and KLEE must also be executed on the same bitcode.
-        * The experiments are run under different kinds of settings which can be seen in %.klee1, %.klee2, %.tx1, %.tx2, %.tx3, %.tx4, %.tx5, and %.tx6 targets defined in the `coreutils/Makefile` and `scalability/Makefile`, on the selected coreutils programs specified using the `EXPERIMENT_SET` variable in `coreutils/Makefile` and `scalability/Makefile`.
+        * For **coreutils** benchmark only, `llbmc-experiment.csv` target will also produce `experiment.csv` (and `small-experiment.csv`) for the data for Tracer-X and KLEE (Z3 and STP) runs. This is because LLBMC can only be run on a smaller subset of Coreutils 6.10 programs, and on bitcode generated from the source of the `main` function only without linking with external files and libraries (libc). As such, for a more fair comparison, Tracer-X and KLEE must also be executed on the same bitcode. This is not the case for ImageMagick.
+        * The experiments are run under different kinds of settings which can be seen in %.klee1, %.klee2, %.tx1, %.tx2, %.tx3, %.tx4, %.tx5, and %.tx6 targets defined in the `coreutils/Makefile`, `imagemagick/Makefile`, and `scalability/Makefile`, on the selected coreutils programs specified using the `EXPERIMENT_SET` variable in `coreutils/Makefile`, `imagemagick/Makefile`, and `scalability/Makefile`.
 
 Note that by default, line coverage computation is performed using `llvm-cov`. To prevent, this, add `ENABLE_COVERAGE=OFF` to the `make` command, for example: `make ENABLE_COVERAGE=OFF Regexp.tx`.
 
