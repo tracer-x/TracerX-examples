@@ -28,7 +28,8 @@ IMAGEMAGICK_UTILS=animate \
 IMAGEMAGICK_COV_MAX_TIME=
 
 CFLAGS_LLBMC_IMAGEMAGICK=-g -I${IMAGEMAGICK_LLVM_DIR}/lib -I${IMAGEMAGICK_DIR}/src -I${IMAGEMAGICK_DIR}/lib
-LLBMC_OPTIONS=--no-overflow-checks \
+LLBMC_OPTIONS=--no-div-by-zero-checks \
+	--no-overflow-checks \
 	--no-shift-checks \
 	--no-memcpy-disjoint-checks \
 	--ignore-missing-function-bodies \
