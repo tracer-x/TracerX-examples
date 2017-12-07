@@ -70,7 +70,21 @@ LLBMC_DEFAULT_TIMEOUT=3600
 # not complete.
 #
 # Then you can try to increase the values.
-LLBMC_DEFAULT_OPTIONS=--ignore-missing-function-bodies -function-name=main --no-max-loop-iterations-checks --no-max-function-call-depth-checks -max-loop-iterations=20 -max-function-call-depth=10 --no-overflow-checks
+#
+# The options -no-overflow-checks -no-shift-checks
+# -no-memcpy-disjoint-checks are for fair(er) comparison since KLEE
+# does not do these checks (overflow check has to be enabled in KLEE
+# by a special instrumentation of the bitcode, see:
+# https://klee.github.io/docs/options/#klee-usage
+LLBMC_DEFAULT_OPTIONS=--no-overflow-checks \
+	--no-shift-checks \
+	--no-memcpy-disjoint-checks \
+	--ignore-missing-function-bodies \
+	-function-name=main \
+	--no-max-loop-iterations-checks \
+	--no-max-function-call-depth-checks \
+	-max-loop-iterations=20 \
+	-max-function-call-depth=10
 
 CC=@CC@
 AS=${CC} -S
