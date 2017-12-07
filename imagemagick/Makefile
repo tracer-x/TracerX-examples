@@ -28,7 +28,13 @@ IMAGEMAGICK_UTILS=animate \
 IMAGEMAGICK_COV_MAX_TIME=
 
 CFLAGS_LLBMC_IMAGEMAGICK=-g -I${IMAGEMAGICK_LLVM_DIR}/lib -I${IMAGEMAGICK_DIR}/src -I${IMAGEMAGICK_DIR}/lib
-LLBMC_OPTIONS=--ignore-missing-function-bodies -function-name=main -max-loop-iterations=5 -max-function-call-depth=10
+LLBMC_OPTIONS=--no-overflow-checks \
+	--no-shift-checks \
+	--no-memcpy-disjoint-checks \
+	--ignore-missing-function-bodies \
+	--function-name=main \
+	--max-loop-iterations=5 \
+	--max-function-call-depth=10
 
 BASH=/bin/bash
 
