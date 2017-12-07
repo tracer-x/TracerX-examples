@@ -32,7 +32,7 @@ KLEE_REPLAY=${KLEE_HOME}/bin/klee-replay
 KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 
 # We use -only-output-states-covering-new to save disk space
-KLEE_FLAGS=${EXTRA_OPTIONS} -only-output-states-covering-new -search=dfs
+KLEE_FLAGS=${EXTRA_OPTIONS} -only-output-states-covering-new -search=dfs -allocate-determ
 
 # klee-replay timeout
 DEFAULT_KLEE_REPLAY_TIMEOUT=@KLEE_REPLAY_TIMEOUT@
