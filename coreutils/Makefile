@@ -17,7 +17,8 @@ COREUTILS_NOLINK_DIR=${COREUTILS_DIR}/obj-nolink
 COREUTILS_COV_MAX_TIME=
 
 CFLAGS_LLBMC_COREUTILS=-g -I${COREUTILS_LLVM_DIR}/lib -I${COREUTILS_DIR}/src -I${COREUTILS_DIR}/lib
-LLBMC_OPTIONS=--no-overflow-checks \
+LLBMC_OPTIONS=--no-div-by-zero-checks \
+	--no-overflow-checks \
 	--no-shift-checks \
 	--no-memcpy-disjoint-checks \
 	--ignore-missing-function-bodies \

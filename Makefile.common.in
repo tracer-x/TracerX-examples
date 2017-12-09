@@ -32,7 +32,7 @@ KLEE_REPLAY=${KLEE_HOME}/bin/klee-replay
 KTEST_TOOL=${KLEE_HOME}/bin/ktest-tool
 
 # We use -only-output-states-covering-new to save disk space
-KLEE_FLAGS=${EXTRA_OPTIONS} -only-output-states-covering-new -search=dfs
+KLEE_FLAGS=${EXTRA_OPTIONS} -only-output-states-covering-new -search=dfs -allocate-determ
 
 # klee-replay timeout
 DEFAULT_KLEE_REPLAY_TIMEOUT=@KLEE_REPLAY_TIMEOUT@
@@ -71,12 +71,13 @@ LLBMC_DEFAULT_TIMEOUT=3600
 #
 # Then you can try to increase the values.
 #
-# The options -no-overflow-checks -no-shift-checks
-# -no-memcpy-disjoint-checks are for fair(er) comparison since KLEE
-# does not do these checks (overflow check has to be enabled in KLEE
-# by a special instrumentation of the bitcode, see:
-# https://klee.github.io/docs/options/#klee-usage
-LLBMC_DEFAULT_OPTIONS=--no-overflow-checks \
+# The options -no-div-by-zero-checks -no-overflow-checks
+# -no-shift-checks -no-memcpy-disjoint-checks are for fair(er)
+# comparison since KLEE does not do these checks (overflow check has
+# to be enabled in KLEE by a special instrumentation of the bitcode,
+# see: https://klee.github.io/docs/options/#klee-usage
+LLBMC_DEFAULT_OPTIONS=--no-div-by-zero-checks \
+	--no-overflow-checks \
 	--no-shift-checks \
 	--no-memcpy-disjoint-checks \
 	--ignore-missing-function-bodies \

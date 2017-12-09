@@ -43,7 +43,7 @@ EXPERIMENT_TIMEOUT=3600
 EXPERIMENT_MEMORY=13000
 
 # Here we use -only-output-states-covering-new by default to save disk space.
-KLEE_DEFAULT_OPTIONS=-search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new
+KLEE_DEFAULT_OPTIONS=-allocate-determ -search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new -allocate-determ
 
 LLBMC_EXPERIMENT_CSV=llbmc-${EXPERIMENT_CSV}
 
@@ -94,49 +94,49 @@ clean: standard-clean
 	touch $@
 
 %.klee1 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--allocate-determ --search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.klee2 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--allocate-determ --search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tx1 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx2 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx2a : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=1 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -max-subsumption-failure=1 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx3 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=random-path --search=nurs:covnew -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx4 : 
-	KLEE_OPTIONS="--search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=random-path --search=nurs:covnew -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx5 : 
-	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx6 : 
-	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -only-output-states-covering-new" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 # The following targets are run with -write-paths and without
 # -only-output-states-covering-new for comparing tree sizes using
 # utils/treecmp.c.
 %.klee11 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
+	KLEE_OPTIONS="--allocate-determ --search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.klee
 
 %.tx11 : 
-	KLEE_OPTIONS="--search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx12 : 
-	KLEE_OPTIONS="--search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx13 : 
-	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -exact-address-interpolant -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 %.tx14 : 
-	KLEE_OPTIONS="--search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
+	KLEE_OPTIONS="--allocate-determ --search=dfs -exact-address-interpolant -max-subsumption-failure=3 -max-memory=${EXPERIMENT_MEMORY} -max-time=${EXPERIMENT_TIMEOUT} -write-paths" OUTPUT_DIR=${CURDIR}/$@ make $*.tx
 
 ###############################################################################
 # The following targets can be used for running experiments. The

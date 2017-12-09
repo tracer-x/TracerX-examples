@@ -1317,8 +1317,8 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-klee             KLEE installation directory (defaults to
                           /usr/local/lib/tracerx)
-  --with-wllvm            The source directory of whole-program-llvm (defaults
-                          to /usr/local/lib/whole-program-llvm)
+  --with-wllvm            wllvm binary installation directory (defaults to
+                          /usr/local/bin)
   --with-z3               The directory of Z3 (defaults to /usr/local/lib/z3)
   --with-stp              The directory of STP (defaults to /usr/local)
   --with-clpr             The directory of CLPR (defaults to /usr/local)
@@ -2663,7 +2663,7 @@ KLEE_REPLAY_TIMEOUT="60"
 if test "${with_wllvm+set}" = set; then :
   withval=$with_wllvm;
 else
-  with_wllvm=/usr/local/lib/whole-program-llvm
+  with_wllvm=/usr/local/bin
 fi
 
 
