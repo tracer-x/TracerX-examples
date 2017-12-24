@@ -4,6 +4,12 @@
  * For this example, LLBMC seems to get exponentially slower as MAX
  * is increased.
  *
+ * In this program, there is a loop with a branch within it which has
+ * a nondeterministic condition. There are two different allocations
+ * in both branches, in such a way that each execution path has a
+ * unique sequence of addresses returned by malloc(), and there are
+ * exponential number of such sequences / paths.
+ *
  * Copyright 2017 National University of Singapore
  */
 
