@@ -1,31 +1,12 @@
-/*
- * Simple regular expression matching.
- *
- * From:
- *   The Practice of Programming
- *   Brian W. Kernighan, Rob Pike
- *
- * This code with KLEE harness is obtained from the following
- * page of the KLEE tutorial on December 2015:
- *   http://klee.github.io/resources/Regexp.c.html
- */
-#ifdef LLBMC
-#include <llbmc.h>
-#else
-#include <klee/klee.h>
-#endif
-
-void tracerx_check(void *p) { *p; } 
-
-char s[1000000];
-char *p=s;
+char *wcet;
+void tracerx_check(char *p) { printf("Timing of Path:%d\n",(int)p-(int)(&(_bound))); *p;}
 
 static int matchhere(char*,char*);
 
 static int matchstar(int c, char *re, char *text) {
   do {
     if (matchhere(re, text)){
-      p++;	
+      wcet++;	
       return 1;
     }
   } while (*text != '\0' && (*text++ == c || c== '.'));
@@ -34,19 +15,19 @@ static int matchstar(int c, char *re, char *text) {
 
 static int matchhere(char *re, char *text) {
   if (re[0] == '\0'){
-     p++;
+     wcet++;
      return 0;
   }
   if (re[1] == '*'){
     return matchstar(re[0], re+2, text);
-    p++;
+    wcet++;
   }
   if (re[0] == '$' && re[1]=='\0'){
-    p++;
+    wcet++;
     return *text == '\0';
   }
   if (*text!='\0' && (re[0]=='.' || re[0]==*text)){
-    p++;
+    wcet++;
     return matchhere(re+1, text+1);
   }
   return 0;
@@ -54,12 +35,12 @@ static int matchhere(char *re, char *text) {
 
 int match(char *re, char *text) {
   if (re[0] == '^'){
-    p++;
+    wcet++;
     return matchhere(re+1, text);
   }
   do {
     if (matchhere(re, text)){
-      p++;
+      wcet++;
       return 1;
     }
   } while (*text++ != '\0');
@@ -74,9 +55,10 @@ int match(char *re, char *text) {
 #define SIZE 7
 
 int main() {
+  wcet=_bound;
   // The input regular expression.
   char re[SIZE];
-  p++;
+  wcet++;
 
 // Make the input symbolic.
 #ifdef LLBMC
@@ -90,7 +72,7 @@ int main() {
 
   // Try to match against a constant string "hello".
   match(re, "hello");
-  tracerx_check(p);
+  tracerx_check(wcet);
   return 0;
 }
 

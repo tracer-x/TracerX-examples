@@ -1,0 +1,34 @@
+/* MDH WCET BENCHMARK SUITE. */
+
+/* 2012/10/03, Jan Gustafsson <jan.gustafsson@mdh.se>
+ * Changes:
+ *  - init of "is" fixed (added a lot of brackets)
+ *  - warning: array subscript is of type 'char': fixed in three places
+ */
+
+#ifdef LLBMC
+#include <llbmc.h>
+#else
+#include <klee/klee.h>
+#endif
+
+
+/* #include <math.h> -- no include files in Uppsala tests, plz */
+
+/* All output disabled for wcsim */
+
+/* A read from this address will result in an known value of 1 */
+/* #define KNOWN_VALUE (int)(*((char *)0x80200001)) Changed JG/Ebbe */
+#define KNOWN_VALUE 1
+
+/* A read from this address will result in an unknown value */
+#define UNKNOWN_VALUE (int)(*((char *)0x80200003))
+
+
+#define WORSTCASE 1
+
+typedef struct IMMENSE { unsigned long l, r; } immense;
+typedef struct GREAT { unsigned long l, c, r; } great;
+
+int wcet;
+

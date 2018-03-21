@@ -1,0 +1,22 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with LLBMC and KLEE harnessing added */
+
+/* $Id: expint.c,v 1.2 2005/04/04 11:34:58 csg Exp $ */
+
+/************************************************************************
+ * FROM:
+ *   http://sron9907.sron.nl/manual/numrecip/c/expint.c
+ *
+ * FEATURE:
+ *   One loop depends on a loop-invariant value to determine
+ *   if it run or not.
+ *
+ ***********************************************************************/
+#ifdef LLBMC
+#include <llbmc.h>
+#else
+#include <klee/klee.h>
+#endif
+
+long int expint(int n, long int x);
+int wcet;
