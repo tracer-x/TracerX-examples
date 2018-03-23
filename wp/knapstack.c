@@ -10,15 +10,14 @@
 #include <klee/klee.h>
 #endif
 
-void tracerx_check(char *p) { *p; } 
+void tracerx_check(char *p) { *p; }
 
 char _bound[20];
 int w_max = 5;
 char *wcet;
 int w;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 
   int p1, p2, p3, p4, p5;
   wcet = _bound;
@@ -41,31 +40,28 @@ int main(int argc, char **argv)
   if (p1 && w <= w_max) {
     wcet += 1;
     w += 10;
-  } 
+  }
   if (p2 && w <= w_max) {
     wcet += 3;
     w += 8;
-  } 
+  }
   if (p3 && w <= w_max) {
     wcet += 5;
     w += 6;
-  } 
+  }
   if (p4 && w <= w_max) {
     wcet += 7;
     w += 4;
-  } 
+  }
   if (p5 && w <= w_max) {
     wcet += 9;
     w += 2;
-  } 
+  }
 
-  // wcet should be in _bound
+// wcet should be in _bound
 #ifdef LLBMC
-    __llbmc_assert(wcet < _bound+100);
+  __llbmc_assert(wcet < _bound + 100);
 #else
   tracerx_check(wcet);
 #endif
-
-
 }
-
