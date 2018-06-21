@@ -80,6 +80,7 @@ regexp_nonrecursive3.c	0
 regexp_small.c		2
 regexp_tiny.c		1
 rutledge.c		1
+simple_tcas.c		1
 sp.c			0
 switch.c		1
 testmem.c		1
