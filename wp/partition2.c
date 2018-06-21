@@ -10,23 +10,18 @@ As a result, the intersection of the WP formulas should be done
 while considering this point.
 */
 
-#ifdef LLBMC
-#include <llbmc.h>
-#else
+
 #include <klee/klee.h>
-#endif
 
 int main() {
   int wcet;
   int a, b;
 
-#ifdef LLBMC
-  a = __llbmc_nondef_int();
-  b = __llbmc_nondef_int();
-#else
+
   klee_make_symbolic(&a, sizeof(int), "a");
   klee_make_symbolic(&b, sizeof(int), "b");
-#endif
+
+  klee_assume(a <= 10);
 
   wcet = 0;
 
@@ -42,9 +37,6 @@ int main() {
     wcet += 5;
   }
 
-#ifdef LLBMC
-  __llbmc_assert(wcet <= 11 && a <= 10);
-#else
+
   klee_assert(wcet <= 11 && a <= 10);
-#endif
 }
