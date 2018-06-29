@@ -19,12 +19,14 @@ blue='\e[1;34m%s\e[0m\n'
 magenta='\e[1;35m%s\e[0m\n'
 cyan='\e[1;36m%s\e[0m\n'
 
+
+
 # WP RESULT
 make clean
 mv resultWP.csv resultWP_old.csv
 
-export EXPERIMENT_SET=" ndes   tcas fly_by_wire nsichneu expint cnt   adpcm  statemate"  
-export UPPER_BOUND_SET=(400000 5000 20000       50000    50000  30000 500000 50000)
+export EXPERIMENT_SET="  tcas fly_by_wire nsichneu expint cnt   adpcm  statemate"  #ndes
+export UPPER_BOUND_SET=( 5000 20000       50000    50000  30000 500000 50000) #400000
 
 export EXPERIMENT_TYPE_SET=".tx1"
 export ENABLE_COVERAGE=OFF
@@ -59,7 +61,7 @@ do
 		echo "void tracerx_check() { printf(\"Timing of Path:%d\n\",wcet); klee_assert(wcet < $[CURRENT_BOUND+1]);}"   >> "$BENCHMARK".c  
 		cat src/"$BENCHMARK".post >> "$BENCHMARK".c   
 		make "$BENCHMARK".tx &> output.txt 
-		#cat output.txt 
+		cat output.txt 
 		printf "Instructions Count: "
 		klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f3  | tr -d '\n' | tr -d ' ' 
 		INSTRUCTION_COUNT=$(klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f3  | tr -d '\n' | tr -d ' ' )
@@ -115,19 +117,12 @@ done
 
 
 
-
-
-
-
-
-
-
 # DELETION RESULT
 make clean
 mv resultDeletion.csv resultDeletion_old.csv
 
-export EXPERIMENT_SET=" ndes   tcas fly_by_wire nsichneu expint cnt   adpcm  statemate"  
-export UPPER_BOUND_SET=(400000 5000 20000       50000    50000  30000 500000 50000) 
+export EXPERIMENT_SET="    tcas fly_by_wire nsichneu expint cnt   adpcm  "  #ndes statemate
+export UPPER_BOUND_SET=( 5000 20000       50000    50000  30000 500000 ) #400000 50000
 
 export EXPERIMENT_TYPE_SET=".tx1"
 export ENABLE_COVERAGE=OFF
@@ -163,7 +158,7 @@ do
 		echo "void tracerx_check() { printf(\"Timing of Path:%d\n\",wcet); klee_assert(wcet < $[CURRENT_BOUND+1]);}"   >> "$BENCHMARK".c  
 		cat src/"$BENCHMARK".post >> "$BENCHMARK".c   
 		make "$BENCHMARK".tx &> output.txt 
-		#cat output.txt 
+		cat output.txt 
 		printf "Instructions Count: "
 		klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f3  | tr -d '\n' | tr -d ' ' 
 		INSTRUCTION_COUNT=$(klee-stats "$BENCHMARK".tx | sed '4q;d' | cut -d '|' -f3  | tr -d '\n' | tr -d ' ' )
@@ -216,5 +211,4 @@ do
 	done
 	echo ",,,,,,,," >> resultDeletion.csv
 done
-
 
