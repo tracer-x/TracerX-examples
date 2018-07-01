@@ -18,7 +18,6 @@ int wcet;
 
 int main() {
 
-  int _B=B;
   int q;
   int a, b;
   wcet = 0;
@@ -49,8 +48,8 @@ int main() {
   }
 
 #ifdef LLBMC
-  __llbmc_assert(wcet < B);
+  __llbmc_assert(wcet <= B);
 #else
-  klee_assert(wcet < B);
+  klee_assert(wcet <= B);
 #endif
 }
