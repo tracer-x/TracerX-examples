@@ -12,8 +12,9 @@ The slack computed by the weakest precondition results in subsumption.
 #include <klee/klee.h>
 #endif
 
-
-int B = 10;
+int UB = 100;
+int B = 100;
+int LB = 4;
 int wcet;
 
 int main() {

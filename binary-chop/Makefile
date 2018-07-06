@@ -3,7 +3,7 @@
 # Copyright 2016, 2017 National University of Singapore
 
 # This is for extra KLEE options
-EXTRA_OPTIONS= -exit-on-error -use-query-log=all:pc,all:smt2 -wp-interpolant -debug-subsumption=3  #-debug-state=3 #  -output-tree -no-compression -debug-state=1
+EXTRA_OPTIONS= -exit-on-error -use-query-log=all:pc,all:smt2 -wp-interpolant #-debug-subsumption=4  #-debug-state=3 #  -output-tree -no-compression -debug-state=1
 
 # This is for the options passed onto the tested program, e.g.,
 # --sym-arg

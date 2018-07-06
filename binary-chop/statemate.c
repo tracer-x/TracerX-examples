@@ -181,7 +181,10 @@ char BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state;  /** 2 bits **/
 char BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state;  /** 2 bits **/
 
 int wcet;
-void tracerx_check() { printf("Timing of Path:%d\n",wcet); klee_assert(wcet < 50001);}
+int UB = 50000;
+int B = 50000;
+int LB = 50;
+
 void interface(void)
 {
    if (SYS_bit_get(Bitlist, entered_WIEDERHOLSPERRE_FH_TUERMODUL_CTRL_IDX)){
@@ -1618,6 +1621,6 @@ int main(void)
 
   interface();
   FH_DU();
-
-  tracerx_check();
+  printf("Timing of Path:%d\n", wcet);
+  klee_assert(wcet <= B);
 }
