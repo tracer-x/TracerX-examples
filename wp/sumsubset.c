@@ -9,58 +9,78 @@
 #endif
 
 int main(int argc, char **argv) {
-  char b[10];
+  char b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10;
   int x = 0;
 
 #ifdef LLBMC
-  for (int i = 0; i < 10; ++i)
-    b[i] = __llbmc_nondef_char();
+  b0 = __llbmc_nondef_char();
+  b1 = __llbmc_nondef_char();
+  b2 = __llbmc_nondef_char();
+  b3 = __llbmc_nondef_char();
+  b4 = __llbmc_nondef_char();
+  b5 = __llbmc_nondef_char();
+  b6 = __llbmc_nondef_char();
+  b7 = __llbmc_nondef_char();
+  b8 = __llbmc_nondef_char();
+  b9 = __llbmc_nondef_char();
 #else
-  klee_make_symbolic(b, 10 * sizeof(char), "b");
+  klee_make_symbolic(&b0, sizeof(char), "b0");
+  klee_make_symbolic(&b1, sizeof(char), "b1");
+  klee_make_symbolic(&b2, sizeof(char), "b2");
+  klee_make_symbolic(&b3, sizeof(char), "b3");
+  klee_make_symbolic(&b4, sizeof(char), "b4");
+  klee_make_symbolic(&b5, sizeof(char), "b5");
+  klee_make_symbolic(&b6, sizeof(char), "b6");
+  klee_make_symbolic(&b7, sizeof(char), "b7");
+  klee_make_symbolic(&b8, sizeof(char), "b8");
+  klee_make_symbolic(&b9, sizeof(char), "b9");
 #endif
 
-  if (b[0] > 0)
+  if (b0 > 0)
     x += 1;
   else
     x += 2;
-  if (b[1] > 0)
+  if (b1 > 0)
     x += 3;
   else
     x += 4;
-  if (b[2] > 0)
+  if (b2 > 0)
     x += 5;
   else
     x += 6;
-  if (b[3] > 0)
+  if (b3 > 0)
     x += 7;
   else
     x += 8;
-  if (b[4] > 0)
+  if (b4 > 0)
     x += 9;
   else
     x += 10;
-  if (b[5] > 0)
+  if (b5 > 0)
     x += 11;
   else
     x += 12;
-  if (b[6] > 0)
+  if (b6 > 0)
     x += 13;
   else
     x += 14;
-  if (b[3] > 0)
+  if (b3 > 0)
     x += 15;
   else
     x += 16;
-  if (b[8] > 0)
+  if (b8 > 0)
     x += 17;
   else
     x += 18;
-  if (b[9] > 0)
+  if (b9 > 0)
     x += 19;
   else
     x += 20;
 
-  klee_assert(x != 990);
+  if(x>99)
+    klee_assert(x > 99);
+  else
+    klee_assert(x < 99);
 
   return 0;
 }
