@@ -2,44 +2,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAXCHOICE 100
-#define MAXWEIGHT 483
-#define N 10
-#define BOUND 483
+#define BOUND 10
+#define MAXWEIGHT 10
 
-int choice[MAXCHOICE], *choice_ptr;
+int knapsack0, knapsack1, knapsack2, knapsack3, knapsack4, knapsack5, knapsack6, knapsack7, knapsack8, knapsack9;
 
-int knapsack[N] = {0};
 
 int main() {
-
-  klee_make_symbolic(choice, sizeof(choice), "choice");
-  choice_ptr = choice;
   int i, j, exp = 1, sum = 0, w = 0, p = 0;
 
-  // for (i = 0; i < N; i++) knapsack[i] = 0;
-
-  for (i = 0; i < N; i++) {
-    exp = 10;
-    if (*(++choice_ptr)) {
+  for (i = 0; i < 10; i++) {
+    exp = 1;
+    int choice;
+    klee_make_symbolic(&choice, sizeof(int), "choice");
+    if (choice > 0) {
       w += exp;
       p += exp;
-      knapsack[i] = exp;
-    }
-    // Feasibility Check
-    if (i == N - 1) {
-      for (j = 0; j <= i; j++) {
-        printf("%d:%d ", j, knapsack[j]);
-        sum += knapsack[j];
+      if (i==0) {
+        knapsack0 = exp;
+      } else if(i==1) {
+        knapsack1 = exp;
+      } else if(i==2) {
+        knapsack2 = exp;
+      } else if(i==3) {
+        knapsack3 = exp;
+      } else if(i==4) {
+        knapsack4 = exp;
+      } else if(i==5) {
+        knapsack5 = exp;
+      } else if(i==6) {
+        knapsack6 = exp;
+      } else if(i==7) {
+        knapsack7 = exp;
+      } else if(i==8) {
+        knapsack8 = exp;
+      } else if(i==9) {
+        knapsack9 = exp;
       }
-      printf("sum %d\n", sum);
-    }
-
-    if (w > MAXWEIGHT) {
-      klee_assert(p <= 999999);
-      return 0;
     }
   }
-  klee_assert(p <= BOUND);
-  // klee_assert(p <= BOUND - 1);
+  klee_assert(w <= BOUND);
 }
+
