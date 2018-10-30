@@ -1,0 +1,12 @@
+# Program	Subsumptions
+branch.c	4
+choice.c	0
+errorWP.c	0
+knapsack.c	18
+partition.c	0
+partition2.c	0
+sumsubset.c	27
+slackNoSubsume.c	1
+slackSubsume.c	2
+slackSubsume2.c	3
+test_slack.c	2

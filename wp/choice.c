@@ -3,6 +3,24 @@
 
 #define N 5
 
+/*choice(int *s) {
+        loop {
+            if (!(s+1)) return *s;
+                // at least two choices
+            char b; klee_make_symbolic(&b, sizeof(char), "b");
+            if (b) { ++s; continue; }
+                else { action(*s); break; }
+        }
+}
+
+action(i) {
+        swtich (i) {
+                case 0: x++; break;
+                case 1: y++; break;
+                default: exit(1);
+        }
+}*/
+
 int grid[N][N] = {{0, 1, 2, 3, 4},
                   {0, 0, 2, 3, 4},
                   {0, 0, 0, 3, 4},
@@ -17,40 +35,9 @@ int profit[N][N] = {{0, 11, 22, 33, 44},
 
 int x = 0, y = 0, sum = 0;
 
-action(i) {
-  switch (i) {
-  case 0: {
-    x++;
-    break;
-  }
-  case 1: {
-    y++;
-    break;
-  }
-  default:
-    exit(1);
-  }
-}
-
-choice(int *s) {
-  for (;;) {
-    if (*(s + 1) == -1)
-      return *s;
-    // at least two choices
-    char b;
-    klee_make_symbolic(&b, sizeof(char), "b");
-    if (b) {
-      ++s;
-      continue;
-    } else {
-      action(*s);
-      break;
-    }
-  }
-}
+int s[] = {0, 1};
 
 int main(int argc, char **argv) {
-  int s[] = {0, 1, -1};
   for (;;) {
     if (x == N - 1 || !grid[x + 1][y])
       if (y == N - 1 || !grid[x][y + 1])

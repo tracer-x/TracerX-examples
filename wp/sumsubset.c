@@ -76,11 +76,13 @@ int main(int argc, char **argv) {
     x += 19;
   else
     x += 20;
+  printf("X:%d\n", x);
+  klee_assert(x != 109);
 
-  if(x>99)
-    klee_assert(x > 99);
-  else
-    klee_assert(x < 99);
+  /*  if(x>99)
+      klee_assert(x > 99);
+    else
+      klee_assert(x < 99);*/
 
   return 0;
 }

@@ -45,8 +45,8 @@ int main() {
   }
 
 #ifdef LLBMC
-  __llbmc_assert(wcet < 104);
+  __llbmc_assert(wcet < 103);
 #else
-  klee_assert(wcet < 104);
+  klee_assert(wcet < 103);
 #endif
 }

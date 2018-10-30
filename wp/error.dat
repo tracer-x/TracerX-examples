@@ -1,0 +1,13 @@
+# Program	Errors
+branch.c	0
+choice.c	0
+errorWP.c	1
+knapsack.c	0
+partition.c	0
+partition2.c	0
+sumsubset.c	2
+slackNoSubsume.c	1
+slackSubsume.c	0
+slackSubsume2.c	0
+test_slack.c	0
+
