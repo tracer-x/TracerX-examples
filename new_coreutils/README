@@ -1,0 +1,10 @@
+1. Install clang & wllvm and add to PATH environment variable before running scripts
+
+2. Download & build coreutils-6.10 and coreutils-6.11
+./setup_coreutils_sandbox.sh
+
+3. Testing coreutils
+./run_sample.sh tracerx_bin_folder coreutils_folder
+Example:
+./run_sample.sh /usr/local/TracerX/tracerx/Release+Asserts/bin/ coreutils-6.10/
+
