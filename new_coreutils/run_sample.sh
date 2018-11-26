@@ -121,4 +121,4 @@ do
 done
 
 # collect experiment result from output folder
-python collect_data.py
+python collect_data.py $OUTPUT_FOLDER

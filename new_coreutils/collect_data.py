@@ -1,6 +1,7 @@
 import os
 import re
 import csv
+import sys
 
 stats = '\\|.*\\|\s*([0-9]+)\\|\s*(.+)\\|\s*(.+)\\|\s*(.+)\\|\s*(.+)\\|\s*(.+)\\|'
 total_instructions = 'KLEE: done: total instructions = ([0-9]+)'
@@ -64,7 +65,8 @@ def write_csv(lines):
 def takeFirst(elem):
     return elem[0]
 
-folder = "/usr/local/TracerX/experiments/sample_result"
+
+folder = sys.argv[1]
 lines = collect(folder, ".klee_rand")
 lines.extend(collect(folder, ".tx_rand"))
 lines.extend(collect(folder, ".tx_dfs"))
