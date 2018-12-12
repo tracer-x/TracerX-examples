@@ -8,6 +8,8 @@ total_instructions = 'KLEE: done: total instructions = ([0-9]+)'
 program_exit_paths = 'KLEE: done:     program exit paths = ([0-9]+)'
 error_paths = 'KLEE: done:     error paths = ([0-9]+)'
 subsumed_paths = 'KLEE: done:     subsumed paths = ([0-9]+)'
+visited_bb = 'KLEE: done: Total number of single time Visited Basic Blocks: ([0-9]+)'
+total_bb = 'KLEE: done: Total number of Basic Blocks: ([0-9]+)'
 
 def collect(folder, runtype):
     lines = []
@@ -25,30 +27,37 @@ def collect(folder, runtype):
                     with open(file_path, 'r') as f:
                         data = f.read()
                         # print(data)
-                        m1 = re.search(stats, data)
-                        if m1:
-                            line.append(m1.group(2)) # Times
-                            line.append(m1.group(1)) # Instructions
-                            line.append(m1.group(3)) # ICov
-                            line.append(m1.group(4)) # BCov
+                        stats_match = re.search(stats, data)
+                        if stats_match:
+                            line.append(stats_match.group(2)) # Times
+                            line.append(stats_match.group(1)) # Instructions
+                            line.append(stats_match.group(3)) # ICov
+                            line.append(stats_match.group(4)) # BCov
                         else:
                             line.extend(["-1", "-1", "-1", "-1"])
-                        m2 = re.search(program_exit_paths, data)
-                        if m2:
-                            line.append(m2.group(1)) # program exit paths
+                        program_exit_paths_match = re.search(program_exit_paths, data)
+                        if program_exit_paths_match:
+                            line.append(program_exit_paths_match.group(1)) # program exit paths
                         else:
                             line.append("-1")
-                        m3 = re.search(error_paths, data)
-                        if m3:
-                            line.append(m3.group(1)) # error paths
+                        error_paths_match = re.search(error_paths, data)
+                        if error_paths_match:
+                            line.append(error_paths_match.group(1)) # error paths
                         else:
                             line.append("-1")
 
+                        visited_bb_match = re.search(visited_bb, data)
+                        total_bb_match = re.search(total_bb, data)
+                        if visited_bb and total_bb_match:
+                            line.append(round(float(visited_bb_match.group(1))/float(total_bb_match.group(1)), 2)) # bb coverage
+                        else:
+                            line.append("-1.0")
+
                         # extract subsumed path from tracerx runs
                         if "tx" in runtype:
-                            m4 = re.search(subsumed_paths, data)
-                            if m4:
-                                line.append(m4.group(1)) # subsumed paths
+                            subsumed_paths_match = re.search(subsumed_paths, data)
+                            if subsumed_paths_match:
+                                line.append(subsumed_paths_match.group(1)) # subsumed paths
                             else:
                                 line.append("-1")
                     lines.append(line)
@@ -58,13 +67,12 @@ def collect(folder, runtype):
 def write_csv(lines):
     with open('result.csv', 'wb') as csvfile:
         expwriter = csv.writer(csvfile, delimiter=',')
-        expwriter.writerow(["Benchmark", "Times", "Total Instructions", "ICov", "BCov", "Program Exit Paths", "Error Paths", "Subsumed Paths"])
+        expwriter.writerow(["Benchmark", "Times", "Total Instructions", "ICov %", "BCov %", "Program Exit Paths", "Error Paths", "BB Cov", "Subsumed Paths"])
         for line in lines:
             expwriter.writerow(line)
 
 def takeFirst(elem):
     return elem[0]
-
 
 folder = sys.argv[1]
 lines = collect(folder, ".klee_rand")
