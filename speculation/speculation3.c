@@ -10,13 +10,13 @@ int main() {
 
   wcet = 0;
 
-  if (a <= 0) {
+  if (a >= 0) {
     wcet += 10;
   } else {
     wcet += 20;
   }
 
-  if (a == 1) {
+  if (a != 1) {
     wcet += 50;
   } else {
     wcet += 60;

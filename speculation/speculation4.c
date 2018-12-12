@@ -10,22 +10,22 @@ int main() {
 
   wcet = 0;
 
-  if (a <= 0) {
-    wcet += 20;
-  } else {
+  if (a >= 0) {
     wcet += 10;
-  }
-
-  if (a == 1) {
-    wcet += 60;
   } else {
-    wcet += 50;
+    wcet += 20;
   }
 
-  if (b < 0) {
+  if (a != 1) {
     wcet += 30;
   } else {
     wcet += 40;
+  }
+
+  if (b < 0) {
+    wcet += 50;
+  } else {
+    wcet += 60;
   }
   
   if (c < 0) {
