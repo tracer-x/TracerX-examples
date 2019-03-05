@@ -1,7 +1,6 @@
 # Program		Errors
 absolute.c		0
 addition.c		0
-addition_safe10.c	0
 addition_safe1.c	0
 addition_safe2.c	0
 addition_safe3.c	0
@@ -10,6 +9,7 @@ addition_safe5.c	0
 addition_safe6.c	0
 addition_safe8.c	0
 addition_safe9.c	0
+addition_safe10.c	0
 addition_unsafe1.c	1
 addition_unsafe2.c	1
 argument1.c		0
@@ -29,9 +29,9 @@ domination1.c		0
 domination2.c		0
 double-free.c		1
 even.c			0
-huge_increment		1
-huge_increment_inverted	1
-instCountTest		0
+huge_increment.c	1
+huge_increment_inverted.c	1
+instCountTest.c		0
 interproc.c		0
 local.c			0
 loop_safe1.c		0
@@ -44,6 +44,7 @@ malloc4.c		0
 masked_error1.c		2
 masked_error2.c		2
 masked_error3.c		2
+mcdc.c			1
 memory-access.c		1
 missing_error.c		1
 missing_pc.c		2
@@ -51,9 +52,9 @@ openssl.c		2
 openssl_partial_fix.c	1
 overmark.c		0
 pointer_alloc.c		1
+pointer_iterative.c	1
 pointer_loop.c		1
 pointer_recursive.c	0
-pointer_iterative.c	1
 pointer_struct1.c	1
 pointer_struct2.c	0
 pointer_struct3.c	0
@@ -80,7 +81,8 @@ regexp_nonrecursive3.c	0
 regexp_small.c		2
 regexp_tiny.c		1
 rutledge.c		1
-simple_tcas.c		1
+simple_tcas1.c		1
+simple_tcas2.c		1
 sp.c			0
 switch.c		1
 testmem.c		1
