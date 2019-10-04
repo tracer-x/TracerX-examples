@@ -1,3 +1,39 @@
+/* Obtained from http://www.mrtc.mdh.se/projects/wcet/benchmarks.html,
+ * with LLBMC and KLEE harnessing added */
+
+/* $Id: cnt.c,v 1.3 2005/04/04 11:34:58 csg Exp $ */
+
+/* sumcntmatrix.c */
+#ifdef LLBMC
+#include <llbmc.h>
+#else
+#include <klee/klee.h>
+#endif
+
+//#include <sys/types.h>
+//#include <sys/times.h>
+
+// #define WORSTCASE 1
+// #define MAXSIZE 100 Changed JG/Ebbe
+#define MAXSIZE 10
+
+// Typedefs
+typedef int matrix [MAXSIZE][MAXSIZE];
+
+// Forwards declarations
+int main(void);
+int Test(matrix);
+int Initialize(matrix);
+int InitSeed(void);
+void Sum(matrix);
+int RandomInteger(void);
+
+// Globals
+int Seed;
+matrix Array;
+int Postotal, Negtotal, Poscnt, Negcnt;
+int wcet;
+
 // The main function
 int main (void)
 {
@@ -49,7 +85,6 @@ int Initialize(matrix Array)
    for (OuterIndex = 0; OuterIndex < MAXSIZE; OuterIndex++) //100 + 1
       for (InnerIndex = 0; InnerIndex < MAXSIZE; InnerIndex++) //100 + 1
 	{
-	 wcet++;
          Array[OuterIndex][InnerIndex] = RandomInteger();
 	}
 
@@ -61,7 +96,6 @@ int Initialize(matrix Array)
 int InitSeed (void)
 {
    Seed = 0;
-   wcet++;
    return 0;
 }
 
@@ -73,7 +107,6 @@ void Sum(matrix Array)
   int Ntotal = 0;
   int Pcnt = 0;
   int Ncnt = 0;
-  wcet += 4;
 
   for (Outer = 0; Outer < MAXSIZE; Outer++) //Maxsize = 100
     for (Inner = 0; Inner < MAXSIZE; Inner++)
@@ -84,19 +117,16 @@ void Sum(matrix Array)
 #endif
 	  Ptotal += Array[Outer][Inner];
 	  Pcnt++;
-	  wcet += 2;
 	}
 	else {
 	  Ntotal += Array[Outer][Inner];
 	  Ncnt++;
-	  wcet += 2;
 	}
 
   Postotal = Ptotal;
   Poscnt = Pcnt;
   Negtotal = Ntotal;
   Negcnt = Ncnt;
-  wcet += 4;
 }
 
 
@@ -116,7 +146,6 @@ void Sum(matrix Array)
 int RandomInteger(void)
 {
    Seed = ((Seed * 133) + 81) % 8095;
-   wcet += 1;
    return Seed;
 }
 
