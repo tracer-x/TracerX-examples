@@ -53,10 +53,10 @@ while true; do
 	cp llvm_annotate/* . 
 	Annotator.sh "$BENCHMARK"
 	if [[ $3 == "-w" ]]; then
-        	klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -wp-interpolant -max-memory=32000 -max-time=1800 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
+        	klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -wp-interpolant -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
         	
 	else
-  		klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -max-memory=32000 -max-time=1800 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
+  		klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
 	fi
 	#cat output.txt 
 	printf "Instructions Count: "
