@@ -537,7 +537,7 @@ void start_simulation(void) {
   }
 }
 
-int main(void) {
+int main() {
   int count;
   int __retres2;
   int FLAG3;

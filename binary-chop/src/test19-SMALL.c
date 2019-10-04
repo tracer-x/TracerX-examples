@@ -523,7 +523,7 @@ void assert(bool arg) {
   }
 }
 
-int main(void) {
+int main() {
   int c1;
   int i2;
 

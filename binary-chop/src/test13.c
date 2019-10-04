@@ -13,7 +13,7 @@
 #include <stdlib.h>
 int kappa = 0;
 
-int main(void) {
+int main() {
   int Cur_Vertical_Sep;
   int High_Confidence;
   int Two_of_Three_Reports_Valid;

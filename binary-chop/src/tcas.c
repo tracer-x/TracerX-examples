@@ -30,7 +30,7 @@ int Other_Capability;
 int Climb_Inhibit;
 int safety;
 
-void main() {
+int main() {
   int enabled;
   int tcas_equipped;
   int intent_not_known;

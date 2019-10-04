@@ -445,7 +445,7 @@ void init_model(void) {
   }
 }
 
-int main(void) {
+int main() {
   int count;
   int __retres2;
 

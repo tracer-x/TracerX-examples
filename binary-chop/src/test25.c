@@ -721,7 +721,7 @@ int calculate_output(int input___0) {
   }
 }
 
-int main(void) {
+int main() {
   int *symb;
   unsigned int __lengthofsymb;
   void *tmp;

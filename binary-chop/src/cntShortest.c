@@ -42,7 +42,7 @@ int LB = 234;
 // int LB = 210;
 
 // The main function
-int main(void) {
+int main() {
   wcet = 0;
   InitSeed();
   // printf("\n   *** MATRIX SUM AND COUNT BENCHMARK TEST ***\n\n");

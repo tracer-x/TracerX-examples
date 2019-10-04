@@ -782,7 +782,7 @@ int FloppyCreateClose(int FloppyCreateClose_DeviceObject,
 int FloppyDeviceControl(int FloppyDeviceControl_DeviceObject,
                         int FloppyDeviceControl_Irp);
 extern int _SLICE();
-void main(void) {
+int main() {
   int main_status;
   int main_irp;
   int main_pirp;

@@ -139,7 +139,7 @@ char X101;
 char X102;
 int t;
 
-int main(void) {
+int main() {
 
   {
     klee_make_symbolic(&B0, sizeof(char), "B0");

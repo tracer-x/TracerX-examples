@@ -21,7 +21,7 @@
 long int expint(int n, long int x);
 int wcet;
 
-int main(void) {
+int main() {
   wcet = 0;
   // with  expint(50,21) as argument, runs the short path
   // in expint.   expint(50,1)  gives the longest execution time

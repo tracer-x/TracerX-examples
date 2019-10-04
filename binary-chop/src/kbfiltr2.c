@@ -199,7 +199,7 @@ int KbFilter_Power(int KbFilter_Power_DeviceObject, int KbFilter_Power_Irp);
 int KbFilter_InternIoCtl(int KbFilter_InternIoCtl_DeviceObject,
                          int KbFilter_InternIoCtl_Irp);
 extern int _SLICE();
-void main(void) {
+int main() {
   int main_status;
   int main_irp;
   int main_pirp;

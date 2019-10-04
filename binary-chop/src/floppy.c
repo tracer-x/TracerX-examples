@@ -798,7 +798,7 @@ void stub_driver_init(void) {
   }
 }
 extern int _SLICE();
-void main(void) {
+int main() {
   int main_status;
   int main_irp;
   int main_pirp;

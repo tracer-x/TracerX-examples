@@ -72,7 +72,7 @@ void coolantControl(void) {
   }
 }
 
-int main(void) {
+int main() {
   int *symb1;
   unsigned int __lengthofsymb1;
   void *tmp;

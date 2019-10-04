@@ -1366,7 +1366,7 @@ void FH_DU(void) {
 
 } /** FH_DU **/
 
-int main(void) {
+int main() {
   wcet = 0;
   /* time = 1; */ /**SYS_get_clock()**/
 #ifdef LLBMC

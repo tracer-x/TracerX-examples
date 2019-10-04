@@ -13,7 +13,7 @@
 #include <stdlib.h>
 int kappa = 0;
 
-int main(void) {
+int main() {
   int date;
   int ch;
 

@@ -983,6 +983,7 @@ int calculate_output(int input) {
 int input, output;
 
 int wcet = 0;
+
 int main() {
   kappa = 0;
   // default output

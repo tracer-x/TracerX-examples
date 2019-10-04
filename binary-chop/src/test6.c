@@ -27,7 +27,7 @@ int m_factorial_1 = 10;
 int m_factorial_2 = 11;
 int kappa = 0;
 
-int main(void) {
+int main() {
   int dummy;
   int q;
   int FLAG;

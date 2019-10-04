@@ -1,6 +1,7 @@
 #include <klee/klee.h>
 int wcet = 0;
-int main(int argc, char **argv) {
+
+int main() {
   char b[10];
   int x = 0;
 

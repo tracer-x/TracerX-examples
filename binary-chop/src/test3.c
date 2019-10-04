@@ -23,7 +23,7 @@ int m_recv_ack_1_1 = 6;
 int m_recv_ack_1_2 = 7;
 int kappa = 0;
 
-int main(void) {
+int main() {
   int dummy;
   int q;
   int FLAG;

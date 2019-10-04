@@ -22,7 +22,7 @@ int m_connect_1 = 5;
 int m_connect_2 = 6;
 int kappa = 0;
 
-int main(void) {
+int main() {
   int dummy;
   int q;
   int FLAG;

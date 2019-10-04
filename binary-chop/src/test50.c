@@ -497,7 +497,7 @@ void start_simulation(void) {
   }
 }
 
-int main(void) {
+int main() {
   int __retres1;
 
   {

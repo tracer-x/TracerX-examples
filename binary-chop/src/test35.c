@@ -75,7 +75,7 @@ void coolantControl(void) {
   }
 }
 
-int main(void) {
+int main() {
   int try
     ;
   int *symb1;

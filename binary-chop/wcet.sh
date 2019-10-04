@@ -49,7 +49,7 @@ while true; do
 	PRECISION=$(bc -l <<< "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/(sqrt($UPPER_BOUND^2+$LOWER_BOUND^2)))" | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')
 	echo "Precision: "$PRECISION
 	cp src/"$BENCHMARK".c "$BENCHMARK".c 
-	sed -i 's/int main (void)/void tracerx_check() { printf(\"Timing of Path:%d\\n\",wcet); klee_assert(wcet <= '$CURRENT_BOUND');}\nint main (void)/g' "$BENCHMARK".c  
+	sed -i 's/int main() {/void tracerx_check() { printf(\"Timing of Path:%d\\n\",wcet); klee_assert(wcet <= '$CURRENT_BOUND');}\nint main() {/g' "$BENCHMARK".c  
 	cp llvm_annotate/* . 
 	Annotator.sh "$BENCHMARK"
 	if [[ $3 == "-w" ]]; then

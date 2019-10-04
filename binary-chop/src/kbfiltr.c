@@ -191,7 +191,7 @@ int KbFilter_PnP(int KbFilter_PnP_DeviceObject, int KbFilter_PnP_Irp) {
   }
 }
 extern int _SLICE();
-void main(void) {
+int main() {
   int main_status;
   int main_irp;
   int main_pirp;
