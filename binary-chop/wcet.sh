@@ -31,7 +31,7 @@ export BENCHMARK=$1
 export UPPER_BOUND=$2
 
 # Write header information
-echo "Round,Benchmark,Known Lower/Upper Bound,Tested Bound,Result,Precision,Analysis Time (sec),Instruction Count,Completed Paths,Subsumed Paths" >> resultWP.csv
+echo "Round,Benchmark,Known Lower/Upper Bound,Tested Bound,Result,Precision,Analysis Time (sec),Instruction Count,Completed Paths,Subsumed Paths" >> result-$BENCHMARK.csv
 
 i=0
 export ROUND=1
@@ -81,9 +81,9 @@ while true; do
 	        echo "LOWER BOUND: "$LOWER_BOUND
 		echo "Precision: " 
 		echo $PRECISION
-		echo "$ROUND,$BENCHMARK,\"$OLD_LOWER_BOUND-$OLD_UPPER_BOUND\",$OLD_CURRENT_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT,$COMPLETED_PATHS,$SUBSUMED_PATHS" >> resultWP.csv
+		echo "$ROUND,$BENCHMARK,\"$OLD_LOWER_BOUND-$OLD_UPPER_BOUND\",$OLD_CURRENT_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT,$COMPLETED_PATHS,$SUBSUMED_PATHS" >> result-$BENCHMARK.csv
 		PRECISION=$(bc -l <<< "scale = 2;100*(1-($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2))" | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')
-		echo "$INTERPOLATION,$BENCHMARK,\"$LOWER_BOUND-$UPPER_BOUND\",-,Safe,$PRECISION,-,-" >> resultWP.csv
+		echo "$INTERPOLATION,$BENCHMARK,\"$LOWER_BOUND-$UPPER_BOUND\",-,Safe,$PRECISION,-,-" >> result-$BENCHMARK.csv
 		rm -R "$BENCHMARK".tx
 		rm "$BENCHMARK".c
 		rm "$BENCHMARK"*
@@ -105,12 +105,12 @@ while true; do
 	    CURRENT_BOUND=$[($UPPER_BOUND + $LOWER_BOUND) / 2]
 	    IS_SAFE="No (${COUNTER_EXAMPLE:15})"
 	fi	
-	echo "$ROUND,$BENCHMARK,\"$OLD_LOWER_BOUND-$OLD_UPPER_BOUND\",$OLD_CURRENT_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT,$COMPLETED_PATHS,$SUBSUMED_PATHS" >> resultWP.csv
+	echo "$ROUND,$BENCHMARK,\"$OLD_LOWER_BOUND-$OLD_UPPER_BOUND\",$OLD_CURRENT_BOUND,$IS_SAFE,$PRECISION,$ANALYSIS_TIME,$INSTRUCTION_COUNT,$COMPLETED_PATHS,$SUBSUMED_PATHS" >> result-$BENCHMARK.csv
 	ROUND=$[$ROUND+1]
 	rm -R "$BENCHMARK".tx
 	rm "$BENCHMARK"*
-	rm Annotator* clang.tmp annotate.tmp
+	#rm Annotator* clang.tmp annotate.tmp
 	rm output.txt
 done
-echo ",,,,,,,," >> resultWP.csv
+echo ",,,,,,,," >> result-$BENCHMARK.csv
 
