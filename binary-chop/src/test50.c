@@ -7,10 +7,6 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 /* compiler builtin:
    void *__builtin_alloca(unsigned int  ) ;  */
 int BOUND1 = 4;
@@ -19,12 +15,12 @@ int BOUND3 = 4;
 int BOUND4 = 4;
 int BOUND5 = 4;
 int BOUND6 = 4;
-int kappa = 0;
-extern __attribute__((__noreturn__)) void __VERIFIER_error();
-void error(void) {
+int wcet;
+
+void xyz(void) {
 
   {
-    __VERIFIER_error();
+    
     return;
   }
 }
@@ -106,7 +102,7 @@ void write_loop(void) {
     WL_WAIT_2_LOC:
       t = t_b;
       if (!(d == t + 1)) {
-        error();
+        xyz();
       }
       FLAG5 = FLAG5 + 1;
     }
@@ -498,6 +494,7 @@ void start_simulation(void) {
 }
 
 int main() {
+wcet = 0;
   int __retres1;
 
   {
@@ -520,7 +517,7 @@ int main() {
     c = 0;
     start_simulation();
     __retres1 = 0;
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (__retres1);
   }
 }

@@ -7,16 +7,13 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 /* compiler builtin:
    void *__builtin_alloca(unsigned int  ) ;  */
 int BOUND1 = 30;
 int BOUND2 = 30;
-int kappa = 0;
-int error;
+int wcet;
+int xyz;
 int tempDisplay;
 int warnLED;
 int tempIn;
@@ -39,8 +36,8 @@ int vinToCels(int kelvin) {
 
   {
     if (temp < 0) {
-      error = 1;
-      display(kelvin - 273, error);
+      xyz = 1;
+      display(kelvin - 273, xyz);
     }
     return (kelvin - 273);
   }
@@ -73,6 +70,7 @@ void coolantControl(void) {
 }
 
 int main() {
+wcet = 0;
   int *symb1;
   unsigned int __lengthofsymb1;
   void *tmp;
@@ -84,7 +82,7 @@ int main() {
     tempDisplay = 0;
     warnLED = 1;
     tempIn = 0;
-    error = 0;
+    xyz = 0;
     chainBroken = 0;
     warnLight = 0;
     temp = 0;
@@ -99,22 +97,22 @@ int main() {
       limit___0 = *(symb1 + FLAG);
       if (limit___0 < 10) {
         if (limit___0 > -273) {
-          error = 0;
-          display(0, error);
+          xyz = 0;
+          display(0, xyz);
           break;
         } else {
-          error = 1;
-          display(0, error);
+          xyz = 1;
+          display(0, xyz);
         }
       } else {
-        error = 1;
-        display(0, error);
+        xyz = 1;
+        display(0, xyz);
       }
       FLAG = FLAG + 1;
     }
     init = 2;
     coolantControl();
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (0);
   }
 }

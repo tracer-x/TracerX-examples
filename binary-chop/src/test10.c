@@ -1,6 +1,4 @@
 // This program in Problem2.c
-#include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #ifdef LLBMC
 #include <llbmc.h>
@@ -31,7 +29,7 @@ int a28 = 7;
 int a19 = 1;
 int a21 = 1;
 int a17 = 8;
-int kappa;
+int wcet;
 
 int calculate_output(int input) {
   if ((((!(a11 == 1) &&
@@ -717,9 +715,9 @@ int calculate_output(int input) {
 }
 
 int input, output;
-int wcet = 0;
+int wcet;
 int main() {
-  kappa = 0;
+  wcet = 0;
   // default output
   output = -1;
 

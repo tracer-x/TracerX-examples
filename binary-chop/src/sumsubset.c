@@ -1,7 +1,8 @@
 #include <klee/klee.h>
-int wcet = 0;
+int wcet;
 
 int main() {
+  wcet = 0;
   char b[10];
   int x = 0;
 

@@ -152,7 +152,7 @@ int exit_stat = 0;
 int nomagic = 1;  /* Use a 3-byte magic number header, unless old file */
 int zcat_flg = 0; /* Write output on stdout, suppress messages */
 int quiet = 1;    /* don't tell me about compression */
-int wcet = 0;
+int wcet;
 /*
  * block compression parameters -- after all codes are used up,
  * and compression rate changes, start over.
@@ -480,7 +480,7 @@ output(code_int code) {
   }
 }
 int main() {
-  kappa = 0;
+  wcet = 0;
   int count = IN_COUNT;
 
   /* The following is replaced with LLBMC and KLEE symbolic array

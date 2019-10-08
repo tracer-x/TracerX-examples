@@ -7,11 +7,8 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-int kappa = 0;
+
+int wcet;
 int Cur_Vertical_Sep;
 int High_Confidence;
 int Two_of_Three_Reports_Valid;
@@ -31,6 +28,7 @@ int Climb_Inhibit;
 int safety;
 
 int main() {
+  wcet = 0;
   int enabled;
   int tcas_equipped;
   int intent_not_known;
@@ -297,7 +295,6 @@ int main() {
         }
       }
     }
-    /*  _SLICE(kappa);*/
-    return;
+    tracerx_check();
   }
 }

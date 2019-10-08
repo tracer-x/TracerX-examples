@@ -7,10 +7,8 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
+int wcet;
 int s;
 int UNLOADED;
 int NP;
@@ -32,7 +30,7 @@ int SYMB;
 int Executive;
 int KernelMode;
 int safety;
-int kappa = 0;
+
 
 void _BLAST_init(void) {
 
@@ -658,133 +656,7 @@ void stub_driver_init(void) {
     return;
   }
 }
-extern int _SLICE();
-int main() {
-  int main_status;
-  int main_irp;
-  int main_irp_choice;
-  int main_devobj;
-  int main_tmp_ndt_1;
-  int main_tmp_ndt_2;
-  int main_tmp_ndt_3;
-  int main_tmp_ndt_4;
-  int main_tmp_ndt_5;
-  int TRACER_returning;
 
-  {
-    TRACER_returning = 0;
-    safety = 0;
-    routine = 0;
-    SYMB = main_irp;
-    _BLAST_init();
-    if (main_status >= 0) {
-      myStatus = 0;
-      if (main_irp_choice >= 0) {
-        if (main_irp_choice <= 0) {
-          myStatus = -1073741637;
-        }
-      }
-      stub_driver_init();
-      klee_make_symbolic(&main_tmp_ndt_1, sizeof(int), "main_tmp_ndt_1");
-      if (main_tmp_ndt_1 >= 0) {
-        if (main_tmp_ndt_1 <= 0) {
-          main_status = DiskPerfCreate(main_devobj, SYMB);
-        } else {
-          goto _L___2;
-        }
-      } else {
-      _L___2: /* CIL Label */
-        klee_make_symbolic(&main_tmp_ndt_2, sizeof(int), "main_tmp_ndt_2");
-        if (main_tmp_ndt_2 >= 2) {
-          if (main_tmp_ndt_2 <= 2) {
-            main_status = DiskPerfDeviceControl(main_devobj, SYMB);
-          } else {
-            goto _L___1;
-          }
-        } else {
-        _L___1: /* CIL Label */
-          klee_make_symbolic(&main_tmp_ndt_3, sizeof(int), "main_tmp_ndt_3");
-          if (main_tmp_ndt_3 >= 3) {
-            if (main_tmp_ndt_3 <= 3) {
-              main_status = DiskPerfDispatchPnp(main_devobj, SYMB);
-            } else {
-              goto _L___0;
-            }
-          } else {
-          _L___0: /* CIL Label */
-            klee_make_symbolic(&main_tmp_ndt_4, sizeof(int), "main_tmp_ndt_4");
-            if (main_tmp_ndt_4 >= 4) {
-              if (main_tmp_ndt_4 <= 4) {
-                main_status = DiskPerfDispatchPower(main_devobj, SYMB);
-              } else {
-                goto _L;
-              }
-            } else {
-            _L: /* CIL Label */
-              klee_make_symbolic(&main_tmp_ndt_5, sizeof(int),
-                                 "main_tmp_ndt_5");
-              if (main_tmp_ndt_5 >= 12) {
-                if (main_tmp_ndt_5 <= 12) {
-                  main_status = DiskPerfShutdownFlush(main_devobj, SYMB);
-                } else {
-                  TRACER_returning = 1;
-                }
-              } else {
-                TRACER_returning = 1;
-              }
-            }
-          }
-        }
-      }
-    }
-    if (TRACER_returning <= 0) {
-      if (s > UNLOADED) {
-        goto _L___5;
-      } else {
-        if (s < UNLOADED) {
-        _L___5: /* CIL Label */
-          if (main_status > -1) {
-            goto _L___4;
-          } else {
-            if (main_status < -1) {
-            _L___4: /* CIL Label */
-              if (s > SKIP2) {
-                goto _L___3;
-              } else {
-                if (s < SKIP2) {
-                _L___3: /* CIL Label */
-                  if (s > IPC) {
-                    safety = safety + (s - DC);
-                  } else {
-                    if (s < IPC) {
-                      safety = safety + (s - DC);
-                    }
-                  }
-                  if (s > DC) {
-                    safety = safety + (main_status - lowerDriverReturn);
-                  } else {
-                    if (s < DC) {
-                      safety = safety + (main_status - lowerDriverReturn);
-                    }
-                  }
-                } else {
-                  safety = safety + (main_status - lowerDriverReturn);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    if (safety != 0) {
-      goto ERROR;
-    }
-    return;
-  ERROR:
-    //_SLICE(kappa);
-    return;
-  }
-}
 int IoBuildDeviceIoControlRequest(
     int IoBuildDeviceIoControlRequest_IoControlCode,
     int IoBuildDeviceIoControlRequest_DeviceObject,
@@ -1091,4 +963,132 @@ int PoCallDriver(int PoCallDriver_DeviceObject, int PoCallDriver_Irp) {
     }
     return (PoCallDriver_returnVal);
   }
+}
+int main() {
+wcet = 0;
+  int main_status;
+  int main_irp;
+  int main_irp_choice;
+  int main_devobj;
+  int main_tmp_ndt_1;
+  int main_tmp_ndt_2;
+  int main_tmp_ndt_3;
+  int main_tmp_ndt_4;
+  int main_tmp_ndt_5;
+  int TRACER_returning;
+
+  {
+    TRACER_returning = 0;
+    safety = 0;
+    routine = 0;
+    SYMB = main_irp;
+    _BLAST_init();
+    if (main_status >= 0) {
+      myStatus = 0;
+      if (main_irp_choice >= 0) {
+        if (main_irp_choice <= 0) {
+          myStatus = -1073741637;
+        }
+      }
+      stub_driver_init();
+      klee_make_symbolic(&main_tmp_ndt_1, sizeof(int), "main_tmp_ndt_1");
+      if (main_tmp_ndt_1 >= 0) {
+        if (main_tmp_ndt_1 <= 0) {
+          main_status = DiskPerfCreate(main_devobj, SYMB);
+        } else {
+          goto _L___2;
+        }
+      } else {
+      _L___2: /* CIL Label */
+        klee_make_symbolic(&main_tmp_ndt_2, sizeof(int), "main_tmp_ndt_2");
+        if (main_tmp_ndt_2 >= 2) {
+          if (main_tmp_ndt_2 <= 2) {
+            main_status = DiskPerfDeviceControl(main_devobj, SYMB);
+          } else {
+            goto _L___1;
+          }
+        } else {
+        _L___1: /* CIL Label */
+          klee_make_symbolic(&main_tmp_ndt_3, sizeof(int), "main_tmp_ndt_3");
+          if (main_tmp_ndt_3 >= 3) {
+            if (main_tmp_ndt_3 <= 3) {
+              main_status = DiskPerfDispatchPnp(main_devobj, SYMB);
+            } else {
+              goto _L___0;
+            }
+          } else {
+          _L___0: /* CIL Label */
+            klee_make_symbolic(&main_tmp_ndt_4, sizeof(int), "main_tmp_ndt_4");
+            if (main_tmp_ndt_4 >= 4) {
+              if (main_tmp_ndt_4 <= 4) {
+                main_status = DiskPerfDispatchPower(main_devobj, SYMB);
+              } else {
+                goto _L;
+              }
+            } else {
+            _L: /* CIL Label */
+              klee_make_symbolic(&main_tmp_ndt_5, sizeof(int),
+                                 "main_tmp_ndt_5");
+              if (main_tmp_ndt_5 >= 12) {
+                if (main_tmp_ndt_5 <= 12) {
+                  main_status = DiskPerfShutdownFlush(main_devobj, SYMB);
+                } else {
+                  TRACER_returning = 1;
+                }
+              } else {
+                TRACER_returning = 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    if (TRACER_returning <= 0) {
+      if (s > UNLOADED) {
+        goto _L___5;
+      } else {
+        if (s < UNLOADED) {
+        _L___5: /* CIL Label */
+          if (main_status > -1) {
+            goto _L___4;
+          } else {
+            if (main_status < -1) {
+            _L___4: /* CIL Label */
+              if (s > SKIP2) {
+                goto _L___3;
+              } else {
+                if (s < SKIP2) {
+                _L___3: /* CIL Label */
+                  if (s > IPC) {
+                    safety = safety + (s - DC);
+                  } else {
+                    if (s < IPC) {
+                      safety = safety + (s - DC);
+                    }
+                  }
+                  if (s > DC) {
+                    safety = safety + (main_status - lowerDriverReturn);
+                  } else {
+                    if (s < DC) {
+                      safety = safety + (main_status - lowerDriverReturn);
+                    }
+                  }
+                } else {
+                  safety = safety + (main_status - lowerDriverReturn);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    if (safety != 0) {
+      goto ERROR;
+    }
+   // return;
+  ERROR:
+    tracerx_check();
+    //return;
+  }
+
 }

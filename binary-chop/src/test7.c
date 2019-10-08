@@ -1,6 +1,4 @@
 // Problem14.c
-#include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #ifdef LLBMC
 #include <llbmc.h>
@@ -14,7 +12,7 @@ int a21 = 7;
 int a15 = 8;
 int a12 = -49;
 int a24 = 1;
-int kappa;
+int wcet;
 int calculate_output(int input) {
 
   if ((((a24 == 1) &&
@@ -982,10 +980,10 @@ int calculate_output(int input) {
 
 int input, output;
 
-int wcet = 0;
+int wcet;
 
 int main() {
-  kappa = 0;
+  wcet = 0;
   // default output
   output = -1;
 

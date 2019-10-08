@@ -7,14 +7,11 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 /* compiler builtin:
    void *__builtin_alloca(unsigned int  ) ;  */
 int BOUND = 7;
-int kappa = 0;
+int wcet;
 int input;
 int output;
 int inputs[10] = {5, 6, 1, 7, 2, 8, 3, 9, 10, 4};
@@ -1208,6 +1205,7 @@ int calculate_output(int input___0) {
 }
 
 int main() {
+wcet = 0;
   int *symb;
   unsigned int __lengthofsymb;
   void *tmp;
@@ -1244,7 +1242,7 @@ int main() {
       calculate_output(*(symb + FLAG));
       FLAG = FLAG + 1;
     }
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (0);
   }
 }

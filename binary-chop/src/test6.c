@@ -7,10 +7,6 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 /* compiler builtin:
    void *__builtin_alloca(unsigned int  ) ;  */
 int BOUND = 10;
@@ -25,9 +21,10 @@ int m_mod_1 = 8;
 int m_mod_2 = 9;
 int m_factorial_1 = 10;
 int m_factorial_2 = 11;
-int kappa = 0;
+int wcet;
 
 int main() {
+wcet = 0;
   int dummy;
   int q;
   int FLAG;
@@ -462,7 +459,7 @@ int main() {
       FLAG___0 = FLAG___0 + 1;
     }
   ERROR:
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (0);
   }
 }

@@ -7,10 +7,7 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 int KernelMode;
 int Executive;
 int s;
@@ -30,7 +27,7 @@ int setEventCalled;
 int customIrp;
 int myStatus;
 int safety;
-int kappa = 0;
+int wcet;
 
 void stub_driver_init(void) {
 
@@ -190,8 +187,8 @@ int KbFilter_PnP(int KbFilter_PnP_DeviceObject, int KbFilter_PnP_Irp) {
     return (KbFilter_PnP_status);
   }
 }
-extern int _SLICE();
 int main() {
+  wcet = 0;
   int main_status;
   int main_irp;
   int main_pirp;
@@ -212,9 +209,9 @@ int main() {
     if (safety != 0) {
       goto ERROR;
     }
-    return;
+    //return;
   ERROR:
-    // _SLICE(kappa);
+    tracerx_check();
     return;
   }
 }

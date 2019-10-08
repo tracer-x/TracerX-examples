@@ -7,11 +7,7 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-int kappa = 0;
+int wcet;
 char B0;
 char B4;
 char B5;
@@ -140,6 +136,7 @@ char X102;
 int t;
 
 int main() {
+wcet = 0;
 
   {
     klee_make_symbolic(&B0, sizeof(char), "B0");
@@ -1101,7 +1098,7 @@ int main() {
     X84 = X85;
     X86 = X84;
     t = t + 1;
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (0);
   }
 }

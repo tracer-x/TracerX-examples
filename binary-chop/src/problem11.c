@@ -1,6 +1,4 @@
 // This program is Problem11.c
-#include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #ifdef LLBMC
 #include <llbmc.h>

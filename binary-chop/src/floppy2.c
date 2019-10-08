@@ -7,10 +7,7 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 int FloppyThread;
 int KernelMode;
 int Suspended;
@@ -34,7 +31,7 @@ int lowerDriverReturn;
 int setEventCalled;
 int customIrp;
 int safety;
-int kappa = 0;
+int wcet;
 
 void _BLAST_init(void) {
 
@@ -781,8 +778,8 @@ int FloppyCreateClose(int FloppyCreateClose_DeviceObject,
                       int FloppyCreateClose_Irp);
 int FloppyDeviceControl(int FloppyDeviceControl_DeviceObject,
                         int FloppyDeviceControl_Irp);
-extern int _SLICE();
 int main() {
+wcet = 0;
   int main_status;
   int main_irp;
   int main_pirp;
@@ -905,9 +902,9 @@ int main() {
     if (safety != 0) {
       goto ERROR;
     }
-    return;
+    //return;
   ERROR:
-    //_SLICE(kappa);
+tracerx_check();
     return;
   }
 }

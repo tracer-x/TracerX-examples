@@ -7,20 +7,17 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 /* compiler builtin:
    void *__builtin_alloca(unsigned int  ) ;  */
 int BOUND1 = 5;
 int BOUND2 = 5;
-int kappa = 0;
-extern __attribute__((__noreturn__)) void __VERIFIER_error();
-void error(void) {
+int wcet;
+
+void xyz(void) {
 
   {
-    __VERIFIER_error();
+    
     return;
   }
 }
@@ -46,7 +43,7 @@ char read_data(int i___0) {
         __retres3 = data_1;
         goto return_label;
       } else {
-        error();
+        xyz();
       }
     }
     __retres3 = c;
@@ -63,7 +60,7 @@ void write_data(int i___0, char c) {
       if (i___0 == 1) {
         data_1 = c;
       } else {
-        error();
+        xyz();
       }
     }
     return;
@@ -188,7 +185,7 @@ void C_1(void) {
       }
       num = num - 1;
       if (!(num >= 0)) {
-        error();
+        xyz();
       }
       c = read_data(num);
       i = i + 1;
@@ -452,6 +449,7 @@ void init_model(void) {
 }
 
 int main() {
+wcet = 0;
   int count;
   int __retres2;
 
@@ -468,7 +466,7 @@ int main() {
     init_model();
     start_simulation();
     __retres2 = 0;
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (__retres2);
   }
 }

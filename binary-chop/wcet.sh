@@ -51,12 +51,14 @@ while true; do
 	cp src/"$BENCHMARK".c "$BENCHMARK".c 
 	sed -i 's/int main() {/void tracerx_check() { printf(\"Timing of Path:%d\\n\",wcet); klee_assert(wcet <= '$CURRENT_BOUND');}\nint main() {/g' "$BENCHMARK".c  
 	cp llvm_annotate/* . 
-	Annotator.sh "$BENCHMARK"
+	./Annotator.sh "$BENCHMARK"
 	if [[ $3 == "-w" ]]; then
-        	klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -wp-interpolant -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
+        	#/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -wp-interpolant -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
+        	/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee --max-memory=32000 --max-time=3600 -solver-backend=z3  -exit-on-error --search=dfs -allow-external-sym-calls --watchdog -dump-states-on-halt=0 -wp-interpolant -no-output -output-dir=$WCET_DIR/"$BENCHMARK".tx ${BENCHMARK}.bc &> output.txt
         	
 	else
-  		klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
+  		#/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
+  		/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee --max-memory=32000 --max-time=3600 -solver-backend=z3  -exit-on-error --search=dfs -allow-external-sym-calls --watchdog -dump-states-on-halt=0 -no-output -output-dir=$WCET_DIR/"$BENCHMARK".tx ${BENCHMARK}.bc &> output.txt
 	fi
 	#cat output.txt 
 	printf "Instructions Count: "

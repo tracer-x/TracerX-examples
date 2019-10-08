@@ -10,8 +10,8 @@
 typedef int bool;
 typedef char msg_t;
 typedef int port_t;
-int kappa = 0;
-void assert(bool arg);
+int wcet;
+void ABC(bool arg);
 msg_t nomsg = (char)-1;
 port_t p12;
 char p12_old;
@@ -555,7 +555,7 @@ int check(void) {
   }
 }
 
-void assert(bool arg) {
+void ABC(bool arg) {
 
   {
     if (!arg) {
@@ -566,6 +566,7 @@ void assert(bool arg) {
 }
 
 int main() {
+wcet = 0;
   int c1;
   int i2;
 
@@ -632,9 +633,9 @@ int main() {
       p32_old = p32_new;
       p32_new = nomsg;
       c1 = check();
-      assert(c1);
+      ABC(c1);
     }
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (0);
   }
 }

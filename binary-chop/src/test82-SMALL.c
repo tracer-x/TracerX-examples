@@ -7,21 +7,18 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 /* compiler builtin:
    void *__builtin_alloca(unsigned int  ) ;  */
 int BOUND1 = 1;
 int BOUND2 = 1;
 int BOUND3 = 3;
-int kappa = 0;
-extern __attribute__((__noreturn__)) void __VERIFIER_error();
-void error(void) {
+int wcet;
+
+void xyz(void) {
 
   {
-    __VERIFIER_error();
+    
     return;
   }
 }
@@ -538,6 +535,7 @@ void start_simulation(void) {
 }
 
 int main() {
+wcet = 0;
   int count;
   int __retres2;
   int FLAG3;
@@ -577,7 +575,7 @@ int main() {
       count = count + 1;
       if (count == 5) {
         if (D_z == 0) {
-          error();
+          xyz();
         }
         count = 0;
       }
@@ -587,7 +585,7 @@ int main() {
       FLAG3 = FLAG3 + 1;
     }
     __retres2 = 0;
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (__retres2);
   }
 }

@@ -7,10 +7,7 @@
 #include <klee/klee.h>
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 /* compiler builtin:
    void *__builtin_alloca(unsigned int  ) ;  */
 int BOUND1 = 1;
@@ -29,12 +26,12 @@ int BOUND13 = 1;
 int BOUND14 = 1;
 int BOUND15 = 1;
 int BOUND16 = 1;
-int kappa = 0;
-extern __attribute__((__noreturn__)) void __VERIFIER_error();
-void error(void) {
+int wcet;
+
+void xyz(void) {
 
   {
-    __VERIFIER_error();
+    
     return;
   }
 }
@@ -157,12 +154,12 @@ void master(void) {
       goto return_label;
     M_WAIT:;
       if (token != local + 13) {
-        error();
+        xyz();
       } else {
         if (tmp_var <= 5) {
           if (tmp_var >= 5) {
             if (tmp_var == 5) {
-              error();
+              xyz();
             }
           }
         }
@@ -1439,13 +1436,14 @@ void start_simulation(void) {
 }
 
 int main() {
+wcet = 0;
   int __retres1;
 
   {
     init_model();
     start_simulation();
     __retres1 = 0;
-    /*  _SLICE(kappa);*/
+    tracerx_check();
     return (__retres1);
   }
 }
