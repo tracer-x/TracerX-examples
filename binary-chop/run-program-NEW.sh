@@ -1,9 +1,9 @@
 echo "Start"
 
 
-timeout 3600 ./wcet.sh adpcm 50000
+timeout 3600 ./wcet.sh adpcm 200000
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh adpcm 50000 -w
+timeout 3600 ./wcet.sh adpcm 200000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 timeout 3600 ./wcet.sh bubblesort25 50000
@@ -78,44 +78,44 @@ timeout 3600 ./wcet.sh pals1 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals14 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals14 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals14 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals15 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals15 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals15 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals16 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals16 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals16 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals17-LARGE 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals17-LARGE 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals17-LARGE 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals17-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals17-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals17-SMALL 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals18 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals18 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals18 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals19 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals19 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals19 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -126,8 +126,8 @@ timeout 3600 ./wcet.sh pals2 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals20 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals20 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals20 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -137,8 +137,8 @@ timeout 3600 ./wcet.sh pals21 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh pals22-LARGE 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh pals22-LARGE 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh pals22-LARGE 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -247,13 +247,13 @@ rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm ou
 timeout 3600 ./wcet.sh test8 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
-timeout 3600 ./wcet.sh test9 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test9 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test9 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
-timeout 3600 ./wcet.sh test10 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test10 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test10 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -270,26 +270,26 @@ timeout 3600 ./wcet.sh test14 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test18-LARGE 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test18-LARGE 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test18-LARGE 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test18-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test18-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test18-SMALL 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test19-LARGE 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test19-LARGE 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test19-LARGE 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test19-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test19-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test19-SMALL 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -358,8 +358,8 @@ rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm ou
 timeout 3600 ./wcet.sh test32 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
-timeout 3600 ./wcet.sh test33 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test33 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test33 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -376,20 +376,20 @@ timeout 3600 ./wcet.sh test35 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test36 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test36 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test36 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test37 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test37 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test37 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test38 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test38 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test38 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -400,9 +400,9 @@ timeout 3600 ./wcet.sh test4 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test45 50000
+timeout 3600 ./wcet.sh test45 200000
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test45 50000 -w
+timeout 3600 ./wcet.sh test45 200000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
@@ -412,8 +412,8 @@ timeout 3600 ./wcet.sh test45-SMALL 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test46 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test46 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 timeout 3600 ./wcet.sh test46 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
@@ -424,99 +424,99 @@ timeout 3600 ./wcet.sh test46-SMALL 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test47 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test47 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test47 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test47 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test47-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test47-SMALL 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test47-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test47-SMALL 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test49 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test49 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test49 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test49 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test49-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test49-SMALL 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test49-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test49-SMALL 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test50 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test50 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test50 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test50 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test50-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test50-SMALL 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test50-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test50-SMALL 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test81 50000 
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test81 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test81 50000 
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test81 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
-timeout 3600 ./wcet.sh test81-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test81-SMALL 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-
-
-timeout 3600 ./wcet.sh test82 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test82 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test81-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test81-SMALL 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test82-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test82-SMALL 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test82 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test82 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test84 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test84 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test82-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test82-SMALL 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test84-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test84-SMALL 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test84 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test84 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test85 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test85 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test84-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test84-SMALL 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test85-SMALL 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test85-SMALL 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test85 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test85 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test5 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test5 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test85-SMALL 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test85-SMALL 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-timeout 3600 ./wcet.sh test6 50000
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
-timeout 3600 ./wcet.sh test6 50000 -w
-rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test5 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test5 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+
+
+#timeout 3600 ./wcet.sh test6 50000
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
+#timeout 3600 ./wcet.sh test6 50000 -w
+#rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
 echo "Finish"
