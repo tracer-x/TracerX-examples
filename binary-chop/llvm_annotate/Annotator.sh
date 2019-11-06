@@ -5,8 +5,8 @@
 # Copyright 2019 National University of Singapore
 
 
-/home/sanghu/TracerX/llvm/Release/bin/clang -c -S -emit-llvm -g $1.c &> clang.tmp
+clang -c -S -emit-llvm -g $1.c &> clang.tmp
 #g++ -o Annotator Annotator.cpp `llvm-config-3.5 --cxxflags` `llvm-config-3.5 --ldflags` `llvm-config-3.5 --libs` -lpthread -lncurses -ldl &> annotate.tmp
 ./Annotator $1.ll 1> $1-trans.ll
-/home/sanghu/TracerX/llvm/Release/bin/llvm-as $1-trans.ll -o $1.bc
+llvm-as $1-trans.ll -o $1.bc
  

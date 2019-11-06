@@ -54,11 +54,11 @@ while true; do
 	./Annotator.sh "$BENCHMARK"
 	if [[ $3 == "-w" ]]; then
         	#/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -wp-interpolant -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
-        	/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee --max-memory=32000 --max-time=3600 -solver-backend=z3  -exit-on-error --search=dfs -allow-external-sym-calls --watchdog -dump-states-on-halt=0 -wp-interpolant -no-output -output-dir=$WCET_DIR/"$BENCHMARK".tx ${BENCHMARK}.bc &> output.txt
+  		klee --max-memory=32000 --max-time=3600 -solver-backend=z3  -exit-on-error --search=dfs -allow-external-sym-calls --watchdog -dump-states-on-halt=0 -wp-interpolant -no-output -output-dir=$WCET_DIR/"$BENCHMARK".tx ${BENCHMARK}.bc &> output.txt
         	
 	else
   		#/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee -exit-on-error -use-query-log=all:pc,all:smt2 -search=dfs -max-memory=32000 -max-time=3600 -only-output-states-covering-new -solver-backend=z3 -output-dir=$WCET_DIR/"$BENCHMARK".tx "$BENCHMARK".bc &> output.txt
-  		/home/sanghu/TracerX/tracerx/Release+Asserts/bin/klee --max-memory=32000 --max-time=3600 -solver-backend=z3  -exit-on-error --search=dfs -allow-external-sym-calls --watchdog -dump-states-on-halt=0 -no-output -output-dir=$WCET_DIR/"$BENCHMARK".tx ${BENCHMARK}.bc &> output.txt
+  		klee --max-memory=32000 --max-time=3600 -solver-backend=z3  -exit-on-error --search=dfs -allow-external-sym-calls --watchdog -dump-states-on-halt=0 -no-output -output-dir=$WCET_DIR/"$BENCHMARK".tx ${BENCHMARK}.bc &> output.txt
 	fi
 	#cat output.txt 
 	printf "Instructions Count: "
@@ -75,6 +75,14 @@ while true; do
 	    COMPLETED_PATHS=${COMPLETED_PATHS_TEMP:37}
 	    SUBSUMED_PATHS_TEMP=$(grep 'KLEE: done:     subsumed paths = [0-9][0-9]*' output.txt | tail -1)
 	    SUBSUMED_PATHS=${SUBSUMED_PATHS_TEMP:33}
+	    if [[ $3 == "-w" ]]; then
+		printf "\nSlack Pushup: "
+		grep 'WCET Pushup:' output.txt | cut -d : -f 2 | xargs basename
+		SLACK=$(grep 'WCET Pushup:' output.txt | cut -d : -f 2 | xargs basename)
+	    else
+		printf "\nSlack Pushup: 0"
+		SLACK=0
+	    fi
 	    IS_SAFE="Safe"
 	    if  [ $(echo " ($UPPER_BOUND-$LOWER_BOUND)/sqrt(($UPPER_BOUND^2+$LOWER_BOUND^2)/2) <= 0.02" | bc -l) -eq 1 ] || [ "$UPPER_BOUND" -eq 1 ] ; then
  		echo
@@ -93,13 +101,16 @@ while true; do
 		rm output.txt
 	        break
 	    else
+	        if [ -n "$SLACK" ] && [ "$SLACK" -eq "$SLACK" ] 2>/dev/null; then
+	        	UPPER_BOUND=$[$UPPER_BOUND-$SLACK]
+	        fi
 	        CURRENT_BOUND=$[($UPPER_BOUND + $LOWER_BOUND) / 2]
 	    fi
 	else
 	    COMPLETED_PATHS='-'
 	    SUBSUMED_PATHS='-'
 	    COUNTER_EXAMPLE=$(grep 'Timing of Path:[0-9][0-9]*' output.txt | tail -1)
-	    printf "\nCounter Example Time:"
+	    printf "\nCounter Example WCET:"
 	    echo $[${COUNTER_EXAMPLE:15}]
 	    printf "$red\n" "Bound is not safe"
 	    echo	

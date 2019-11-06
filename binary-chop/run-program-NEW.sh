@@ -1,4 +1,4 @@
-echo "sanghu start"
+echo "Start"
 
 
 timeout 3600 ./wcet.sh adpcm 50000
@@ -519,6 +519,6 @@ timeout 3600 ./wcet.sh test6 50000 -w
 rm -R *.tx; rm *.ll; rm *.bc; rm *.c; rm Annotator* clang.tmp annotate.tmp;rm output.txt
 
 
-echo "sanghu finish"
+echo "Finish"
 
 
