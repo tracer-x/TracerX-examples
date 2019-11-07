@@ -39,7 +39,6 @@ void stub_driver_init(void) {
     klee_make_symbolic(&lowerDriverReturn, sizeof(int), "lowerDriverReturn");
     klee_make_symbolic(&setEventCalled, sizeof(int), "setEventCalled");
     klee_make_symbolic(&customIrp, sizeof(int), "customIrp");
-    return;
   }
 }
 void _BLAST_init(void) {
@@ -59,7 +58,6 @@ void _BLAST_init(void) {
     klee_make_symbolic(&lowerDriverReturn, sizeof(int), "lowerDriverReturn");
     klee_make_symbolic(&setEventCalled, sizeof(int), "setEventCalled");
     klee_make_symbolic(&customIrp, sizeof(int), "customIrp");
-    return;
   }
 }
 void IofCompleteRequest(int IofCompleteRequest_Irp,
@@ -206,13 +204,8 @@ int main() {
         main_status = KbFilter_PnP(main_devobj, main_pirp);
       }
     }
-    if (safety != 0) {
-      goto ERROR;
-    }
-    //return;
-  ERROR:
     tracerx_check();
-    return;
+    return 0;
   }
 }
 void stubMoreProcessingRequired(void) {
@@ -220,7 +213,6 @@ void stubMoreProcessingRequired(void) {
   {
     safety = safety + (s - NP);
     s = MPR1;
-    return;
   }
 }
 int KbFilter_Complete(int KbFilter_Complete_DeviceObject,
@@ -311,7 +303,6 @@ void IofCompleteRequest(int IofCompleteRequest_Irp,
   {
     safety = safety + (s - NP);
     s = DC;
-    return;
   }
 }
 int KeSetEvent(int KeSetEvent_Event, int KeSetEvent_Increment,

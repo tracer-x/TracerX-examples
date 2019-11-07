@@ -21,12 +21,12 @@ int warnLight;
 int temp;
 int limit;
 int init;
+int wcet;
 void display(int tempdiff, int warning) {
 
   {
     tempDisplay = tempdiff;
     warnLED = warning;
-    return;
   }
 }
 int vinToCels(int kelvin) {
@@ -65,7 +65,6 @@ void coolantControl(void) {
       }
       FLAG = FLAG + 1;
     }
-    return;
   }
 }
 
