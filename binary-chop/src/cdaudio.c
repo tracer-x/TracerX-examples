@@ -53,7 +53,6 @@ void _BLAST_init(void) {
     klee_make_symbolic(&lowerDriverReturn, sizeof(int), "lowerDriverReturn");
     klee_make_symbolic(&setEventCalled, sizeof(int), "setEventCalled");
     klee_make_symbolic(&customIrp, sizeof(int), "customIrp");
-    return;
   }
 }
 int KeWaitForSingleObject(int KeWaitForSingleObject_Object,
@@ -1961,7 +1960,6 @@ void HpCdrProcessLastSession(int HpCdrProcessLastSession_Toc) {
         HpCdrProcessLastSession_index = HpCdrProcessLastSession_index - 1;
       }
     }
-    return;
   }
 }
 int HPCdrCompletion(int HPCdrCompletion_DeviceObject, int HPCdrCompletion_Irp,
@@ -2093,7 +2091,6 @@ void stub_driver_init(void) {
     compRegistered = lowerDriverReturn;
     compFptr = compRegistered;
     pended = compFptr;
-    return;
   }
 }
 int main() {
@@ -2235,13 +2232,8 @@ wcet = 0;
         }
       }
     }
-    if (safety != 0) {
-      goto ERROR;
-    }
-    return;
-  ERROR:
     tracerx_check();
-    return;
+    return 0;
   }
 }
 void stubMoreProcessingRequired(void) {
@@ -2249,7 +2241,6 @@ void stubMoreProcessingRequired(void) {
   {
     safety = safety + (s - NP);
     s = MPR1;
-    return;
   }
 }
 int IofCallDriver(int IofCallDriver_DeviceObject, int IofCallDriver_Irp) {
@@ -2366,7 +2357,6 @@ void IofCompleteRequest(int IofCompleteRequest_Irp,
   {
     safety = safety + (s - NP);
     s = DC;
-    return;
   }
 }
 int KeSetEvent(int KeSetEvent_Event, int KeSetEvent_Increment,
