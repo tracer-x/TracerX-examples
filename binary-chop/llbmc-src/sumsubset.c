@@ -4,7 +4,7 @@
  */
 #define LLBMC 1
 #ifdef LLBMC
-#include <llbmc.h>
+#include "llbmc.h"
 #else
 #include <klee/klee.h>
 #endif
