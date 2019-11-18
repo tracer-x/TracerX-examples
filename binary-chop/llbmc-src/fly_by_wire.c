@@ -152,7 +152,7 @@ int main() {
   int SPI_MISO_PIN = 4;
 
   int SPCR;
-  #ifdef LLBMC
+#ifdef LLBMC
   for (int i = 0; i < 10; ++i) {
     servo_widths[i] = __llbmc_nondef_int();
   }
@@ -194,7 +194,7 @@ int main() {
   TIFR = __llbmc_nondef_int();
   TIMSK = __llbmc_nondef_int();
   SPCR = __llbmc_nondef_int();
-  #else
+#else
   klee_make_symbolic(servo_widths, 10 * sizeof(unsigned short), "servo_widths");
   klee_make_symbolic(&time_since_last_mega128, sizeof(unsigned char),
                      "time_since_last_mega128");
@@ -231,7 +231,7 @@ int main() {
   klee_make_symbolic(&TIFR, sizeof(int), "TIFR");
   klee_make_symbolic(&TIMSK, sizeof(int), "TIMSK");
   klee_make_symbolic(&SPCR, sizeof(int), "SPCR");
-   #endif
+#endif
 
 
   int SPIE = 7;
@@ -687,13 +687,13 @@ klee_make_symbolic(&_var_roll, sizeof(signed short), "_var_roll");
     // servo_set(failsafe);
     unsigned short servo_value;
     signed short _var_roll;
-  #ifdef LLBMC
+#ifdef LLBMC
   servo_value = __llbmc_nondef_int();
   _var_roll = __llbmc_nondef_int();
-  #else
+#else
     klee_make_symbolic(&servo_value, sizeof(unsigned short), "servo_value");
     klee_make_symbolic(&_var_roll, sizeof(signed short), "_var_roll");
-   #endif
+#endif
 
 
     servo_value =

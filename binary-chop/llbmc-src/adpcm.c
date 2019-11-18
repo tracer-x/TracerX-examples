@@ -325,7 +325,7 @@ int encode(int xin1, int xin2) {
   int *h_ptr, *tqmf_ptr, *tqmf_ptr1;
   long int xa, xb;
   int decis;
-  #ifdef LLBMC
+#ifdef LLBMC
   i = __llbmc_nondef_int();
   h_ptr = __llbmc_nondef_int();
   tqmf_ptr = __llbmc_nondef_int();
@@ -333,7 +333,7 @@ int encode(int xin1, int xin2) {
   xa = __llbmc_nondef_int();
   xb = __llbmc_nondef_int();
   decis = __llbmc_nondef_int();
-  #else
+#else
   klee_make_symbolic(&i, sizeof(int), "i");
   klee_make_symbolic(&h_ptr, sizeof(h_ptr), "h_ptr");
   klee_make_symbolic(&tqmf_ptr, sizeof(tqmf_ptr), "tqmf_ptr");
@@ -342,7 +342,7 @@ int encode(int xin1, int xin2) {
   klee_make_symbolic(&xa, sizeof(long int), "xa");
   klee_make_symbolic(&xb, sizeof(long int), "xb");
   klee_make_symbolic(&decis, sizeof(int), "decis");
-   #endif
+#endif
 
 
   /* transmit quadrature mirror filters implemented here */
@@ -498,7 +498,7 @@ void decode(int input) {
   long int xa1, xa2; /* qmf accumulators */
   int *h_ptr, *ac_ptr, *ac_ptr1, *ad_ptr, *ad_ptr1;
 
-  #ifdef LLBMC
+#ifdef LLBMC
   i = __llbmc_nondef_int();
   xa1 = __llbmc_nondef_int();
   xa2 = __llbmc_nondef_int();
@@ -507,7 +507,7 @@ void decode(int input) {
   ac_ptr1 = __llbmc_nondef_int();
   ad_ptr = __llbmc_nondef_int();
   ad_ptr1 = __llbmc_nondef_int();
-  #else
+#else
   klee_make_symbolic(&i, sizeof(int), "i");
   klee_make_symbolic(&xa1, sizeof(long int), "xa1");
   klee_make_symbolic(&xa2, sizeof(long int), "xa2");
@@ -516,7 +516,7 @@ void decode(int input) {
   klee_make_symbolic(&ac_ptr1, sizeof(ac_ptr1), "ac_ptr1");
   klee_make_symbolic(&ad_ptr, sizeof(ad_ptr), "ad_ptr");
   klee_make_symbolic(&ad_ptr1, sizeof(ad_ptr1), "ad_ptr1");
-   #endif
+#endif
 
   /* split transmitted word from input into ilr and ih */
   ilr = input & 0x3f;
@@ -1057,7 +1057,7 @@ int uppol1(int al1, int apl2, int plt, int plt1) {
 int logsch(int ih, int nbh) {
   int wd;
   klee_make_symbolic(&wd, sizeof(int), "wd");
-  #ifdef LLBMC
+#ifdef LLBMC
   wd = __llbmc_nondef_int();
 #else
   klee_make_symbolic(&wd, sizeof(long int), "wd");
@@ -1079,7 +1079,7 @@ int logsch(int ih, int nbh) {
 
 int main() {
 
-  #ifdef LLBMC
+#ifdef LLBMC
   for (int i = 0; i < 24; ++i) {
     tqmf[i] = __llbmc_nondef_int();
   }
@@ -1089,13 +1089,13 @@ int main() {
   for (int i = 0; i < 11; ++i) {
     accumd[i] = __llbmc_nondef_int();
   }
-  #else
+#else
   klee_make_symbolic(tqmf, 24 * sizeof(int), "tqmf");
   klee_make_symbolic(accumc, 11 * sizeof(int), "accumc");
   klee_make_symbolic(accumd, 11 * sizeof(int), "accumd");
-  #endif
+#endif
   
-  #ifdef LLBMC
+#ifdef LLBMC
   xl = __llbmc_nondef_int();
   xh = __llbmc_nondef_int();
   xout1 = __llbmc_nondef_int();
@@ -1107,7 +1107,7 @@ int main() {
   spl = __llbmc_nondef_int();
   sl = __llbmc_nondef_int();
   el = __llbmc_nondef_int();  
-  #else
+#else
   klee_make_symbolic(&xl, sizeof(int), "xl");
   klee_make_symbolic(&xh, sizeof(int), "xh");
   klee_make_symbolic(&xout1, sizeof(int), "xout1");
@@ -1119,21 +1119,21 @@ int main() {
   klee_make_symbolic(&spl, sizeof(int), "spl");
   klee_make_symbolic(&sl, sizeof(int), "sl");
   klee_make_symbolic(&el, sizeof(int), "el");
-   #endif
+#endif
 
-  #ifdef LLBMC
+#ifdef LLBMC
   for (int i = 0; i < 6; ++i) {
     delay_bpl[i] = __llbmc_nondef_int();
   }
   for (int i = 0; i < 6; ++i) {
     delay_dltx[i] = __llbmc_nondef_int();
   }
-  #else
+#else
   klee_make_symbolic(delay_bpl, 6 * sizeof(int), "delay_bpl");
   klee_make_symbolic(delay_dltx, 6 * sizeof(int), "delay_dltx");
-  #endif
+#endif
 
-  #ifdef LLBMC
+#ifdef LLBMC
   nbl = __llbmc_nondef_int();
   al1 = __llbmc_nondef_int();
   al2 = __llbmc_nondef_int();
@@ -1157,7 +1157,7 @@ int main() {
   ph = __llbmc_nondef_int();
   yh = __llbmc_nondef_int();
   rh = __llbmc_nondef_int();
-  #else
+#else
   klee_make_symbolic(&nbl, sizeof(int), "nbl");
   klee_make_symbolic(&al1, sizeof(int), "al1");
   klee_make_symbolic(&al2, sizeof(int), "al2");
@@ -1181,22 +1181,22 @@ int main() {
   klee_make_symbolic(&ph, sizeof(int), "ph");
   klee_make_symbolic(&yh, sizeof(int), "yh");
   klee_make_symbolic(&rh, sizeof(int), "rh");
-   #endif
+#endif
 
 
-  #ifdef LLBMC
+#ifdef LLBMC
   for (int i = 0; i < 6; ++i) {
     delay_dhx[i] = __llbmc_nondef_int();
   }
   for (int i = 0; i < 6; ++i) {
     delay_bph[i] = __llbmc_nondef_int();
   }
-  #else
+#else
   klee_make_symbolic(delay_dhx, 6 * sizeof(int), "delay_dhx");
   klee_make_symbolic(delay_bph, 6 * sizeof(int), "delay_bph");
-  #endif
+#endif
   
-  #ifdef LLBMC
+#ifdef LLBMC
   ah1 = __llbmc_nondef_int();
   ah2 = __llbmc_nondef_int();
   ph1 = __llbmc_nondef_int();
@@ -1210,7 +1210,7 @@ int main() {
   dec_deth = __llbmc_nondef_int();
   dec_detl = __llbmc_nondef_int();
   dec_dlt = __llbmc_nondef_int();
-  #else
+#else
   klee_make_symbolic(&ah1, sizeof(int), "ah1");
   klee_make_symbolic(&ah2, sizeof(int), "ah2");
   klee_make_symbolic(&ph1, sizeof(int), "ph1");
@@ -1224,23 +1224,23 @@ int main() {
   klee_make_symbolic(&dec_deth, sizeof(int), "dec_deth");
   klee_make_symbolic(&dec_detl, sizeof(int), "dec_detl");
   klee_make_symbolic(&dec_dlt, sizeof(int), "dec_dlt");
-   #endif
+#endif
 
 
-  #ifdef LLBMC
+#ifdef LLBMC
   for (int i = 0; i < 6; ++i) {
     dec_del_bpl[i] = __llbmc_nondef_int();
   }
   for (int i = 0; i < 6; ++i) {
     dec_del_dltx[i] = __llbmc_nondef_int();
   }
-  #else
+#else
   klee_make_symbolic(dec_del_bpl, 6 * sizeof(int), "dec_del_bpl");
   klee_make_symbolic(dec_del_dltx, 6 * sizeof(int), "dec_del_dltx");
-  #endif
+#endif
 
   
-    #ifdef LLBMC
+#ifdef LLBMC
   dec_plt = __llbmc_nondef_int();
   dec_plt1 = __llbmc_nondef_int();
   dec_plt2 = __llbmc_nondef_int();
@@ -1259,7 +1259,7 @@ int main() {
   dec_yh = __llbmc_nondef_int();
   dec_dh = __llbmc_nondef_int();
   dec_nbh = __llbmc_nondef_int();      
-  #else
+#else
   klee_make_symbolic(&dec_plt, sizeof(int), "dec_plt");
   klee_make_symbolic(&dec_plt1, sizeof(int), "dec_plt1");
   klee_make_symbolic(&dec_plt2, sizeof(int), "dec_plt2");
@@ -1278,23 +1278,23 @@ int main() {
   klee_make_symbolic(&dec_yh, sizeof(int), "dec_yh");
   klee_make_symbolic(&dec_dh, sizeof(int), "dec_dh");
   klee_make_symbolic(&dec_nbh, sizeof(int), "dec_nbh");
-   #endif
+#endif
 
-  #ifdef LLBMC
+#ifdef LLBMC
   for (int i = 0; i < 6; ++i) {
     dec_del_bph[i] = __llbmc_nondef_int();
   }
   for (int i = 0; i < 6; ++i) {
     dec_del_dhx[i] = __llbmc_nondef_int();
   }
-  #else
+#else
   klee_make_symbolic(dec_del_bph, 6 * sizeof(int), "dec_del_bph");
   klee_make_symbolic(dec_del_dhx, 6 * sizeof(int), "dec_del_dhx");
-  #endif
+#endif
 
 
   
-  #ifdef LLBMC
+#ifdef LLBMC
   dec_szh = __llbmc_nondef_int();
   dec_rh1 = __llbmc_nondef_int();
   dec_rh2 = __llbmc_nondef_int();
@@ -1306,7 +1306,7 @@ int main() {
   dec_rh = __llbmc_nondef_int();
   dec_ph1 = __llbmc_nondef_int();
   dec_ph2 = __llbmc_nondef_int();    
-  #else
+#else
   klee_make_symbolic(&dec_szh, sizeof(int), "dec_szh");
   klee_make_symbolic(&dec_rh1, sizeof(int), "dec_rh1");
   klee_make_symbolic(&dec_rh2, sizeof(int), "dec_rh2");
@@ -1319,7 +1319,7 @@ int main() {
   klee_make_symbolic(&dec_rh, sizeof(int), "dec_rh");
   klee_make_symbolic(&dec_ph1, sizeof(int), "dec_ph1");
   klee_make_symbolic(&dec_ph2, sizeof(int), "dec_ph2");
-   #endif
+#endif
 
 
 

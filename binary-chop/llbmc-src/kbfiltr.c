@@ -80,13 +80,13 @@ void _BLAST_init(void) {
   lowerDriverReturn = __llbmc_nondef_int();
   setEventCalled = __llbmc_nondef_int();
   customIrp = __llbmc_nondef_int();
-  #else
+#else
     klee_make_symbolic(&pended, sizeof(int), "pended");
     klee_make_symbolic(&compRegistered, sizeof(int), "compRegistered");
     klee_make_symbolic(&lowerDriverReturn, sizeof(int), "lowerDriverReturn");
     klee_make_symbolic(&setEventCalled, sizeof(int), "setEventCalled");
     klee_make_symbolic(&customIrp, sizeof(int), "customIrp");
-   #endif    
+#endif    
 
   }
 }

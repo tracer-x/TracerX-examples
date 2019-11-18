@@ -18,18 +18,19 @@ int main() {
   wcet = 0;
   unsigned int a[25];
   int temp;
+#ifdef LLBMC
+  for (int j = 0; j < 25; ++j) {
+    a[j] = __llbmc_nondef_int();
+  }
+#else
   klee_make_symbolic(a, 25 * sizeof(int), "a");
-  #ifdef LLBMC
-  a = __llbmc_nondef_int();
-  #else
-  klee_make_symbolic(&v1, sizeof(int), "a");
-  #endif
+#endif
 
   int i, j;
   i = 0;
   int b1, b2, b3, b4, b5, b6, b7, b8;
 
-  #ifdef LLBMC
+#ifdef LLBMC
   b1 = __llbmc_nondef_int();
   b2 = __llbmc_nondef_int();
   b3 = __llbmc_nondef_int();
@@ -38,7 +39,7 @@ int main() {
   b6 = __llbmc_nondef_int();
   b7 = __llbmc_nondef_int();
   b8 = __llbmc_nondef_int();
-  #else
+#else
   klee_make_symbolic(&b1, sizeof(int), "b1");
   klee_make_symbolic(&b2, sizeof(int), "b2");
   klee_make_symbolic(&b3, sizeof(int), "b3");
@@ -47,16 +48,16 @@ int main() {
   klee_make_symbolic(&b6, sizeof(int), "b6");
   klee_make_symbolic(&b7, sizeof(int), "b7");
   klee_make_symbolic(&b8, sizeof(int), "b8");
-   #endif
+#endif
 
   int v1, v2;
-  #ifdef LLBMC
+#ifdef LLBMC
   v1 = __llbmc_nondef_int();
   v2 = __llbmc_nondef_int();
-  #else
+#else
   klee_make_symbolic(&v1, sizeof(int), "v1");
   klee_make_symbolic(&v2, sizeof(int), "v2");
-  #endif
+#endif
 
   if (b1 > 0)
     a[0] = v1;

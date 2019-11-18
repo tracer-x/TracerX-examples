@@ -53,7 +53,7 @@ wcet = 0;
   int temp23;
 
   {
-    #ifdef LLBMC
+#ifdef LLBMC
   Cur_Vertical_Sep = __llbmc_nondef_int();
   High_Confidence = __llbmc_nondef_int();
   date = __llbmc_nondef_int();
@@ -84,7 +84,7 @@ wcet = 0;
   temp4 = __llbmc_nondef_int();                
   result_Non_Crossing_Biased_Climb = __llbmc_nondef_int();          
   result_Non_Crossing_Biased_Descend = __llbmc_nondef_int();                                    
-  #else
+#else
     klee_make_symbolic(&Cur_Vertical_Sep, sizeof(int), "Cur_Vertical_Sep");
     klee_make_symbolic(&High_Confidence, sizeof(int), "High_Confidence");
     klee_make_symbolic(&Two_of_Three_Reports_Valid, sizeof(int),
@@ -122,7 +122,7 @@ wcet = 0;
                        "result_Non_Crossing_Biased_Climb");
     klee_make_symbolic(&result_Non_Crossing_Biased_Descend, sizeof(int),
                        "result_Non_Crossing_Biased_Descend");
-  #endif
+#endif
 
     Positive_RA_Alt_Thresh__0 = 400;
     Positive_RA_Alt_Thresh__1 = 500;
@@ -133,7 +133,7 @@ wcet = 0;
     intent_not_known = 0;
     need_upward_RA = 0;
     need_downward_RA = 0;
-  #ifdef LLBMC
+#ifdef LLBMC
   upward_preferred_1 = __llbmc_nondef_int();
   alim_Non_Crossing_Biased_Climb = __llbmc_nondef_int();
   temp11 = __llbmc_nondef_int();
@@ -144,7 +144,7 @@ wcet = 0;
   temp21 = __llbmc_nondef_int();
   temp22 = __llbmc_nondef_int();
   temp23 = __llbmc_nondef_int();        
-  #else
+#else
     klee_make_symbolic(&upward_preferred_1, sizeof(int), "upward_preferred_1");
     klee_make_symbolic(&alim_Non_Crossing_Biased_Climb, sizeof(int),
                        "alim_Non_Crossing_Biased_Climb");
@@ -157,7 +157,7 @@ wcet = 0;
     klee_make_symbolic(&temp21, sizeof(int), "temp21");
     klee_make_symbolic(&temp22, sizeof(int), "temp22");
     klee_make_symbolic(&temp23, sizeof(int), "temp23");
-  #endif    
+#endif    
 
     if (Alt_Layer_Value == 0) {
       alim = Positive_RA_Alt_Thresh__0;

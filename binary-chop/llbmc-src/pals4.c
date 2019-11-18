@@ -10,11 +10,10 @@
 
 
 int wcet;
-int bool;
 typedef char msg_t;
 typedef int port_t;
 int kappa  =    0;
-void ABC(bool arg ) ;
+void ABC(int arg ) ;
 msg_t nomsg  =    (char)-1;
 char r1  ;
 port_t p1  ;
@@ -23,56 +22,56 @@ char p1_new  ;
 char id1  ;
 char st1  ;
 msg_t send1  ;
-bool mode1  ;
+int mode1  ;
 port_t p2  ;
 char p2_old  ;
 char p2_new  ;
 char id2  ;
 char st2  ;
 msg_t send2  ;
-bool mode2  ;
+int mode2  ;
 port_t p3  ;
 char p3_old  ;
 char p3_new  ;
 char id3  ;
 char st3  ;
 msg_t send3  ;
-bool mode3  ;
+int mode3  ;
 port_t p4  ;
 char p4_old  ;
 char p4_new  ;
 char id4  ;
 char st4  ;
 msg_t send4  ;
-bool mode4  ;
+int mode4  ;
 port_t p5  ;
 char p5_old  ;
 char p5_new  ;
 char id5  ;
 char st5  ;
 msg_t send5  ;
-bool mode5  ;
+int mode5  ;
 port_t p6  ;
 char p6_old  ;
 char p6_new  ;
 char id6  ;
 char st6  ;
 msg_t send6  ;
-bool mode6  ;
+int mode6  ;
 port_t p7  ;
 char p7_old  ;
 char p7_new  ;
 char id7  ;
 char st7  ;
 msg_t send7  ;
-bool mode7  ;
+int mode7  ;
 port_t p8  ;
 char p8_old  ;
 char p8_new  ;
 char id8  ;
 char st8  ;
 msg_t send8  ;
-bool mode8  ;
+int mode8  ;
 void node1(void) 
 { msg_t m1 ;
 
@@ -625,7 +624,7 @@ int check(void)
 }
 }
 
-void ABC(bool arg ) 
+void ABC(int arg ) 
 { 
 
   {
@@ -644,7 +643,7 @@ int main(void)
 
   {
   c1 = 0;
-  #ifdef LLBMC
+#ifdef LLBMC
   
   r1 = __llbmc_nondef_char();
   
@@ -689,43 +688,43 @@ int main(void)
   mode8 = __llbmc_nondef_int();
   
   
-  #else
+#else
   
  
   klee_make_symbolic(& r1, sizeof(char ), "r1");
   klee_make_symbolic(& id1, sizeof(char ), "id1");
   klee_make_symbolic(& st1, sizeof(char ), "st1");
   klee_make_symbolic(& send1, sizeof(char ), "send1");
-  klee_make_symbolic(& mode1, sizeof(bool ), "mode1");
+  klee_make_symbolic(& mode1, sizeof(int ), "mode1");
   klee_make_symbolic(& id2, sizeof(char ), "id2");
   klee_make_symbolic(& st2, sizeof(char ), "st2");
   klee_make_symbolic(& send2, sizeof(char ), "send2");
-  klee_make_symbolic(& mode2, sizeof(bool ), "mode2");
+  klee_make_symbolic(& mode2, sizeof(int ), "mode2");
   klee_make_symbolic(& id3, sizeof(char ), "id3");
   klee_make_symbolic(& st3, sizeof(char ), "st3");
   klee_make_symbolic(& send3, sizeof(char ), "send3");
-  klee_make_symbolic(& mode3, sizeof(bool ), "mode3");
+  klee_make_symbolic(& mode3, sizeof(int ), "mode3");
   klee_make_symbolic(& id4, sizeof(char ), "id4");
   klee_make_symbolic(& st4, sizeof(char ), "st4");
   klee_make_symbolic(& send4, sizeof(char ), "send4");
-  klee_make_symbolic(& mode4, sizeof(bool ), "mode4");
+  klee_make_symbolic(& mode4, sizeof(int ), "mode4");
   klee_make_symbolic(& id5, sizeof(char ), "id5");
   klee_make_symbolic(& st5, sizeof(char ), "st5");
   klee_make_symbolic(& send5, sizeof(char ), "send5");
-  klee_make_symbolic(& mode5, sizeof(bool ), "mode5");
+  klee_make_symbolic(& mode5, sizeof(int ), "mode5");
   klee_make_symbolic(& id6, sizeof(char ), "id6");
   klee_make_symbolic(& st6, sizeof(char ), "st6");
   klee_make_symbolic(& send6, sizeof(char ), "send6");
-  klee_make_symbolic(& mode6, sizeof(bool ), "mode6");
+  klee_make_symbolic(& mode6, sizeof(int ), "mode6");
   klee_make_symbolic(& id7, sizeof(char ), "id7");
   klee_make_symbolic(& st7, sizeof(char ), "st7");
   klee_make_symbolic(& send7, sizeof(char ), "send7");
-  klee_make_symbolic(& mode7, sizeof(bool ), "mode7");
+  klee_make_symbolic(& mode7, sizeof(int ), "mode7");
   klee_make_symbolic(& id8, sizeof(char ), "id8");
   klee_make_symbolic(& st8, sizeof(char ), "st8");
   klee_make_symbolic(& send8, sizeof(char ), "send8");
-  klee_make_symbolic(& mode8, sizeof(bool ), "mode8");
-   #endif
+  klee_make_symbolic(& mode8, sizeof(int ), "mode8");
+#endif
   i2 = init();
   p1_old = nomsg;
   p1_new = nomsg;

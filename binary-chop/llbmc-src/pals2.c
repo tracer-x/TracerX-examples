@@ -258,7 +258,7 @@ int main(void)
 
   {
   c1 = 0;
-  #ifdef LLBMC
+#ifdef LLBMC
   r1 = __llbmc_nondef_char();
   
   id1 = __llbmc_nondef_char();
@@ -275,7 +275,7 @@ int main(void)
   st3 = __llbmc_nondef_char();
   send3 = __llbmc_nondef_char();
   mode3 = __llbmc_nondef_int();
-  #else
+#else
   
  
   klee_make_symbolic(& r1, sizeof(char ), "r1");
@@ -291,7 +291,7 @@ int main(void)
   klee_make_symbolic(& st3, sizeof(char ), "st3");
   klee_make_symbolic(& send3, sizeof(char ), "send3");
   klee_make_symbolic(& mode3, sizeof(bool ), "mode3");
-   #endif
+#endif
   i2 = init();
   p1_old = nomsg;
   p1_new = nomsg;
