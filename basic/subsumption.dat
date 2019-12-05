@@ -80,7 +80,7 @@ regexp_nonrecursive2.c	37
 regexp_nonrecursive3.c	3
 regexp_small.c		8
 regexp_tiny.c		2
-rutledge.c		96
+rutledge.c		98
 simple_tcas1.c		4
 simple_tcas2.c		3				
 sp.c			2
