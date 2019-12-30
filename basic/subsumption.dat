@@ -70,7 +70,7 @@ pointer_wp4.c		8
 pointer_wp5.c		78
 pointer_wp6.c		2
 polynomial.c		0
-queens.c		50
+queens.c		47
 recursion1.c		0
 recursion2.c		28
 regexp_iterative.c	116
@@ -78,7 +78,7 @@ regexp_mark.c		8
 regexp_nonrecursive1.c	2
 regexp_nonrecursive2.c	37
 regexp_nonrecursive3.c	3
-regexp_small.c		8
+regexp_small.c		5
 regexp_tiny.c		2
 rutledge.c		98
 simple_tcas1.c		4
