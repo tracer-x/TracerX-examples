@@ -2,7 +2,7 @@
 absolute.c		0
 addition.c		0
 addition_safe1.c	0
-addition_safe2.c	3
+addition_safe2.c	4
 addition_safe3.c	0
 addition_safe4.c	0
 addition_safe5.c	2
@@ -29,14 +29,15 @@ domination1.c		2
 domination2.c		4
 double-free.c		0
 even.c			0
+half_speculation	0
 huge_increment.c	4
 huge_increment_inverted.c	4
 instCountTest.c		0
 interproc.c		0
 local.c			2
 loop_safe1.c		0
-loop_safe2.c		11
-loop_unsafe1.c		6
+loop_safe2.c		20
+loop_unsafe1.c		10
 malloc1.c		0
 malloc2.c		14
 malloc3.c		24
@@ -44,8 +45,9 @@ malloc4.c		0
 masked_error1.c		0
 masked_error2.c		0
 masked_error3.c		0
-mcdc.c			9702
+mcdc.c			295
 memory-access.c		3
+memo_check		0
 missing_error.c		3
 missing_pc.c		6
 openssl.c		4
@@ -70,7 +72,7 @@ pointer_wp4.c		8
 pointer_wp5.c		78
 pointer_wp6.c		2
 polynomial.c		0
-queens.c		47
+queens.c		48
 recursion1.c		0
 recursion2.c		28
 regexp_iterative.c	116
@@ -88,4 +90,4 @@ switch.c		0
 testmem.c		23
 use_after_free.c	0
 validation.c		36
-veritesting_plus_small.c	56
+veritesting_plus_small.c	24
