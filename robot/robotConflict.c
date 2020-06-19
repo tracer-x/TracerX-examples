@@ -1,3 +1,8 @@
+/*
+ * Copyright 2020 National University of Singapore
+ * Robot with conflict
+ */
+
 #include <klee/klee.h>
 #include <stdlib.h>
 

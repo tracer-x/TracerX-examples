@@ -1,0 +1,114 @@
+/*
+ * Copyright 2020 National University of Singapore
+ *
+ */
+
+#include <klee/klee.h>
+#include <stdlib.h>
+
+#define N 10
+#define CONF 4
+#define INF 9999999
+#define QUALITY_BOUND 10
+#define RESOURCE_BOUND 20
+
+struct cell {
+  int posx;
+  int posy;
+};
+
+struct conflict {
+  struct cell item1;
+  struct cell item2;
+};
+
+int grid[N][N] = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+                  {1, 0, 2, 3, 4, 5, 6, 7, 8, 9},
+                  {2, 2, 0, 3, 4, 5, 6, 7, 8, 9},
+                  {3, 3, 3, 0, 4, 5, 6, 7, 8, 9},
+                  {4, 4, 4, 4, 0, 5, 6, 7, 8, 9},
+                  {5, 5, 5, 5, 5, 0, 6, 7, 8, 9},
+                  {6, 6, 6, 6, 6, 6, 0, 7, 8, 9},
+                  {7, 7, 7, 7, 7, 7, 7, 0, 8, 9},
+                  {8, 8, 8, 8, 8, 8, 8, 8, 0, 9},
+                  {9, 9, 9, 9, 9, 9, 9, 9, 9, 0}
+
+};
+
+int quality[N][N] = {
+    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
+    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
+    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
+    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
+    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {10, 9, 8, 7, 6, 5, 4, 3, 2, 1}};
+
+struct conflict conflicts[CONF] = {
+    {{1, 1}, {1, 2}}, {{3, 4}, {5, 7}}, {{4, 6}, {8, 9}}, {{1, 2}, {5, 8}}};
+
+main() {
+  int posx = 0;
+  int posy = 0;
+  struct cell decisions[1000];
+
+  int a, w, i = 0;
+  char direction[] = "01";
+  int current_r = 0, current_q = 0;
+
+  while (1) {
+    if (posx == N - 1 && posy == N - 1)
+      goto FEASIBLE;
+    char b;
+    klee_make_symbolic(&b, sizeof(char), "b");
+    if (b)
+      posx++;
+    else
+      posy++;
+    printf("posx, posy:%d,%d\n ", posx, posy);
+    if (posx < 0 || posx >= N)
+      goto INFEASIBLE;
+    if (posy < 0 || posy >= N)
+      goto INFEASIBLE;
+    if (posx + posy >= INF)
+      goto INFEASIBLE;
+
+    struct cell newCell = {posx, posy};
+    decisions[i] = newCell;
+    for (int i = 0; i < CONF; i++) {
+      struct conflict c = conflicts[i];
+      struct cell i1 = c.item1;
+      struct cell i2 = c.item2;
+      struct cell confItem;
+      int flag = 0;
+      if (decisions[i].posx == i1.posx && decisions[i].posy == i1.posy) {
+        confItem = i2;
+        flag = 1;
+      } else if (decisions[i].posx == i2.posx && decisions[i].posy == i2.posy) {
+        confItem = i1;
+        flag = 1;
+      }
+      if (flag == 1) {
+        for (int j = 0; j < i - 1; j++)
+          if (decisions[j].posx == confItem.posx &&
+              decisions[j].posy == confItem.posy)
+            goto INFEASIBLE;
+      }
+    }
+
+    int r = posx + posy;
+    if (current_r + r > RESOURCE_BOUND)
+      goto INFEASIBLE;
+    current_r += r;
+    int q = quality[posx][posy];
+    current_q += q;
+    i++;
+  }
+
+FEASIBLE:
+  printf("resource:%d, ", current_r);
+  printf("quality:%d\n", current_q);
+  klee_assert(current_q <= QUALITY_BOUND);
+INFEASIBLE:
+  // printf("Infeasible: resource:%d, ",current_r);
+  // printf("quality:%d\n",current_q);
+  return 0;
+}
